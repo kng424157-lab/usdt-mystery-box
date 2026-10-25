@@ -148,7 +148,6 @@
             isSubscribed: false
         };
 
-        // التحقق مما إذا كان المستخدم قد اشترك مسبقاً
         if (userState.isSubscribed) {
             document.getElementById('subModal').style.display = 'none';
         }
@@ -199,9 +198,8 @@
         }
         saveAndRefreshUI();
 
-        // دوال الاشتراك الإجباري
         function goToChannel() {
-            const channelUrl = "https://t.me/YourChannelUsername"; // استبدل برابط قناتك الحقيقي
+            const channelUrl = "https://t.me/udt001"; // رابط قناتك المحدث
             if (tg) {
                 tg.openTelegramLink(channelUrl);
             } else {
@@ -210,12 +208,11 @@
         }
 
         function checkSubscription() {
-            // منح مفتاحين هدية ترحيبية عند التحقق من الاشتراك
             userState.isSubscribed = true;
             userState.keys += 2;
             saveAndRefreshUI();
             document.getElementById('subModal').style.display = 'none';
-            showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنظاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
+            showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
         }
 
         function watchAdForKey() {
