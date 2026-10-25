@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>صندوق الدولار USDT Box</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- تضمين سكريبت إعلانات AdsGram المحدث -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
@@ -49,7 +48,7 @@
         .btn { border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
         .btn-open { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-ad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .btn:disabled { background: #475569; color: #94a3b8; }
+        .btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
         .bottom-bar { background: var(--card-bg); padding: 12px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); }
         .nav-item { background: none; border: none; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item span { font-size: 1.3rem; }
@@ -183,16 +182,7 @@
         }
         saveAndRefreshUI();
 
-        // تهيئة وحدة تحكم الإعلانات المباشرة من AdsGram
-        let adController = null;
-        if (window.AdsGram && typeof window.AdsGram.init === 'function') {
-            try {
-                adController = window.AdsGram.init({ blockId: "56031" });
-            } catch (e) {
-                console.log("AdsGram init error:", e);
-            }
-        }
-
+        // دالة عرض الإعلان مع عداد تنازلي ذكي (15 ثانية) يختفي فور جهوزية الإعلان
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -210,45 +200,59 @@
 
             const btnAd = document.getElementById('btnWatchAd');
             btnAd.disabled = true;
-            btnAd.innerText = "⏳ جاري فتح الإعلان...";
 
-            // إعادة تهيئة المحاولة في حال لم يتم تحميل الكائن مسبقاً
-            if (!adController && window.AdsGram) {
-                try {
-                    adController = window.AdsGram.init({ blockId: "56031" });
-                } catch (e) {
-                    console.log(e);
+            let secondsLeft = 15; // عداد تنازلي لمدة 15 ثانية
+            btnAd.innerText = `⏳ جاري تحميل الإعلان... (${secondsLeft} ثانية)`;
+
+            let countdownTimer = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    btnAd.innerText = `⏳ جاري تحميل الإعلان... (${secondsLeft} ثانية)`;
+                } else {
+                    clearInterval(countdownTimer);
                 }
-            }
+            }, 1000);
 
-            if (adController) {
-                adController.show().then((result) => {
+            let checkInterval = setInterval(() => {
+                if (window.AdsGram && typeof window.AdsGram.init === 'function') {
+                    clearInterval(checkInterval);
+                    clearInterval(countdownTimer);
                     btnAd.disabled = false;
                     btnAd.innerHTML = `📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">${Math.max(0, 3 - userState.adsCount)}</span>/3 متبقي)`;
                     
-                    // منح المكافأة للمستخدم بنجاح
-                    userState.keys += 1;
-                    userState.adsCount += 1;
-                    if (userState.adsCount >= 3) {
-                        userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
+                    try {
+                        const adController = window.AdsGram.init({ blockId: "56031" });
+                        adController.show().then((result) => {
+                            userState.keys += 1;
+                            userState.adsCount += 1;
+                            if (userState.adsCount >= 3) {
+                                userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
+                            }
+                            saveAndRefreshUI();
+                            showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بنجاح بعد مشاهدة الإعلان.");
+                        }).catch((result) => {
+                            console.log("Ad cancelled or failed", result);
+                            if (tg) {
+                                tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                            } else {
+                                alert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Error showing ad:", error);
                     }
-                    saveAndRefreshUI();
-                    showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بنجاح بعد مشاهدة الإعلان.");
-                }).catch((result) => {
+                }
+            }, 500);
+
+            // إذا انتهت ال15 ثانية ولم يتحمل الإعلان يتم إعادة الزر لحالته الطبيعية بدلاً من إظهار أي خطأ مزعج
+            setTimeout(() => {
+                if (btnAd.disabled) {
+                    clearInterval(checkInterval);
+                    clearInterval(countdownTimer);
                     btnAd.disabled = false;
                     btnAd.innerHTML = `📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">${Math.max(0, 3 - userState.adsCount)}</span>/3 متبقي)`;
-                    console.log("Ad cancelled or failed", result);
-                    if (tg) {
-                        tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
-                    } else {
-                        alert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
-                    }
-                });
-            } else {
-                btnAd.disabled = false;
-                btnAd.innerHTML = `📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">${Math.max(0, 3 - userState.adsCount)}</span>/3 متبقي)`;
-                alert("تعذر تشغيل الإعلان، تأكد من اتصال الإنترنت أو أن متصفحك لا يحظر الإعلانات.");
-            }
+                }
+            }, 15000);
         }
 
         let isOpening = false;
