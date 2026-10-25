@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوت صناديق الحظ والهدايا</title>
+    <!-- مكتبة تيليجرام الرسمية للتطبيقات المصغرة -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- مكتبة إعلانات AdsGram -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <!-- مكتبة ربط محفظة TON Connect -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --green: #10b981;
+            --blue: #3b82f6;
+            --text-light: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* شريط الفائزين المتحرك */
+        .ticker-wrap {
+            background: rgba(245, 158, 11, 0.15);
+            border-bottom: 1px solid var(--gold);
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: #fde68a;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+
+        /* الهيدر ولوحة الأرصدة */
+        .header {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .stat-card strong {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .usdt-text { color: var(--green) !important; }
+        .key-text { color: var(--gold) !important; }
+        .ticket-text { color: var(--blue) !important; }
+
+        /* منطقة الصندوق الرئيسية */
+        .main-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .box-wrapper {
+            width: 170px;
+            height: 170px;
+            background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .box-wrapper:active {
+            transform: scale(0.92);
+        }
+
+        .box-emoji {
+            font-size: 105px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+
+        /* أنيميشن اهتزاز الصندوق */
+        @keyframes shakeBox {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-12deg) scale(1.08); }
+            40% { transform: rotate(12deg) scale(1.08); }
+            60% { transform: rotate(-12deg) scale(1.12); }
+            80% { transform: rotate(12deg) scale(1.12); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .shaking {
+            animation: shakeBox 0.7s ease-in-out infinite;
+        }
+
+        .status-msg {
+            font-size: 1rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 25px;
+        }
+
+        /* الأزرار الرئيسية */
+        .actions {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .btn-open {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-ad {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn:disabled {
+            background: #475569;
+            box-shadow: none;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* القائمة السفلية */
+        .bottom-bar {
+            background: var(--card-bg);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item span { font-size: 1.3rem; }
+
+        /* النافذة المنبثقة (Modal) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            border: 2px solid var(--gold);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon { font-size: 60px; margin-bottom: 10px; }
+        .modal-title { font-size: 1.3rem; color: var(--gold); margin-bottom: 10px; }
+        .modal-desc { font-size: 1rem; color: #e2e8f0; margin-bottom: 20px; line-height: 1.5; }
+
+        .input-wallet {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شريط الفائزين المباشر -->
+    <div class="ticker-wrap" id="liveTicker">
+        🎉 الفائز @Ahmed_99 ربح للتو 0.50 USDT من الصندوق!
+    </div>
+
+    <!-- لوحة الأرصدة العلوية -->
+    <div class="header">
+        <div class="stat-card">
+            <span>رصيد الدولار</span>
+            <strong class="usdt-text"><span id="usdtBal">0.000</span> $</strong>
+        </div>
+        <div class="stat-card">
+            <span>المفاتيح 🔑</span>
+            <strong class="key-text" id="keysBal">1</strong>
+        </div>
+        <div class="stat-card">
+            <span>تذاكر السحب 🎟️</span>
+            <strong class="ticket-text" id="ticketsBal">0</strong>
+        </div>
+    </div>
+
+    <!-- منطقة الصندوق -->
+    <div class="main-stage">
+        <div class="box-wrapper" onclick="openBox()">
+            <div class="box-emoji" id="boxEmoji">🎁</div>
+        </div>
+        <div class="status-msg" id="statusMsg">لديك مفتاح مجاني! اضغط لفتح الصندوق</div>
+
+        <div class="actions">
+            <button class="btn btn-open" id="btnOpen" onclick="openBox()">
+                🔓 افتح صندوق الحظ (1 مفتاح)
+            </button>
+            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForKey()">
+                📺 شاهد إعلاناً للحصول على مفتاح (+1 🔑)
+            </button>
+        </div>
+    </div>
+
+    <!-- الشريط السفلي (السحب، الإحالة، محفظة TON) -->
+    <div class="bottom-bar">
+        <button class="nav-item" onclick="openWithdrawModal()">
+            <span>💸</span> سحب الأرباح
+        </button>
+        <button class="nav-item" onclick="shareReferral()">
+            <span>👥</span> دعوة صديق (+🔑)
+        </button>
+        <!-- زر ربط محفظة TON الرسمي -->
+        <div id="ton-connect-btn"></div>
+    </div>
+
+    <!-- نافذة الجائزة المنبثقة -->
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">مبروك!</div>
+            <div class="modal-desc" id="modalDesc">لقد ربحت جائزة</div>
+            <button class="btn btn-open" style="width:100%" onclick="closeModal('rewardModal')">استلام ومتابعة</button>
+        </div>
+    </div>
+
+    <!-- نافذة سحب الأرباح -->
+    <div class="modal-overlay" id="withdrawModal">
+        <div class="modal-box">
+            <div class="modal-icon">💳</div>
+            <div class="modal-title">سحب الأرباح (USDT)</div>
+            <div class="modal-desc">
+                الحد الأدنى للسحب هو <strong>0.50 USDT</strong> على شبكة TON.<br>
+                رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $
+            </div>
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON / USDT الخاص بك">
+            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">تأكيد طلب السحب</button>
+            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. تهيئة بيئة تيليجرام
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // 2. استرجاع أو تهيئة بيانات المستخدم (محفوظة محلياً للتجربة، وتربط لاحقاً بالسيرفر)
+        let userState = JSON.parse(localStorage.getItem('mysteryBoxState')) || {
+            usdt: 0.000,
+            keys: 1,      // مفتاح ترحيبي مجاني لكل مستخدم جديد
+            tickets: 0,
+            adCooldown: 0
+        };
+
+        function saveAndRefreshUI() {
+            localStorage.setItem('mysteryBoxState', JSON.stringify(userState));
+            document.getElementById('usdtBal').innerText = userState.usdt.toFixed(3);
+            document.getElementById('keysBal').innerText = userState.keys;
+            document.getElementById('ticketsBal').innerText = userState.tickets;
+
+            const btnOpen = document.getElementById('btnOpen');
+            if (userState.keys <= 0) {
+                btnOpen.disabled = true;
+                document.getElementById('statusMsg').innerText = "نفدت المفاتيح! شاهد إعلاناً للحصول على مفتاح 🔑";
+            } else {
+                btnOpen.disabled = false;
+                document.getElementById('statusMsg').innerText = `لديك ${userState.keys} مفتاح جاهز للفتح!`;
+            }
+        }
+        saveAndRefreshUI();
+
+        // 3. إعداد إعلانات AdsGram (استبدل الرقم بمعرف الإعلان الخاص بك من موقع AdsGram)
+        let AdController = null;
+        try {
+            if (window.Adsgram) {
+                AdController = window.Adsgram.init({ blockId: "ضع_رقم_البلوك_هنا" });
+            }
+        } catch (e) { console.log("AdsGram غير مفعل بعد"); }
+
+        // 4. دالة مشاهدة الإعلان مع نظام المؤقت (Cooldown) لحماية الحساب
+        function watchAdForKey() {
+            const btnAd = document.getElementById('btnWatchAd');
+            
+            // إذا كان هناك حساب AdsGram مربوط فعلياً
+            if (AdController) {
+                AdController.show().then((result) => {
+                    if (result.done) {
+                        grantKeyAfterAd();
+                    }
+                }).catch((err) => {
+                    alert("لا يوجد إعلان متاح في منطقتك حالياً، حاول بعد قليل.");
+                });
+            } else {
+                // محاكاة الإعلان في وضع التجربة قبل وضع كود AdsGram الحقيقي
+                btnAd.disabled = true;
+                btnAd.innerText = "⏳ جاري عرض الإعلان التجريبي (3 ثوانٍ)...";
+                setTimeout(() => {
+                    grantKeyAfterAd();
+                }, 3000);
+            }
+        }
+
+        function grantKeyAfterAd() {
+            userState.keys += 1;
+            saveAndRefreshUI();
+            showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد إلى رصيدك بعد مشاهدة الإعلان. افتح الصندوق الآن!");
+            startAdCooldown(15); // مؤقت انتظار 15 ثانية قبل الإعلان التالي
+        }
+
+        function startAdCooldown(seconds) {
+            const btnAd = document.getElementById('btnWatchAd');
+            let remaining = seconds;
+            btnAd.disabled = true;
+            const timer = setInterval(() => {
+                btnAd.innerText = `⏳ الإعلان القادم بعد (${remaining} ث)`;
+                remaining--;
+                if (remaining < 0) {
+                    clearInterval(timer);
+                    btnAd.disabled = false;
+                    btnAd.innerText = "📺 شاهد إعلاناً للحصول على مفتاح (+1 🔑)";
+                }
+            }, 1000);
+        }
+
+        // 5. خوارزمية فتح الصندوق وحساب احتمالات الربح (Drop Rate)
+        let isOpening = false;
+        function openBox() {
+            if (isOpening || userState.keys <= 0) return;
+
+            isOpening = true;
+            userState.keys -= 1;
+            saveAndRefreshUI();
+
+            const box = document.getElementById('boxEmoji');
+            box.classList.add('shaking');
+            document.getElementById('statusMsg').innerText = "جاري فتح الصندوق... 🥁";
+
+            setTimeout(() => {
+                box.classList.remove('shaking');
+                isOpening = false;
+
+                // حساب الاحتمالات من 100 لحماية ميزانية صاحب البوت
+                const roll = Math.random() * 100;
+                
+                if (roll < 75) {
+                    // 75% احتمال: تذاكر للسحب اليومي (لا تكلفك رصيداً فورياً وتحفز المستخدم)
+                    const wonTickets = Math.floor(Math.random() * 3) + 1;
+                    userState.tickets += wonTickets;
+                    showCustomModal("🎟️", "تذاكر السحب اليومي!", `ربحت ${wonTickets} تذكرة لدخول السحب اليومي الكبير على 5 USDT!`);
+                } else if (roll < 97) {
+                    // 22% احتمال: رصيد USDT بسيط ومضمون (بين 0.001$ و 0.005$)
+                    const wonUsdt = parseFloat((Math.random() * (0.005 - 0.001) + 0.001).toFixed(3));
+                    userState.usdt += wonUsdt;
+                    showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
+                } else {
+                    // 3% احتمال نادر: جائزة عالية (0.05 USDT)
+                    const bigWin = 0.050;
+                    userState.usdt += bigWin;
+                    showCustomModal("💎", "ضربة حظ نادرة!", `رائع! لقد ربحت الجائزة الذهبية بقيمة ${bigWin} USDT!`);
+                }
+
+                saveAndRefreshUI();
+            }, 1200);
+        }
+
+        // 6. نوافذ العرض والسحب ومشاركة رابط الإحالة
+        function showCustomModal(icon, title, desc) {
+            document.getElementById('modalIcon').innerText = icon;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('rewardModal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('modalUsdtBal').innerText = userState.usdt.toFixed(3);
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function submitWithdraw() {
+            const wallet = document.getElementById('walletInput').value.trim();
+            if (userState.usdt < 0.50) {
+                alert("عذراً، لم تصل للحد الأدنى للسحب بعد (0.50 USDT). افتح المزيد من الصناديق!");
+                return;
+            }
+            if (wallet.length < 15) {
+                alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح.");
+                return;
+            }
+            // إرسال بيانات السحب إلى البوت الخاص بك
+            tg.sendData(JSON.stringify({ action: "withdraw", amount: userState.usdt, wallet: wallet }));
+            alert("✅ تم إرسال طلب السحب بنجاح إلى الإدارة وستتم مراجعته قريباً!");
+            closeModal('withdrawModal');
+        }
+
+        function shareReferral() {
+            const botUsername = "YourBotUsername_bot"; // ضع معرف البوت الخاص بك هنا
+            const userId = tg.initDataUnsafe?.user?.id || "12345";
+            const shareUrl = `https://t.me/share/url?url=https://t.me/${botUsername}?start=${userId}&text=افتح صناديق الحظ المجانية واربح USDT يومياً! 🎁💵`;
+            tg.openTelegramLink(shareUrl);
+        }
+
+        // 7. شريط الفائزين المتغير تلقائياً كل 5 ثوانٍ
+        const fakeWinners = [
+            "🎉 المستخدم @Sami_K ربح للتو 0.05 USDT من الصندوق!",
+            "🎟️ المستخدم @Yemen_Crypto حصل على 5 تذاكر للسحب اليومي!",
+            "💵 تم دفع 0.65 USDT بنجاح إلى محفظة المستخدم @Ali_Pro!",
+            "💎 المستخدم @Mona_98 فتحت الصندوق الذهبي وربحت 0.10 USDT!"
+        ];
+        let tickerIdx = 0;
+        setInterval(() => {
+            tickerIdx = (tickerIdx + 1) % fakeWinners.length;
+            document.getElementById('liveTicker').innerText = fakeWinners[tickerIdx];
+        }, 5000);
+
+        // 8. تفعيل زر ربط محفظة TON Connect
+        try {
+            new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect-btn'
+            });
+        } catch (e) { console.log("TON Connect init"); }
+    </script>
+</body>
+</html>
