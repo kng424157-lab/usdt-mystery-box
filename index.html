@@ -114,6 +114,7 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('mysteryBoxUserId') || 'user_' + Math.floor(Math.random() * 1000000);
+        let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'بدون معرف';
         localStorage.setItem('mysteryBoxUserId', userId);
 
         let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { usdt: 0.000, keys: 1, referrals: 0 };
@@ -229,7 +230,21 @@
             const wallet = document.getElementById('walletInput').value.trim();
             if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT. افتح المزيد من الصناديق!"); return; }
             if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح."); return; }
-            alert("✅ تم حفظ المحفظة وإرسال طلب السحب بنجاح!");
+
+            // إرسال طلب السحب مباشرة إلى بوت الإدارة الخاص بك
+            const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
+            const chatId = "5630771182";
+            const message = `🚨 طلب سحب جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(3)} USDT\n💳 المحفظة:\n${wallet}`;
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: message })
+            }).catch(err => console.log(err));
+
+            alert("✅ تم إرسال طلب السحب بنجاح وسيتم مراجعته وتحويل الأرباح قريباً!");
+            userState.usdt = 0; 
+            saveAndRefreshUI();
             closeModal('withdrawModal');
         }
 
