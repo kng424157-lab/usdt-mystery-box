@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>صندوق الدولار USDT Box</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- تضمين مكتبة إعلانات AdsGram -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -215,7 +213,7 @@
             showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
         }
 
-        // دالة تشغيل إعلانات AdsGram مع آلية انتظار تحميل المكتبة تلقائياً
+        // دالة جلب مكتبة AdsGram وإظهار الإعلان ديناميكياً
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -231,9 +229,8 @@
                 return;
             }
 
-            // دالة مساعدة للتحقق من تحميل المكتبة وتشغيل الإعلان
-            let attempts = 0;
-            function tryInitAd() {
+            // تنفيذ الإعلان أو حقن السكريبت إذا لم يكن موجوداً
+            function executeAd() {
                 if (window.AdsGram && typeof window.AdsGram.init === 'function') {
                     try {
                         const adController = window.AdsGram.init({ blockId: "56031" });
@@ -255,20 +252,23 @@
                         });
                     } catch (error) {
                         console.error("Error showing ad:", error);
-                        alert("حدث خطأ أثناء محاولة عرض الإعلان.");
+                        alert("حدث خطأ أثناء تشغيل الإعلان.");
                     }
                 } else {
-                    attempts++;
-                    if (attempts < 10) {
-                        // إعادة المحاولة بعد نصف ثانية إذا لم تكن قد تحسنت بعد
-                        setTimeout(tryInitAd, 500);
-                    } else {
-                        alert("مكتبة الإعلانات لم تتحمل بعد، تأكد من اتصال الإنترنت ثم حاول مجدداً.");
-                    }
+                    // تحميل السكريبت ديناميكياً إذا لم يتم تحميله مسبقاً
+                    let script = document.createElement('script');
+                    script.src = "https://sad.adsgram.ai/js/sad.min.js";
+                    script.onload = function() {
+                        setTimeout(executeAd, 300);
+                    };
+                    script.onerror = function() {
+                        alert("فشل تحميل مكتبة الإعلانات، تأكد من اتصال الإنترنت.");
+                    };
+                    document.head.appendChild(script);
                 }
             }
 
-            tryInitAd();
+            executeAd();
         }
 
         let isOpening = false;
