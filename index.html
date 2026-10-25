@@ -86,7 +86,8 @@
         <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
     </div>
 
-    <div class="modal-overlay" id="subModal" style="display: flex;">
+    <!-- نافذة الاشتراك الإجباري (مخفية افتراضياً، وتظهر فقط إذا لم يكن المستخدم قد اشترك مسبقاً) -->
+    <div class="modal-overlay" id="subModal" style="display: none;">
         <div class="modal-box">
             <div class="modal-icon">📢</div>
             <div class="modal-title">تنبيه هام جداً!</div>
@@ -147,7 +148,10 @@
             isSubscribed: false
         };
 
-        if (userState.isSubscribed) {
+        // التحقق من حالة الاشتراك وإظهار النافذة للمستخدم الجديد فقط
+        if (!userState.isSubscribed) {
+            document.getElementById('subModal').style.display = 'flex';
+        } else {
             document.getElementById('subModal').style.display = 'none';
         }
 
@@ -214,7 +218,7 @@
             showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
         }
 
-        // دالة تشغيل إعلانات AdsGram الذكية (بدون رسائل خطأ، مع انتظار التحميل التلقائي)
+        // دالة تشغيل إعلانات AdsGram الذكية
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -265,7 +269,6 @@
                 }
             }, 500);
 
-            // مهلة زمنية أقصاها 5 ثوانٍ، وإذا لم تتحمل المكتبة يتم إعادة الزر لحالته الطبيعية
             setTimeout(() => {
                 if (btnAd.disabled) {
                     clearInterval(checkInterval);
@@ -364,9 +367,4 @@
             const text = encodeURIComponent(`افتح صناديق الحظ المجانية واربح USDT يومياً! 🎁💵 استخدم رابطي لدخول البوت واحصل على مفتاح مجاني فوراً:\n\n${refLink}`);
             const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
             if (tg) {
-                tg.openTelegramLink(shareUrl);
-            } else {
-                window.open(shareUrl, '_blank');
-            }
-        }
- 
+                tg.o
