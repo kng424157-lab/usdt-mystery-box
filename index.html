@@ -35,7 +35,7 @@
             75% { transform: rotate(12deg) scale(1.1); }
         }
         .shaking { animation: shakeBox 0.5s ease-in-out infinite; }
-        .status-msg { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 20px; text-align: center; }
+        .status-msg { font-size: 0.90rem; color: #cbd5e1; margin-bottom: 20px; text-align: center; line-height: 1.4; }
         .actions { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 12px; }
         .btn { border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
         .btn-open { background: linear-gradient(135deg, #f59e0b, #d97706); }
@@ -68,7 +68,7 @@
         <div class="status-msg" id="statusMsg">لديك مفتاح مجاني! اضغط لفتح الصندوق</div>
         <div class="actions">
             <button class="btn btn-open" id="btnOpen" onclick="openBox()">🔓 افتح صندوق الحظ (1 مفتاح)</button>
-            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForKey()">📺 شاهد إعلاناً للحصول على مفتاح (+1 🔑)</button>
+            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForKey()">📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">3</span>/3 متبقي)</button>
         </div>
     </div>
 
@@ -117,14 +117,29 @@
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'بدون معرف';
         localStorage.setItem('mysteryBoxUserId', userId);
 
-        let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { usdt: 0.000, keys: 1, referrals: 0 };
+        let todayStr = new Date().toDateString();
+        let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { 
+            usdt: 0.000, 
+            keys: 1, 
+            referrals: 0, 
+            dailyEarned: 0, 
+            lastDate: todayStr,
+            adsCount: 0,
+            adsResetTime: 0
+        };
+
+        // إعادة تعيين العدادات اليومية إذا تغير اليوم
+        if (userState.lastDate !== todayStr) {
+            userState.dailyEarned = 0;
+            userState.lastDate = todayStr;
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('ref');
         
         if (startParam && startParam !== userId && !localStorage.getItem('referred_processed')) {
             localStorage.setItem('referred_processed', 'true');
-            let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: 0 };
+            let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: 0, dailyEarned: 0 };
             referrerState.usdt += 0.001; 
             referrerState.keys += 1;     
             referrerState.referrals += 1; 
@@ -137,7 +152,15 @@
             document.getElementById('usdtBal').innerText = userState.usdt.toFixed(3);
             document.getElementById('keysBal').innerText = userState.keys;
             document.getElementById('refCountBal').innerText = userState.referrals;
-            
+
+            // تحديث حالة الإعلانات المتبقية
+            let now = Date.now();
+            if (now > userState.adsResetTime) {
+                userState.adsCount = 0; // إعادة التعيين بعد مرور الساعتين
+            }
+            let adsRemaining = Math.max(0, 3 - userState.adsCount);
+            document.getElementById('adsLeft').innerText = adsRemaining;
+
             const btnOpen = document.getElementById('btnOpen');
             if (userState.keys <= 0) {
                 btnOpen.disabled = true;
@@ -154,30 +177,35 @@
         saveAndRefreshUI();
 
         function watchAdForKey() {
+            let now = Date.now();
+            if (now < userState.adsResetTime) {
+                let diffMin = Math.ceil((userState.adsResetTime - now) / 60000);
+                alert(`⚠️ لقد استهلكت الـ 3 إعلانات المتاحة. يمكنك مشاهدة إعلانات جديدة بعد ${diffMin} دقيقة.`);
+                return;
+            }
+
+            if (userState.adsCount >= 3) {
+                userState.adsResetTime = now + (2 * 60 * 60 * 1000); // ساعتان من الآن
+                userState.adsCount = 0;
+                saveAndRefreshUI();
+                return;
+            }
+
             const btnAd = document.getElementById('btnWatchAd');
             btnAd.disabled = true;
-            btnAd.innerText = "⏳ جاري عرض الإعلان (3 ثوانٍ)...";
+            btnAd.innerText = "⏳ جاري محاكاة عرض الإعلان (3 ثوانٍ)...";
+            
             setTimeout(() => {
                 userState.keys += 1;
-                saveAndRefreshUI();
-                showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد إلى رصيدك بعد مشاهدة الإعلان.");
-                startAdCooldown(10);
-            }, 3000);
-        }
-
-        function startAdCooldown(seconds) {
-            const btnAd = document.getElementById('btnWatchAd');
-            let rem = seconds;
-            btnAd.disabled = true;
-            const t = setInterval(() => {
-                btnAd.innerText = `⏳ الإعلان القادم بعد (${rem} ث)`;
-                rem--;
-                if (rem < 0) {
-                    clearInterval(t);
-                    btnAd.disabled = false;
-                    btnAd.innerText = "📺 شاهد إعلاناً للحصول على مفتاح (+1 🔑)";
+                userState.adsCount += 1;
+                if (userState.adsCount >= 3) {
+                    userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000); // قفل الساعتين بعد إتمام 3 إعلانات
                 }
-            }, 1000);
+                saveAndRefreshUI();
+                showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بعد مشاهدة الإعلان.");
+                btnAd.disabled = false;
+                saveAndRefreshUI();
+            }, 3000);
         }
 
         let isOpening = false;
@@ -194,16 +222,33 @@
                 box.classList.remove('shaking');
                 isOpening = false;
                 const roll = Math.random() * 100;
-                if (roll < 75) {
+
+                // التحقق من الحد الأقصى للربح اليومي (0.05 USDT)
+                if (userState.dailyEarned >= 0.05) {
+                    // إذا وصل الحد الأقصى، نجعله يربح مفاتيح أو تذاكر فقط بدون زيادة الرصيد المالي
                     userState.keys += 1;
-                    showCustomModal("🔑", "ربحت مفتاح إضافي!", "رائع! لقد عثرت على مفتاح جديد داخل الصندوق.");
-                } else if (roll < 97) {
-                    const wonUsdt = parseFloat((Math.random() * (0.010 - 0.002) + 0.002).toFixed(3));
-                    userState.usdt += wonUsdt;
-                    showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
+                    showCustomModal("🔑", "ربحت مفتاح إضافي!", "لقد وصلت للحد الأقصى للربح اليومي (0.05 $)، لكنك ربحت مفتاحاً إضافياً!");
                 } else {
-                    userState.usdt += 0.050;
-                    showCustomModal("💎", "ضربة حظ نادرة!", "رائع! لقد ربحت الجائزة الذهبية بقيمة 0.050 USDT!");
+                    if (roll < 70) {
+                        userState.keys += 1;
+                        showCustomModal("🔑", "ربحت مفتاح إضافي!", "رائع! لقد عثرت على مفتاح جديد داخل الصندوق.");
+                    } else if (roll < 97) {
+                        let wonUsdt = parseFloat((Math.random() * (0.008 - 0.002) + 0.002).toFixed(3));
+                        if (userState.dailyEarned + wonUsdt > 0.05) {
+                            wonUsdt = parseFloat((0.05 - userState.dailyEarned).toFixed(3));
+                        }
+                        userState.usdt += wonUsdt;
+                        userState.dailyEarned += wonUsdt;
+                        showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
+                    } else {
+                        let wonUsdt = 0.020;
+                        if (userState.dailyEarned + wonUsdt > 0.05) {
+                            wonUsdt = parseFloat((0.05 - userState.dailyEarned).toFixed(3));
+                        }
+                        userState.usdt += wonUsdt;
+                        userState.dailyEarned += wonUsdt;
+                        showCustomModal("💎", "ضربة حظ نادرة!", `رائع! لقد ربحت جائزة بقيمة ${wonUsdt} USDT!`);
+                    }
                 }
                 saveAndRefreshUI();
             }, 1000);
@@ -231,7 +276,6 @@
             if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT. افتح المزيد من الصناديق!"); return; }
             if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح."); return; }
 
-            // إرسال طلب السحب مباشرة إلى بوت الإدارة الخاص بك
             const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
             const chatId = "5630771182";
             const message = `🚨 طلب سحب جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(3)} USDT\n💳 المحفظة:\n${wallet}`;
