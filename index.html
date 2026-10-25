@@ -48,7 +48,7 @@
         .btn { border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
         .btn-open { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-ad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .btn:disabled { background: #475569; color: #94a3b8; }
+        .btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
         .bottom-bar { background: var(--card-bg); padding: 12px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); }
         .nav-item { background: none; border: none; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item span { font-size: 1.3rem; }
@@ -86,7 +86,6 @@
         <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
     </div>
 
-    <!-- نافذة الجوائز المنبثقة -->
     <div class="modal-overlay" id="rewardModal">
         <div class="modal-box">
             <div class="modal-icon" id="modalIcon">🎉</div>
@@ -96,7 +95,6 @@
         </div>
     </div>
 
-    <!-- نافذة الإحالة -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box">
             <div class="modal-icon">👥</div>
@@ -108,7 +106,6 @@
         </div>
     </div>
 
-    <!-- نافذة السحب -->
     <div class="modal-overlay" id="withdrawModal">
         <div class="modal-box">
             <div class="modal-icon">💳</div>
@@ -185,7 +182,7 @@
         }
         saveAndRefreshUI();
 
-        // دالة إعلانات AdsGram الذكية والآمنة
+        // نظام إعلانات مع عداد ثواني تنازلي بدلاً من رسائل الخطأ
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -203,13 +200,27 @@
 
             const btnAd = document.getElementById('btnWatchAd');
             btnAd.disabled = true;
-            btnAd.innerText = "⏳ جاري تحميل الإعلان...";
+
+            let countdown = 5; // عدد ثواني الانتظار
+            btnAd.innerText = `⏳ جاري الاتصال والإعداد... (${countdown} ثوانٍ)`;
+
+            let timer = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    btnAd.innerText = `⏳ يرجى الانتظار... (${countdown} ثوانٍ)`;
+                } else {
+                    clearInterval(timer);
+                    btnAd.disabled = false;
+                    btnAd.innerHTML = `📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">${Math.max(0, 3 - userState.adsCount)}</span>/3 متبقي)`;
+                }
+            }, 1000);
 
             let checkInterval = setInterval(() => {
                 if (window.AdsGram && typeof window.AdsGram.init === 'function') {
                     clearInterval(checkInterval);
+                    clearInterval(timer);
                     btnAd.disabled = false;
-                    btnAd.innerHTML = '📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">' + Math.max(0, 3 - userState.adsCount) + '</span>/3 متبقي)';
+                    btnAd.innerHTML = `📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">${Math.max(0, 3 - userState.adsCount)}</span>/3 متبقي)`;
                     
                     try {
                         const adController = window.AdsGram.init({ blockId: "56031" });
@@ -231,19 +242,9 @@
                         });
                     } catch (error) {
                         console.error("Error showing ad:", error);
-                        alert("حدث خطأ أثناء تشغيل الإعلان.");
                     }
                 }
             }, 500);
-
-            setTimeout(() => {
-                if (btnAd.disabled) {
-                    clearInterval(checkInterval);
-                    btnAd.disabled = false;
-                    btnAd.innerHTML = '📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">' + Math.max(0, 3 - userState.adsCount) + '</span>/3 متبقي)';
-                    alert("تعذر الاتصال بخادم الإعلانات، تحقق من اتصالك وحاول مجدداً.");
-                }
-            }, 5000);
         }
 
         let isOpening = false;
