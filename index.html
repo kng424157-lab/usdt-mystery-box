@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>صندوق الدولار USDT Box</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -213,7 +214,7 @@
             showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
         }
 
-        // دالة جلب مكتبة AdsGram وإظهار الإعلان ديناميكياً
+        // دالة تشغيل إعلانات AdsGram الذكية (بدون رسائل خطأ، مع انتظار التحميل التلقائي)
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -229,9 +230,16 @@
                 return;
             }
 
-            // تنفيذ الإعلان أو حقن السكريبت إذا لم يكن موجوداً
-            function executeAd() {
+            const btnAd = document.getElementById('btnWatchAd');
+            btnAd.disabled = true;
+            btnAd.innerText = "⏳ جاري تحميل الإعلان...";
+
+            let checkInterval = setInterval(() => {
                 if (window.AdsGram && typeof window.AdsGram.init === 'function') {
+                    clearInterval(checkInterval);
+                    btnAd.disabled = false;
+                    btnAd.innerHTML = '📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">' + Math.max(0, 3 - userState.adsCount) + '</span>/3 متبقي)';
+                    
                     try {
                         const adController = window.AdsGram.init({ blockId: "56031" });
                         adController.show().then((result) => {
@@ -254,21 +262,18 @@
                         console.error("Error showing ad:", error);
                         alert("حدث خطأ أثناء تشغيل الإعلان.");
                     }
-                } else {
-                    // تحميل السكريبت ديناميكياً إذا لم يتم تحميله مسبقاً
-                    let script = document.createElement('script');
-                    script.src = "https://sad.adsgram.ai/js/sad.min.js";
-                    script.onload = function() {
-                        setTimeout(executeAd, 300);
-                    };
-                    script.onerror = function() {
-                        alert("فشل تحميل مكتبة الإعلانات، تأكد من اتصال الإنترنت.");
-                    };
-                    document.head.appendChild(script);
                 }
-            }
+            }, 500);
 
-            executeAd();
+            // مهلة زمنية أقصاها 5 ثوانٍ، وإذا لم تتحمل المكتبة يتم إعادة الزر لحالته الطبيعية
+            setTimeout(() => {
+                if (btnAd.disabled) {
+                    clearInterval(checkInterval);
+                    btnAd.disabled = false;
+                    btnAd.innerHTML = '📺 شاهد إعلاناً للحصول على مفتاح (<span id="adsLeft">' + Math.max(0, 3 - userState.adsCount) + '</span>/3 متبقي)';
+                    alert("تعذر الاتصال بخادم الإعلانات، تحقق من اتصالك وحاول مجدداً.");
+                }
+            }, 5000);
         }
 
         let isOpening = false;
@@ -364,6 +369,4 @@
                 window.open(shareUrl, '_blank');
             }
         }
-    </script>
-</body>
-</html>
+ 
