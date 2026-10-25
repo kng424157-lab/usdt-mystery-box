@@ -17,7 +17,15 @@
             --text-light: #f8fafc;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow-x: hidden; }
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); 
+            color: var(--text-light); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow-x: hidden; 
+        }
         .ticker-wrap { background: rgba(245, 158, 11, 0.15); border-bottom: 1px solid var(--gold); padding: 8px 15px; font-size: 0.85rem; text-align: center; color: #fde68a; font-weight: bold; }
         .header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
         .stat-card { background: var(--card-bg); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
@@ -128,7 +136,6 @@
             adsResetTime: 0
         };
 
-        // إعادة تعيين العدادات اليومية إذا تغير اليوم
         if (userState.lastDate !== todayStr) {
             userState.dailyEarned = 0;
             userState.lastDate = todayStr;
@@ -153,10 +160,9 @@
             document.getElementById('keysBal').innerText = userState.keys;
             document.getElementById('refCountBal').innerText = userState.referrals;
 
-            // تحديث حالة الإعلانات المتبقية
             let now = Date.now();
             if (now > userState.adsResetTime) {
-                userState.adsCount = 0; // إعادة التعيين بعد مرور الساعتين
+                userState.adsCount = 0;
             }
             let adsRemaining = Math.max(0, 3 - userState.adsCount);
             document.getElementById('adsLeft').innerText = adsRemaining;
@@ -185,7 +191,7 @@
             }
 
             if (userState.adsCount >= 3) {
-                userState.adsResetTime = now + (2 * 60 * 60 * 1000); // ساعتان من الآن
+                userState.adsResetTime = now + (2 * 60 * 60 * 1000);
                 userState.adsCount = 0;
                 saveAndRefreshUI();
                 return;
@@ -199,7 +205,7 @@
                 userState.keys += 1;
                 userState.adsCount += 1;
                 if (userState.adsCount >= 3) {
-                    userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000); // قفل الساعتين بعد إتمام 3 إعلانات
+                    userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
                 }
                 saveAndRefreshUI();
                 showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بعد مشاهدة الإعلان.");
@@ -223,9 +229,7 @@
                 isOpening = false;
                 const roll = Math.random() * 100;
 
-                // التحقق من الحد الأقصى للربح اليومي (0.05 USDT)
                 if (userState.dailyEarned >= 0.05) {
-                    // إذا وصل الحد الأقصى، نجعله يربح مفاتيح أو تذاكر فقط بدون زيادة الرصيد المالي
                     userState.keys += 1;
                     showCustomModal("🔑", "ربحت مفتاح إضافي!", "لقد وصلت للحد الأقصى للربح اليومي (0.05 $)، لكنك ربحت مفتاحاً إضافياً!");
                 } else {
