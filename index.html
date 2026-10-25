@@ -55,7 +55,7 @@
 </head>
 <body>
 
-    <div class="ticker-wrap" id="liveTicker">🎉 الفائز @Ahmed_99 ربح للتو 0.50 USDT من الصندوق!</div>
+    <div class="ticker-wrap" id="liveTicker">🎉 الفائز @Ahmed_99 ربح للتو 0.10 USDT من الصندوق!</div>
 
     <div class="header">
         <div class="stat-card"><span>رصيد الدولار</span><strong class="usdt-text"><span id="usdtBal">0.000</span> $</strong></div>
@@ -102,7 +102,7 @@
         <div class="modal-box">
             <div class="modal-icon">💳</div>
             <div class="modal-title">سحب الأرباح ومحفظة TON</div>
-            <div class="modal-desc">الحد الأدنى للسحب <strong>0.50 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
+            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
             <input type="text" class="input-wallet" id="walletInput" placeholder="ضع عنوان محفظة TON / USDT هنا">
             <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">حفظ وسحب الأرباح</button>
             <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
@@ -118,20 +118,16 @@
 
         let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { usdt: 0.000, keys: 1, referrals: 0 };
 
-        // التحقق من الانضمام عبر رابط إحالة صديق ومنح المكافأة لصاحب الدعوة (محاكاة محلية للتخزين)
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('ref');
         
         if (startParam && startParam !== userId && !localStorage.getItem('referred_processed')) {
             localStorage.setItem('referred_processed', 'true');
-            // منح مستخدم الدعوة المكافأة (إذا كان الحساب مخزناً محلياً في نفس المتصفح أو محاكاة)
             let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: 0 };
-            referrerState.usdt += 0.001; // إضافة 0.001 USDT لصاحب الرابط
-            referrerState.keys += 1;     // مفتاح إضافي
-            referrerState.referrals += 1; // زيادة عداد الفريق
+            referrerState.usdt += 0.001; 
+            referrerState.keys += 1;     
+            referrerState.referrals += 1; 
             localStorage.setItem('mysteryBoxState_' + startParam, JSON.stringify(referrerState));
-            
-            // المستخدم الجديد يحصل أيضاً على مفتاح ترحيبي إضافي
             userState.keys += 1;
         }
 
@@ -201,7 +197,7 @@
                     userState.keys += 1;
                     showCustomModal("🔑", "ربحت مفتاح إضافي!", "رائع! لقد عثرت على مفتاح جديد داخل الصندوق.");
                 } else if (roll < 97) {
-                    const wonUsdt = parseFloat((Math.random() * (0.005 - 0.001) + 0.001).toFixed(3));
+                    const wonUsdt = parseFloat((Math.random() * (0.010 - 0.002) + 0.002).toFixed(3));
                     userState.usdt += wonUsdt;
                     showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
                 } else {
@@ -231,7 +227,7 @@
 
         function submitWithdraw() {
             const wallet = document.getElementById('walletInput').value.trim();
-            if (userState.usdt < 0.50) { alert("الحد الأدنى للسحب هو 0.50 USDT. افتح المزيد من الصناديق!"); return; }
+            if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT. افتح المزيد من الصناديق!"); return; }
             if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح."); return; }
             alert("✅ تم حفظ المحفظة وإرسال طلب السحب بنجاح!");
             closeModal('withdrawModal');
