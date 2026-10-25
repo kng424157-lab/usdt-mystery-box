@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>صندوق الدولار USDT Box</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- تضمين مكتبة إعلانات AdsGram بشكل صحيح -->
+    <!-- تضمين مكتبة إعلانات AdsGram -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
@@ -87,7 +87,6 @@
         <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
     </div>
 
-    <!-- نافذة الاشتراك الإجباري للقناة -->
     <div class="modal-overlay" id="subModal" style="display: flex;">
         <div class="modal-box">
             <div class="modal-icon">📢</div>
@@ -216,7 +215,7 @@
             showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنجاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
         }
 
-        // دالة تشغيل إعلانات AdsGram الحقيقية بالمعرف 56031
+        // دالة تشغيل إعلانات AdsGram مع آلية انتظار تحميل المكتبة تلقائياً
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -232,38 +231,44 @@
                 return;
             }
 
-            try {
-                if (!window.AdsGram) {
-                    alert("مكتبة الإعلانات لم تتحمل بعد، تأكد من اتصال الإنترنت.");
-                    return;
-                }
-
-                // تهيئة إعلانات AdsGram بالمعرف الخاص بك 56031
-                const adController = window.AdsGram.init({ blockId: "56031" });
-                
-                adController.show().then((result) => {
-                    // نجاح مشاهدة الإعلان بالكامل وحصول المستخدم على المكافأة
-                    userState.keys += 1;
-                    userState.adsCount += 1;
-                    if (userState.adsCount >= 3) {
-                        userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
+            // دالة مساعدة للتحقق من تحميل المكتبة وتشغيل الإعلان
+            let attempts = 0;
+            function tryInitAd() {
+                if (window.AdsGram && typeof window.AdsGram.init === 'function') {
+                    try {
+                        const adController = window.AdsGram.init({ blockId: "56031" });
+                        adController.show().then((result) => {
+                            userState.keys += 1;
+                            userState.adsCount += 1;
+                            if (userState.adsCount >= 3) {
+                                userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
+                            }
+                            saveAndRefreshUI();
+                            showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بنجاح بعد مشاهدة الإعلان.");
+                        }).catch((result) => {
+                            console.log("Ad cancelled or failed", result);
+                            if (tg) {
+                                tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                            } else {
+                                alert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Error showing ad:", error);
+                        alert("حدث خطأ أثناء محاولة عرض الإعلان.");
                     }
-                    saveAndRefreshUI();
-                    showCustomModal("🔑", "حصلت على مفتاح!", "تمت إضافة مفتاح جديد برصيدك بنجاح بعد مشاهدة الإعلان.");
-                }).catch((result) => {
-                    // إغلاق الإعلان مبكراً أو فشله
-                    console.log("Ad cancelled or failed", result);
-                    if (tg) {
-                        tg.showAlert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                } else {
+                    attempts++;
+                    if (attempts < 10) {
+                        // إعادة المحاولة بعد نصف ثانية إذا لم تكن قد تحسنت بعد
+                        setTimeout(tryInitAd, 500);
                     } else {
-                        alert("يجب مشاهدة الإعلان كاملاً لكي تحصل على المفتاح!");
+                        alert("مكتبة الإعلانات لم تتحمل بعد، تأكد من اتصال الإنترنت ثم حاول مجدداً.");
                     }
-                });
-
-            } catch (error) {
-                console.error("Error showing ad:", error);
-                alert("حدث خطأ أثناء محاولة عرض الإعلان.");
+                }
             }
+
+            tryInitAd();
         }
 
         let isOpening = false;
