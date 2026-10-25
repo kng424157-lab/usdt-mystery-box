@@ -86,6 +86,17 @@
         <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
     </div>
 
+    <!-- نافذة الاشتراك الإجباري للقناة -->
+    <div class="modal-overlay" id="subModal" style="display: flex;">
+        <div class="modal-box">
+            <div class="modal-icon">📢</div>
+            <div class="modal-title">تنبيه هام جداً!</div>
+            <div class="modal-desc">لفتح صناديق الحظ والحصول على <strong>مفتاحين (🔑🔑) هدية ترحيبية</strong>، يجب عليك أولاً الاشتراك في قناتنا الرسمية لمتابعة أحدث السحوبات والأخبار!</div>
+            <button class="btn btn-ad" style="width:100%; margin-bottom:10px;" onclick="goToChannel()">🔗 اضغط هنا للانضمام للقناة</button>
+            <button class="btn btn-open" style="width:100%;" onclick="checkSubscription()">✅ لقد اشتركت، اعطني الهدية</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="rewardModal">
         <div class="modal-box">
             <div class="modal-icon" id="modalIcon">🎉</div>
@@ -133,8 +144,14 @@
             dailyEarned: 0, 
             lastDate: todayStr,
             adsCount: 0,
-            adsResetTime: 0
+            adsResetTime: 0,
+            isSubscribed: false
         };
+
+        // التحقق مما إذا كان المستخدم قد اشترك مسبقاً
+        if (userState.isSubscribed) {
+            document.getElementById('subModal').style.display = 'none';
+        }
 
         if (userState.lastDate !== todayStr) {
             userState.dailyEarned = 0;
@@ -181,6 +198,25 @@
             document.getElementById('myRefLink').innerText = refLink;
         }
         saveAndRefreshUI();
+
+        // دوال الاشتراك الإجباري
+        function goToChannel() {
+            const channelUrl = "https://t.me/YourChannelUsername"; // استبدل برابط قناتك الحقيقي
+            if (tg) {
+                tg.openTelegramLink(channelUrl);
+            } else {
+                window.open(channelUrl, '_blank');
+            }
+        }
+
+        function checkSubscription() {
+            // منح مفتاحين هدية ترحيبية عند التحقق من الاشتراك
+            userState.isSubscribed = true;
+            userState.keys += 2;
+            saveAndRefreshUI();
+            document.getElementById('subModal').style.display = 'none';
+            showCustomModal("🎁", "هدايا الاشتراك!", "رائع جداً! تم التحقق بنظاح ومنحك مفتاحين (🔑🔑) هدية ترحيبية لانضمامك للقناة.");
+        }
 
         function watchAdForKey() {
             let now = Date.now();
