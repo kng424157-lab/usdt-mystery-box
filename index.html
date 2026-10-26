@@ -104,7 +104,6 @@
 <body>
 
     <div class="top-nav">
-        <!-- رصيد العملات المحصلة في الزاوية اليسرى المكتوب بجوارها MOON -->
         <div class="balance-badge"><span id="totalBal">0</span> MOON 🪙</div>
         <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
     </div>
@@ -294,8 +293,13 @@
             startTime: Date.now()
         };
 
-        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 ساعة
+        // فحص وإصلاح وقت البداية إذا كان منتهياً أو غير صالح
+        const SESSION_DURATION = 24 * 60 * 60 * 1000;
+        if (!userState.startTime || (Date.now() - userState.startTime > SESSION_DURATION)) {
+            userState.startTime = Date.now();
+        }
 
+        // محرك التعدين المستمر والفعال لحظياً
         function cloudMiningTick() {
             let now = Date.now();
             let elapsedSessionTime = now - userState.startTime;
@@ -317,7 +321,8 @@
             let currentLevel = Math.floor(userState.balance / 50) + 1;
             let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
             
-            userState.pending += (currentSpeed * 0.0001);
+            // زيادة الرصيد المعلق (pending) باستمرار كل ثانية
+            userState.pending += (currentSpeed * 0.005);
             updateUI();
         }
 
@@ -338,11 +343,10 @@
             document.getElementById('speedTH').innerText = calculatedSpeed.toFixed(2);
             document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
             
-            // رصيد العملات المحصلة في الزاوية اليسرى المكتوب بجوارها MOON
             document.getElementById('totalBal').innerText = userState.balance >= 1000 ? (userState.balance/1000).toFixed(1) + 'K' : userState.balance.toFixed(0);
             
             document.getElementById('modalBal').innerText = userState.balance.toFixed(0) + ' MOON';
-            document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
+            document.getElementById('pendingReward').innerText = userState.pending.toFixed(4);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
 
             document.getElementById('mrgNeeded').innerText = (50 - progressIntoLevel).toFixed(0);
@@ -355,18 +359,18 @@
         updateUI();
 
         function claimMiningReward() {
-            if (userState.pending < 0.001) {
-                if (tg) tg.showAlert("⚠️ المكافأة غير كافية للمطالبة حالياً!");
+            if (userState.pending < 0.01) {
+                if (tg) tg.showAlert("⚠️ المكافأة قليلة جداً للمطالبة حالياً، انتظر قليلاً!");
                 return;
             }
             let claimedAmount = userState.pending;
             userState.balance += claimedAmount;
             userState.dailyEarned += claimedAmount;
             userState.pending = 0.0;
-            userState.startTime = Date.now();
+            userState.startTime = Date.now(); // بدء 24 ساعة جديدة
             updateUI();
             
-            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة، إضافتها لرصيدك وأرباح اليوم، وبدء 24 ساعة جديدة!");
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة وإضافتها للرصيد بنجاح، وبدء دورة 24 ساعة جديدة!");
         }
 
         function claimTeamCommission() {
@@ -386,9 +390,9 @@
                 try {
                     const adController = window.AdsGram.init({ blockId: "56031" });
                     adController.show().then(() => {
-                        userState.pending += 0.50;
+                        userState.pending += 1.00; // زيادة مكافأة سريعة عبر الإعلان
                         updateUI();
-                        if (tg) tg.showAlert("🚀 تم زيادة الأرباح بنجاح عبر الإعلان!");
+                        if (tg) tg.showAlert("🚀 تم إضافة أرباح فورية بنجاح عبر الإعلان!");
                     }).catch(() => {
                         if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
                     });
