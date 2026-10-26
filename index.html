@@ -124,7 +124,6 @@
 
         <div class="mining-reward-label">مكافأة التعدين غير المطالب بها</div>
         <div class="mining-reward-val" id="pendingReward">0.000000</div>
-        <!-- الخوارزمية الجديدة لحساب القيمة التنافسية التلقائية -->
         <div class="mining-speed-info">TH/s 1.00 · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
         <button class="btn-claim" id="btnClaim" onclick="claimMiningReward()">مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
@@ -317,10 +316,9 @@
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
             document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
 
-            // خوارزمية حساب السعر التنافسي المتصاعد تناسبياً حتى 5000 حبة = 0.20$
             let currentTotalForCalc = userState.balance + userState.pending;
             let calculatedUsdValue = (currentTotalForCalc / 5000) * 0.20;
-            if (calculatedUsdValue > 0.20) calculatedUsdValue = 0.20; // سقف القيمة عند الحد الأدنى للسحب
+            if (calculatedUsdValue > 0.20) calculatedUsdValue = 0.20;
             document.getElementById('dynamicPriceVal').innerText = calculatedUsdValue.toFixed(4);
 
             let nextLevelTarget = userState.level * 50;
@@ -338,10 +336,9 @@
         }
         updateUI();
 
-        // محرك التعدين والتحديث المستمر
         setInterval(() => {
             userState.pending += 0.000010;
-            updateUI(); // تحديث واجهة الرصيد والقيمة التنافسية تلقائياً كل ثانية
+            updateUI();
 
             let elapsed = Date.now() - userState.startTime;
             let remaining = CYCLE_TIME - elapsed;
@@ -418,10 +415,11 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
+        // تم تحديث معرف الإعلان هنا ليعمل بالمعرف الجديد task-56202
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56190" });
+                    const adController = window.Adsgram.init({ blockId: "task-56202" });
                     adController.show().then(() => {
                         userState.pending += 1.00;
                         updateUI();
@@ -459,10 +457,11 @@
             }, 1500);
         }
 
+        // استخدام المعرف الجديد task-56202 للمهام الإعلانية
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56190" });
+                    const adController = window.Adsgram.init({ blockId: "task-56202" });
                     adController.show().then(() => {
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
@@ -550,4 +549,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
