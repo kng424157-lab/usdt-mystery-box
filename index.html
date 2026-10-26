@@ -53,7 +53,7 @@
         .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
         .btn-ad:active { transform: scale(0.97); }
 
-        /* شريط التنقل السفلي الجديد (Floating Dock الفاخر) */
+        /* شريط التنقل السفلي الفاخر العائم */
         .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
         .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
         .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 10px; border-radius: 14px; transition: all 0.25s ease; flex: 1; }
@@ -70,6 +70,13 @@
         .modal-box { background: var(--card-bg); padding: 22px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(59,130,246,0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
         .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
+
+        /* تصميم تمرين السحب الخفيف (Swipe Captcha) */
+        .captcha-container { background: #070b19; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
+        .captcha-track { position: relative; width: 100%; height: 50px; background: #1f2937; border-radius: 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(59,130,246,0.3); }
+        .captcha-text { font-size: 0.75rem; color: #94a3b8; pointer-events: none; }
+        .captcha-slider { position: absolute; left: 4px; width: 42px; height: 42px; background: linear-gradient(135deg, var(--blue), var(--purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.1s; z-index: 2; }
+        .captcha-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: rgba(16,185,129,0.25); border-radius: 25px; z-index: 1; transition: width 0.05s; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
@@ -119,7 +126,6 @@
         .input-wallet:focus { border-color: var(--blue); box-shadow: 0 0 8px rgba(59,130,246,0.3); }
         .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
         
-        /* مساحة لتفادي تغطية المحتوى بواسطة الشريط السفلي */
         .bottom-spacer { height: 75px; }
     </style>
 </head>
@@ -147,7 +153,7 @@
         <div class="mining-reward-val" id="pendingReward">0.000000</div>
         <div class="mining-speed-info">TH/s 1.00 · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
-        <button class="btn-claim" id="btnClaim" onclick="claimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
+        <button class="btn-claim" id="btnClaim" onclick="handleClaimAttempt()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
         <div class="bottom-spacer"></div>
     </div>
@@ -160,6 +166,24 @@
             <button class="nav-btn" onclick="openMinersModal()"><span>⚡</span> المعدنون</button>
             <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
             <button class="nav-btn active" onclick="openMiningTab()" id="navMiningBtn"><span>⛏️</span> التعدين</button>
+        </div>
+    </div>
+
+    <!-- نافذة التحقق الأمني الذكي (سحب الزر) -->
+    <div class="modal-overlay" id="captchaModal">
+        <div class="modal-box">
+            <div class="modal-title">🛡️ التحقق الأمني الذكي</div>
+            <div class="modal-desc" id="captchaReasonDesc">تم رصد نشاط يتطلب التحقق أو بلوغ مستوى متقدم. اسحب الأيقونة يميناً للمتابعة:</div>
+            
+            <div class="captcha-container">
+                <div class="captcha-track" id="captchaTrack">
+                    <div class="captcha-progress" id="captchaProgress"></div>
+                    <span class="captcha-text" id="captchaText">اسحب للفتح ➔</span>
+                    <div class="captcha-slider" id="captchaSlider">🔓</div>
+                </div>
+            </div>
+
+            <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('captchaModal')">إلغاء</button>
         </div>
     </div>
 
@@ -234,9 +258,7 @@
                 <div><span>المستوى</span><strong id="modalLevel">1</strong></div>
             </div>
 
-            <div class="levels-list-container" id="levelsListContainer">
-                <!-- تعبئة تلقائية عبر الجافاسكريبت -->
-            </div>
+            <div class="levels-list-container" id="levelsListContainer"></div>
 
             <div class="progress-container">
                 <span style="font-size:0.75rem; color:#94a3b8;">التقدم للمستوى التالي: <span id="mrgNeeded">50</span> عملة MOON</span>
@@ -320,16 +342,136 @@
             checkinDay: 1,
             lastCheckinTime: 0,
             completedTasks: [],
-            adCooldowns: {}, // لتتبع أوقات الـ 2 ساعة لإعلانات المهام
+            adCooldowns: {},
+            lastClaimTime: 0,
+            claimAttemptsCount: 0,
             startTime: Date.now()
         };
 
         const CYCLE_TIME = 24 * 60 * 60 * 1000;
-        const AD_COOLDOWN_TIME = 2 * 60 * 60 * 1000; // ساعتان بالميلي ثانية
+        const AD_COOLDOWN_TIME = 2 * 60 * 60 * 1000;
 
-        // دالة تحديث عداد المهام النشطة على أيقونة الإشعار الحمراء
+        // خوارزمية التحقق الذكي عند المطالبة (تفحص المستوى أو الشك في روبوت)
+        function handleClaimAttempt() {
+            if (userState.pending < 0.01) {
+                if (tg) tg.showAlert("⚠️ المكافأة قليلة جداً للمطالبة حالياً، انتظر قليلاً!");
+                else alert("المكافأة قليلة جداً للمطالبة حالياً!");
+                return;
+            }
+
+            let now = Date.now();
+            // كشف محاولات متطفلين (إذا ضغط المستخدم بسرعة متتالية جنونية أقل من ثانية)
+            if (userState.lastClaimTime && (now - userState.lastClaimTime < 1000)) {
+                userState.claimAttemptsCount++;
+            } else {
+                userState.claimAttemptsCount = 0;
+            }
+            userState.lastClaimTime = now;
+
+            // شروط إظهار التحقق الأمني:
+            // 1. إذا وصل مستواه إلى مضاعفات الـ 10 (مثلاً 10، 20، 30...)
+            // 2. أو تم رصد نقرات سريعة ومشبوهة (أكثر من 3 محاولات سريعة)
+            let isMilestoneLevel = (userState.level % 10 === 0);
+            let isSuspiciousActivity = (userState.claimAttemptsCount >= 3);
+
+            if (isMilestoneLevel || isSuspiciousActivity) {
+                let descText = isSuspiciousActivity 
+                    ? "🚨 تم رصد نقرات سريعة غير طبيعية! يرجى السحب لإثبات أنك بشري:"
+                    : `🎉 مبروك بلوغك المستوى (${userState.level})! يرجى السحب لتأكيد المطالبة:`;
+                
+                document.getElementById('captchaReasonDesc').innerText = descText;
+                document.getElementById('captchaModal').style.display = 'flex';
+            } else {
+                // تمرير المكافأة مباشرة بدون إزعاج إذا كان الاستخدام طبيعياً
+                executeClaimMiningReward();
+            }
+        }
+
+        // برمجة تمرين السحب الخفيف (Swipe Captcha)
+        const slider = document.getElementById('captchaSlider');
+        const track = document.getElementById('captchaTrack');
+        const progress = document.getElementById('captchaProgress');
+        const captchaText = document.getElementById('captchaText');
+        let isDragging = false;
+        let startX = 0;
+
+        slider.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            let currentX = e.touches[0].clientX;
+            let diff = currentX - startX;
+            let trackWidth = track.clientWidth - slider.clientWidth - 8;
+            if (diff < 0) diff = 0;
+            if (diff > trackWidth) diff = trackWidth;
+
+            slider.style.transform = `translateX(${diff}px)`;
+            progress.style.width = `${(diff / trackWidth) * 100}%`;
+
+            if (diff >= trackWidth - 5) {
+                isDragging = false;
+                successCaptcha();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            resetCaptcha();
+        });
+
+        slider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            let diff = e.clientX - startX;
+            let trackWidth = track.clientWidth - slider.clientWidth - 8;
+            if (diff < 0) diff = 0;
+            if (diff > trackWidth) diff = trackWidth;
+
+            slider.style.transform = `translateX(${diff}px)`;
+            progress.style.width = `${(diff / trackWidth) * 100}%`;
+
+            if (diff >= trackWidth - 5) {
+                isDragging = false;
+                successCaptcha();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            resetCaptcha();
+        });
+
+        function resetCaptcha() {
+            slider.style.transform = `translateX(0px)`;
+            progress.style.width = `0%`;
+        }
+
+        function successCaptcha() {
+            slider.innerHTML = "✅";
+            captchaText.innerText = "تم التحقق بنجاح!";
+            captchaText.style.color = "var(--green)";
+            userState.claimAttemptsCount = 0; // إعادة ضبط العداد
+            setTimeout(() => {
+                closeModal('captchaModal');
+                resetCaptcha();
+                slider.innerHTML = "🔓";
+                captchaText.innerText = "اسحب للفتح ➔";
+                captchaText.style.color = "#94a3b8";
+                executeClaimMiningReward();
+            }, 600);
+        }
+
         function updateTaskBadgeCount() {
-            let totalActiveTasks = 4; // إجمالي المهام المتاحة (2 تليجرام + 2 إعلانات)
+            let totalActiveTasks = 4;
             let completedCount = userState.completedTasks.length;
             let remainingTasks = Math.max(0, totalActiveTasks - completedCount);
             
@@ -408,19 +550,15 @@
         renderLevelsList();
         updateUI();
 
-        // محرك التعدين والمؤقتات وتحديث فترات الانتظار (Cooldowns) للإعلانات كل ثانية
         setInterval(() => {
             userState.pending += 0.000010;
             
-            // فحص انتهاء وقت الـ 2 ساعة لإعلانات المهام
             let now = Date.now();
             ['ad1', 'ad2'].forEach(adKey => {
                 if (userState.adCooldowns[adKey] && now >= userState.adCooldowns[adKey]) {
                     delete userState.adCooldowns[adKey];
-                    // إزالة المهمة من المكتملة لتصبح متاحة مجدداً
                     userState.completedTasks = userState.completedTasks.filter(t => t !== ('taskBtnAd' + (adKey === 'ad1' ? '1' : '2')));
                     
-                    // إعادة تفعيل الزر في الواجهة
                     let btnId = adKey === 'ad1' ? 'taskBtnAd1' : 'taskBtnAd2';
                     let btnElem = document.getElementById(btnId);
                     if (btnElem) {
@@ -499,11 +637,7 @@
             }
         }
 
-        function claimMiningReward() {
-            if (userState.pending < 0.01) {
-                if (tg) tg.showAlert("⚠️ المكافأة قليلة جداً للمطالبة حالياً، انتظر قليلاً!");
-                return;
-            }
+        function executeClaimMiningReward() {
             let claimedAmount = userState.pending;
             userState.balance += claimedAmount;
             userState.dailyEarned += claimedAmount;
@@ -571,7 +705,6 @@
             }, 1500);
         }
 
-        // مشاهدة إعلان المهمة مع تفعيل وقت الانتظار (2 ساعة) ونقص عداد المهام
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -583,12 +716,11 @@
                             userState.balance += rewardAmount;
                             userState.dailyEarned += rewardAmount;
                             
-                            // تعيين وقت انتهاء الـ 2 ساعة للعودة
                             userState.adCooldowns[adId] = Date.now() + AD_COOLDOWN_TIME;
 
                             renderLevelsList();
                             updateUI();
-                            if (tg) tg.showAlert(`🚀 مبروك! شاهدت الإعلان وحصلت على ${rewardAmount} MOON بنجاح. يمكنك إعادة مشاهدة الإعلان بعد ساعتين.`);
+                            if (tg) tg.showAlert(`🚀 مبروك! حصلت على ${rewardAmount} MOON. يمكنك إعادة مشاهدة الإعلان بعد ساعتين.`);
                         }
                     }).catch(() => {
                         if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على العملات!");
@@ -633,6 +765,7 @@
             document.getElementById('minersModal').style.display = 'none';
             document.getElementById('tasksModal').style.display = 'none';
             document.getElementById('walletModal').style.display = 'none';
+            document.getElementById('captchaModal').style.display = 'none';
         }
         
         function closeModal(id) { 
@@ -686,4 +819,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
