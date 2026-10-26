@@ -104,8 +104,9 @@
 <body>
 
     <div class="top-nav">
+        <!-- رصيد العملات المحصلة في الزاوية اليسرى المكتوب بجوارها MOON -->
+        <div class="balance-badge"><span id="totalBal">0</span> MOON 🪙</div>
         <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
-        <div class="balance-badge">🪙 MOON <span id="totalBal">0</span></div>
     </div>
 
     <div class="main-stage">
@@ -195,7 +196,7 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين (المحدثة لتسجيل الأرباح اليومية) -->
+    <!-- نافذة متجر المعدنين -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 370px;">
             <div class="modal-title">⚡ متجر المعدنين</div>
@@ -311,12 +312,12 @@
                     String(hours).padStart(2, '0') + ":" + 
                     String(minutes).padStart(2, '0') + ":" + 
                     String(seconds).padStart(2, '0');
-
-                let currentLevel = Math.floor(userState.balance / 50) + 1;
-                let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
-                
-                userState.pending += (currentSpeed * 0.00001);
             }
+
+            let currentLevel = Math.floor(userState.balance / 50) + 1;
+            let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
+            
+            userState.pending += (currentSpeed * 0.0001);
             updateUI();
         }
 
@@ -335,11 +336,11 @@
             document.getElementById('modalLevel').innerText = calculatedLevel;
             document.getElementById('peakLevel').innerText = calculatedLevel;
             document.getElementById('speedTH').innerText = calculatedSpeed.toFixed(2);
-            
-            // تسجيل أرباح اليوم بناءً على المكالمات والمطالبات المُنجزة
             document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
             
+            // رصيد العملات المحصلة في الزاوية اليسرى المكتوب بجوارها MOON
             document.getElementById('totalBal').innerText = userState.balance >= 1000 ? (userState.balance/1000).toFixed(1) + 'K' : userState.balance.toFixed(0);
+            
             document.getElementById('modalBal').innerText = userState.balance.toFixed(0) + ' MOON';
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
@@ -353,7 +354,6 @@
         }
         updateUI();
 
-        // عند المطالبة: يرتفع الرصيد، تتسجل في أرباح اليوم، ويعود عداد 24 ساعة للبداية
         function claimMiningReward() {
             if (userState.pending < 0.001) {
                 if (tg) tg.showAlert("⚠️ المكافأة غير كافية للمطالبة حالياً!");
@@ -361,12 +361,12 @@
             }
             let claimedAmount = userState.pending;
             userState.balance += claimedAmount;
-            userState.dailyEarned += claimedAmount; // تسجيل المكافأة في أرباح اليوم
+            userState.dailyEarned += claimedAmount;
             userState.pending = 0.0;
-            userState.startTime = Date.now(); // إعادة ضبط مؤقت الـ 24 ساعة من جديد
+            userState.startTime = Date.now();
             updateUI();
             
-            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح، إضافتها لأرباح اليوم، وبدء دورة 24 ساعة جديدة!");
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة، إضافتها لرصيدك وأرباح اليوم، وبدء 24 ساعة جديدة!");
         }
 
         function claimTeamCommission() {
@@ -378,7 +378,7 @@
             userState.dailyEarned += userState.teamCommission;
             userState.teamCommission = 0.0;
             updateUI();
-            if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق وتسجيلها في أرباح اليوم!");
+            if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
         function watchAdForMiningBoost() {
@@ -386,9 +386,9 @@
                 try {
                     const adController = window.AdsGram.init({ blockId: "56031" });
                     adController.show().then(() => {
-                        userState.pending += 0.10;
+                        userState.pending += 0.50;
                         updateUI();
-                        if (tg) tg.showAlert("🚀 تم مضاعفة سرعة التعدين السحابي بنجاح!");
+                        if (tg) tg.showAlert("🚀 تم زيادة الأرباح بنجاح عبر الإعلان!");
                     }).catch(() => {
                         if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
                     });
@@ -409,7 +409,7 @@
 
             setTimeout(() => {
                 userState.balance += rewardAmount;
-                userState.dailyEarned += rewardAmount; // إضافة أرباح المهمة لأرباح اليوم
+                userState.dailyEarned += rewardAmount;
                 updateUI();
                 btn.innerText = "تم ✓";
                 btn.classList.add('claimed');
@@ -429,7 +429,7 @@
                         btn.innerText = "تم ✓";
                         btn.classList.add('claimed');
                         btn.disabled = true;
-                        if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON وتسجيلها في أرباح اليوم.`);
+                        if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON بعد مشاهدة الإعلان.`);
                     }).catch(() => {
                         if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
                     });
