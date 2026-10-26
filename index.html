@@ -361,7 +361,6 @@
         let username = tg?.initDataUnsafe?.user?.username ? ('@' + tg?.initDataUnsafe?.user?.username) : ('مستخدم_' + userId);
         localStorage.setItem('moontapUserId', userId);
 
-        // هيكل البيانات الافتراضي
         let userState = {
             balance: 0,
             pending: 0.05,
@@ -377,7 +376,6 @@
             startTime: Date.now()
         };
 
-        // استرجاع البيانات المحفوظة سابقاً من التخزين المحلي (LocalStorage) لضمان عدم ضياع أي تقدم عند التحديث أو الخروج
         const savedStateKey = 'moontap_user_state_' + userId;
         const savedDataJson = localStorage.getItem(savedStateKey);
         if (savedDataJson) {
@@ -387,7 +385,6 @@
             } catch(e) { console.log(e); }
         }
 
-        // دالة حفظ الحالة الحالية تلقائياً في التخزين المحلي
         function saveUserState() {
             localStorage.setItem(savedStateKey, JSON.stringify(userState));
         }
@@ -617,7 +614,7 @@
             document.getElementById('myRefLink').innerText = refLink;
 
             updateTaskBadgeCount();
-            saveUserState(); // حفظ التقدم مع كل تحديث للواجهة
+            saveUserState();
         }
 
         renderLevelsList();
@@ -735,11 +732,11 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // استخدام معرف الإعلان الجديد int-56211 للإعلانات
+        /* 1. إعلان مضاعفة سرعة التعدين باستخدام المعرف: int-56190 */
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56211" });
+                    const adController = window.Adsgram.init({ blockId: "int-56190" });
                     adController.show().then(() => {
                         userState.pending += 1.00;
                         renderLevelsList();
@@ -779,11 +776,11 @@
             }, 1500);
         }
 
-        // استخدام معرف الإعلان الجديد int-56211 للمهام
+        /* 2. إعلان مهام التعدين باستخدام المعرف: task-56202 */
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56211" });
+                    const adController = window.Adsgram.init({ blockId: "task-56202" });
                     adController.show().then(() => {
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
