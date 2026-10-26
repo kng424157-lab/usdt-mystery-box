@@ -77,11 +77,11 @@
         .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; }
         .wallet-card-box .value-usd { font-size: 0.9rem; color: var(--gold); margin-top: 2px; }
 
-        .withdraw-info-card { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(59,130,246,0.05)); border: 1px dashed var(--gold); border-radius: 14px; padding: 12px; margin-bottom: 12px; text-align: center; }
-        .withdraw-info-card span { font-size: 0.8rem; color: var(--gold); font-weight: bold; display: block; }
+        .withdraw-warning-text { font-size: 0.72rem; color: #f87171; text-align: right; margin-top: -4px; margin-bottom: 8px; display: none; font-weight: bold; }
 
-        /* رسالة التحذير الخفيفة عند عدم استيفاء الحد الأدنى */
-        .withdraw-warning-text { font-size: 0.72rem; color: #f87171; text-align: right; margin-top: -6px; margin-bottom: 10px; display: none; font-weight: bold; }
+        /* زر حفظ المحفظة الفرعي */
+        .btn-save-wallet { width: 100%; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: background 0.2s; }
+        .btn-save-wallet:active { background: rgba(16, 185, 129, 0.3); }
 
         /* تمرين السحب الخفيف (Swipe Captcha) */
         .captcha-container { background: #070b19; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
@@ -134,7 +134,7 @@
         .task-btn.claimed { background: var(--green); box-shadow: 0 3px 10px rgba(16,185,129,0.3); }
         .task-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; box-shadow: none; }
 
-        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 4px; text-align: center; font-size: 0.85rem; outline: none; }
+        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 6px; text-align: center; font-size: 0.85rem; outline: none; }
         .input-wallet:focus { border-color: var(--blue); box-shadow: 0 0 8px rgba(59,130,246,0.3); }
         .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
         
@@ -181,13 +181,13 @@
         </div>
     </div>
 
-    <!-- نافذة سحب الأرباح المحدثة والمطورة بالكامل -->
+    <!-- نافذة سحب الأرباح المحدثة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-title">💳 سحب أرباح MoonTap</div>
-            <div class="modal-desc">أدخل المبلغ المراد سحبه وعنوان محفظتك بكل سهولة وأمان.</div>
+            <div class="modal-desc">إدارة محفظتك وسحب الأرباح بكل سهولة وأمان.</div>
             
-            <!-- بطاقة إجمالي الرصيد -->
+            <!-- بطاقة إجمالي الرصيد وما يعادله بالدولار -->
             <div class="wallet-card-box">
                 <span class="label">إجمالي رصيدك المتاح</span>
                 <div class="value-moon"><span id="modalBal">0.00</span> MOON</div>
@@ -199,15 +199,12 @@
             <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="مثال: 5000" oninput="checkWithdrawAmountInput()">
             <div class="withdraw-warning-text" id="withdrawWarning">⚠️ المبلغ المدخل أقل من الحد الأدنى (5000 MOON = $0.20)</div>
 
-            <!-- خانة حفظ عنوان المحفظة -->
-            <div style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 4px 0; text-align: right;">عنوان محفظة Tonkeeper:</div>
-            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON هنا..." oninput="saveWalletAddress()">
-            <div style="font-size: 0.65rem; color: var(--green); text-align: right; margin-bottom: 10px;">💾 يتم حفظ عنوان محفظتك تلقائياً في جهازك.</div>
-
-            <!-- بطاقة الحد الأدنى للسحب المستقلة -->
-            <div class="withdraw-info-card">
-                <span>الحد الأدنى للسحب: 5000 MOON ($0.20)</span>
-            </div>
+            <!-- خانة عنوان محفظة Tonkeeper -->
+            <div style="font-size: 0.75rem; color: #94a3b8; margin: 6px 0 4px 0; text-align: right;">عنوان محفظة Tonkeeper:</div>
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON هنا...">
+            
+            <!-- زر حفظ المحفظة اليدوي -->
+            <button class="btn-save-wallet" onclick="manualSaveWallet()">💾 حفظ عنوان المحفظة في الجهاز</button>
 
             <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 طلب سحب الأرباح</button>
             <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('walletModal')">إغلاق</button>
@@ -390,12 +387,19 @@
             }
         });
 
-        function saveWalletAddress() {
+        // دالة حفظ المحفظة يدوياً عبر الزر
+        function manualSaveWallet() {
             const walletVal = document.getElementById('walletInput').value.trim();
+            if (!walletVal || walletVal.length < 10) {
+                if(tg) tg.showAlert("⚠️ يرجى إدخال عنوان محفظة TON صحيح أولاً!");
+                else alert("⚠️ يرجى إدخال عنوان محفظة TON صحيح أولاً!");
+                return;
+            }
             localStorage.setItem('savedTonWallet', walletVal);
+            if(tg) tg.showAlert("✅ تم حفظ عنوان المحفظة في جهازك بنجاح!");
+            else alert("✅ تم حفظ عنوان المحفظة في جهازك بنجاح!");
         }
 
-        // التحقق الخفيف والفوري من المبلغ المدخل للسحب
         function checkWithdrawAmountInput() {
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
             const warningEl = document.getElementById('withdrawWarning');
