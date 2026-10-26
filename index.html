@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoonTap Mining</title>
+    <!-- مكتبة تيليجرام الرسمية -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- مكتبة إعلانات Adsgram الرسمية -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         body {
             background-color: #0f172a;
@@ -73,11 +76,11 @@
             <h3>MoonTap Mining</h3>
             <div class="coin-img"></div>
             <p>مكافأة التعدين غير المطالب بها</p>
-            <div id="miningBalance" class="balance">0.0000</div>
+            <div id="miningBalance" class="balance">1.1500</div>
             <p id="miningRate">معدل التعدين: 1.15 يومياً</p>
             
             <button class="btn" onclick="claimRewards()">مطالبة بالمكافأة</button>
-            <button class="btn btn-ad" onclick="watchAd()">مشاهدة إعلان لمضاعفة السرعة</button>
+            <button class="btn btn-ad" onclick="showRewardedAd()">📺 مشاهدة إعلان لمضاعفة السرعة</button>
         </div>
     </div>
 
@@ -91,12 +94,11 @@
             { level: 5, dailyRate: 50.00 }
         ];
 
-        let currentLevelIndex = 0; // يمكنك تغييرها حسب مستوى المستخدم (0 = المستوى الأول)
+        let currentLevelIndex = 0; 
         let minedAmount = 1.1500;
 
         function updateMiningDisplay() {
             let activeLevel = levels[currentLevelIndex];
-            // حساب الزيادة التراكمية الثانية بناءً على المعدل اليومي
             let incrementPerSecond = activeLevel.dailyRate / 86400; 
 
             setInterval(() => {
@@ -104,7 +106,7 @@
                 document.getElementById('miningBalance').innerText = minedAmount.toFixed(4);
             }, 1000);
 
-            document.getElementById('levelDisplay.innerText` = `⚡ المستوى ${activeLevel.level}`;
+            document.getElementById('levelDisplay').innerText = `⚡ المستوى ${activeLevel.level}`;
             document.getElementById('miningRate').innerText = `معدل التعدين: ${activeLevel.dailyRate} يومياً`;
         }
 
@@ -113,11 +115,21 @@
             minedAmount = 0;
         }
 
-        function watchAd() {
-            alert("جاري عرض الإعلان لمضاعفة السرعة...");
+        // تهيئة وحدة إعلانات Adsgram بالرقم الصحيح UnitID
+        const adController = Adsgram.init({ blockId: "56031" });
+
+        function showRewardedAd() {
+            adController.show().then(() => {
+                // المكافأة عند إتمام مشاهدة الإعلان بنجاح
+                minedAmount += 0.5000;
+                alert("مبروك! لقد حصلت على مكافأة إضافية 0.50 عملة.");
+            }).catch((result) => {
+                // في حال تخطي الإعلان أو حدوث خطأ
+                alert("لم يتم إتمام مشاهدة الإعلان بالكامل.");
+            });
         }
 
-        // تشغيل العداد عند فتح الصفحة
+        // تشغيل نظام التعدين التلقائي
         updateMiningDisplay();
     </script>
 </body>
