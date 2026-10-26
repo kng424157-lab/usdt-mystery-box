@@ -47,6 +47,7 @@
         .mining-speed-info { font-size: 0.8rem; color: #64748b; margin-bottom: 20px; }
 
         .btn-claim { width: 100%; max-width: 330px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(59,130,246,0.4); margin-bottom: 10px; }
+        .btn-claim:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; padding: 12px; border-radius: 14px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; }
 
         /* شريط التنقل السفلي */
@@ -111,7 +112,7 @@
     <div class="main-stage">
         <div class="timer-box">
             <div class="timer-dot"></div>
-            <span id="countdownTimer">23:58:38</span>
+            <span id="countdownTimer">24:00:00</span>
         </div>
 
         <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">1</span></div>
@@ -125,7 +126,7 @@
         <div class="mining-reward-val" id="pendingReward">0.000000</div>
         <div class="mining-speed-info">TH/s <span id="speedTH">1.00</span> · $0.0001 ≈</div>
 
-        <button class="btn-claim" onclick="claimMiningReward()">مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
+        <button class="btn-claim" id="btnClaim" onclick="claimMiningReward()">مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
     </div>
 
@@ -195,7 +196,7 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين والمستويات (تحديث تلقائي) -->
+    <!-- نافذة متجر المعدنين والمستويات -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 370px;">
             <div class="modal-title">⚡ متجر المعدنين</div>
@@ -285,30 +286,43 @@
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
         localStorage.setItem('moontapUserId', userId);
 
-        // تنظيف البيانات القديمة المخزنة برقم 12 وإجبارها للبدء من الصفر والمستوى 1
-        let savedVersion = localStorage.getItem('moontap_version_v2');
-        if (!savedVersion) {
-            localStorage.removeItem('moontapState_' + userId);
-            localStorage.setItem('moontap_version_v2', 'true');
-        }
-
         let userState = JSON.parse(localStorage.getItem('moontapState_' + userId)) || {
             balance: 0.0,
             pending: 0.0,
             teamCommission: 0.0,
-            lastTick: Date.now()
+            startTime: Date.now() // وقت بدء جلسة الـ 24 ساعة
         };
 
-        // تعدين سحابي تلقائي بمرور الوقت
+        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 ساعة بالميلي ثانية
+
+        // دالة التعدين السحابي والعداد التنازلي الحقيقي
         function cloudMiningTick() {
             let now = Date.now();
-            let elapsed = (now - userState.lastTick) / 1000;
-            userState.lastTick = now;
+            let elapsedSessionTime = now - userState.startTime;
+            let remainingTime = SESSION_DURATION - elapsedSessionTime;
 
-            let currentLevel = Math.floor(userState.balance / 50) + 1;
-            let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
+            if (remainingTime <= 0) {
+                // انتهت الـ 24 ساعة
+                document.getElementById('countdownTimer').innerText = "00:00:00";
+                document.getElementById('btnClaim').disabled = false;
+            } else {
+                // حساب الساعات والدقائق والثواني المتبقية
+                let hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
-            userState.pending += (currentSpeed * 0.00001) * elapsed;
+                document.getElementById('countdownTimer').innerText = 
+                    String(hours).padStart(2, '0') + ":" + 
+                    String(minutes).padStart(2, '0') + ":" + 
+                    String(seconds).padStart(2, '0');
+
+                // احتساب الأرباح المتراكمة بناءً على سرعة المستوى الحالي
+                let currentLevel = Math.floor(userState.balance / 50) + 1;
+                let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
+                
+                // تراكم المكافأة بمرور الوقت
+                userState.pending += (currentSpeed * 0.00001);
+            }
             updateUI();
         }
 
@@ -343,6 +357,7 @@
         }
         updateUI();
 
+        // عند المطالبة: يتم إضافة الرصيد وإعادة ضبط العداد لـ 24 ساعة من جديد
         function claimMiningReward() {
             if (userState.pending < 0.001) {
                 if (tg) tg.showAlert("⚠️ المكافأة غير كافية للمطالبة حالياً!");
@@ -350,8 +365,10 @@
             }
             userState.balance += userState.pending;
             userState.pending = 0.0;
+            userState.startTime = Date.now(); // إعادة ضبط مؤقت الـ 24 ساعة من جديد
             updateUI();
-            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح وأضيفت لرصيدك، وارتفع مستواك تلقائياً!");
+            
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح، وتم بدء دورة تعدين جديدة لمدة 24 ساعة!");
         }
 
         function claimTeamCommission() {
@@ -478,4 +495,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
