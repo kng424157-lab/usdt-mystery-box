@@ -16,9 +16,10 @@
             text-align: center;
             margin: 0;
             padding: 0;
+            padding-bottom: 80px;
         }
         .container {
-            padding: 20px;
+            padding: 15px;
         }
         .level-badge {
             background: #f59e0b;
@@ -27,13 +28,13 @@
             border-radius: 20px;
             font-weight: bold;
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .mining-box {
             background: #1e293b;
             border-radius: 20px;
             padding: 20px;
-            margin-top: 20px;
+            margin-top: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .coin-img {
@@ -65,6 +66,41 @@
         .btn-ad {
             background: #d97706;
         }
+        /* شريط التنقل السفلي */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1e293b;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #334155;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+        }
+        .nav-item {
+            color: #94a3b8;
+            font-size: 12px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: #38bdf8;
+        }
+        .nav-item span {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -72,19 +108,86 @@
     <div class="container">
         <div id="levelDisplay" class="level-badge">⚡ المستوى 1</div>
         
-        <div class="mining-box">
-            <h3>MoonTap Mining</h3>
-            <div class="coin-img"></div>
-            <p>مكافأة التعدين غير المطالب بها</p>
-            <div id="miningBalance" class="balance">1.1500</div>
-            <p id="miningRate">معدل التعدين: 1.15 يومياً</p>
-            
-            <button class="btn" onclick="claimRewards()">مطالبة بالمكافأة</button>
-            <button class="btn btn-ad" onclick="showRewardedAd()">📺 مشاهدة إعلان لمضاعفة السرعة</button>
+        <!-- قسم التعدين الرئيسي -->
+        <div id="mining-section" class="section-content active">
+            <div class="mining-box">
+                <h3>MoonTap Mining</h3>
+                <div class="coin-img"></div>
+                <p>مكافأة التعدين غير المطالب بها</p>
+                <div id="miningBalance" class="balance">1.1500</div>
+                <p id="miningRate">معدل التعدين: 1.15 يومياً</p>
+                
+                <button class="btn" onclick="claimRewards()">مطالبة بالمكافأة</button>
+                <button class="btn btn-ad" onclick="showRewardedAd()">📺 مشاهدة إعلان لمضاعفة السرعة</button>
+            </div>
+        </div>
+
+        <!-- قسم المهام -->
+        <div id="tasks-section" class="section-content">
+            <div class="mining-box">
+                <h3>المهام اليومية</h3>
+                <p style="color: #94a3b8;">أكمل المهام واحصل على مكافآت فورية!</p>
+                <button class="btn" onclick="alert('انضم لقناة البوت للحصول على المكافأة')">انضم لقناة التليجرام (+1.0)</button>
+            </div>
+        </div>
+
+        <!-- قسم المعدنون / المستويات -->
+        <div id="miners-section" class="section-content">
+            <div class="mining-box">
+                <h3>المعدنون والمستويات</h3>
+                <p style="color: #94a3b8;">ارفع مستواك لزيادة قوة وسرعة التعدين التلقائي.</p>
+                <button class="btn" onclick="alert('أنت في المستوى الأول حالياً')">ترقية المعدن</button>
+            </div>
+        </div>
+
+        <!-- قسم الأصدقاء -->
+        <div id="friends-section" class="section-content">
+            <div class="mining-box">
+                <h3>دعوة الأصدقاء</h3>
+                <p style="color: #94a3b8;">ادع أصدقاءك واحصل على مكافآت مضاعفة.</p>
+                <button class="btn" onclick="alert('تم نسخ رابط الإحالة بنجاح!')">نسخ رابط الدعوة</button>
+            </div>
+        </div>
+
+        <!-- قسم المحفظة -->
+        <div id="wallet-section" class="section-content">
+            <div class="mining-box">
+                <h3>المحفظة</h3>
+                <p style="color: #94a3b8;">اربط محفظة TON الخاصة بك لسحب أرباحك.</p>
+                <button class="btn" onclick="alert('قريباً: ربط محفظة TON')">ربط المحفظة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- القائمة السفلية -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('mining', this)">
+            <span>⛏️</span>التعدين
+        </div>
+        <div class="nav-item" onclick="switchTab('tasks', this)">
+            <span>📋</span>المهام
+        </div>
+        <div class="nav-item" onclick="switchTab('miners', this)">
+            <span>⚡</span>المعدنون
+        </div>
+        <div class="nav-item" onclick="switchTab('friends', this)">
+            <span>👥</span>الأصدقاء
+        </div>
+        <div class="nav-item" onclick="switchTab('wallet', this)">
+            <span>💳</span>المحفظة
         </div>
     </div>
 
     <script>
+        // التنقل بين الأقسام
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById(tabName + '-section').classList.add('active');
+            element.classList.add('active');
+        }
+
         // إعدادات المستويات والتعدين اليومي
         const levels = [
             { level: 1, dailyRate: 1.15 },
@@ -115,16 +218,14 @@
             minedAmount = 0;
         }
 
-        // تهيئة وحدة إعلانات Adsgram بالرقم الصحيح UnitID
+        // تهيئة وحدة إعلانات Adsgram الحقيقية بالـ UnitID الخاص بك
         const adController = Adsgram.init({ blockId: "56031" });
 
         function showRewardedAd() {
             adController.show().then(() => {
-                // المكافأة عند إتمام مشاهدة الإعلان بنجاح
                 minedAmount += 0.5000;
-                alert("مبروك! لقد حصلت على مكافأة إضافية 0.50 عملة.");
+                alert("مبروك! لقد أتممت مشاهدة الإعلان وحصلت على مكافأة 0.50 عملة.");
             }).catch((result) => {
-                // في حال تخطي الإعلان أو حدوث خطأ
                 alert("لم يتم إتمام مشاهدة الإعلان بالكامل.");
             });
         }
@@ -133,4 +234,4 @@
         updateMiningDisplay();
     </script>
 </body>
-</html>
+</html> 
