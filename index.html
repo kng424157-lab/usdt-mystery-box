@@ -63,13 +63,30 @@
         .notification-dot { position: absolute; top: 4px; right: 12px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        /* النوافذ المنبثقة */
+        /* النوافذ المنبثقة العامة */
         .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
         .modal-box { background: var(--card-bg); padding: 22px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(59,130,246,0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
         .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
+
+        /* تصميم نافذة إنجاز المستوى الجديد (Level Up Modal الفاخرة) */
+        .levelup-box { background: linear-gradient(135deg, #0f172a, #1e1b4b); border: 2px solid var(--blue); padding: 25px 20px; border-radius: 28px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 40px rgba(59,130,246,0.4); position: relative; overflow: hidden; animation: popUp 0.3s ease-out; }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .levelup-rocket { font-size: 50px; margin-bottom: 5px; animation: floatRocket 2s ease-in-out infinite; }
+        @keyframes floatRocket { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+
+        .levelup-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .levelup-num { font-size: 3.2rem; font-weight: bold; color: #fff; text-shadow: 0 0 20px var(--blue); margin-bottom: 5px; }
+        .levelup-heading { font-size: 1.3rem; color: var(--gold); font-weight: bold; margin-bottom: 8px; }
+        .levelup-subtext { font-size: 0.78rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.4; }
+
+        .levelup-stats-card { background: rgba(7, 11, 25, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+        .levelup-stats-card .stat-title { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 2px; }
+        .levelup-stats-card .stat-val { font-size: 1rem; color: #fff; font-weight: bold; }
+        .levelup-stats-card .stat-sub { font-size: 0.7rem; color: var(--green); margin-top: 2px; }
 
         /* بطاقات المحفظة والتصميم الجديد */
         .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
@@ -78,8 +95,6 @@
         .wallet-card-box .value-usd { font-size: 0.9rem; color: var(--gold); margin-top: 2px; }
 
         .withdraw-warning-text { font-size: 0.72rem; color: #f87171; text-align: right; margin-top: -4px; margin-bottom: 8px; display: none; font-weight: bold; }
-
-        /* زر حفظ المحفظة الفرعي */
         .btn-save-wallet { width: 100%; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: background 0.2s; }
         .btn-save-wallet:active { background: rgba(16, 185, 129, 0.3); }
 
@@ -181,29 +196,59 @@
         </div>
     </div>
 
+    <!-- نافذة إنجاز المستوى الجديد (Level Up Modal الفاخرة) -->
+    <div class="modal-overlay" id="levelUpModal">
+        <div class="levelup-box">
+            <div class="levelup-rocket">🚀</div>
+            <div class="levelup-label">المستوى</div>
+            <div class="levelup-num" id="popupLevelNum">2</div>
+            <div class="levelup-heading">!Level up</div>
+            <div class="levelup-subtext">أصبح منجمك أسرع الآن. واصل التعدين وحقق المزيد من الأرباح للوصول للقمة!</div>
+            
+            <div class="levelup-stats-card">
+                <div>
+                    <span class="stat-title">قوة التعدين الجديدة</span>
+                    <strong class="stat-val" id="popupThVal">TH/s 2.00</strong>
+                </div>
+                <div style="text-align: left;">
+                    <span class="stat-val" style="color:var(--green)">+0.05</span>
+                </div>
+            </div>
+
+            <div class="levelup-stats-card" style="margin-bottom: 18px;">
+                <div>
+                    <span class="stat-title">الإنتاج اليومي المقدر</span>
+                    <strong class="stat-val" id="popupDayVal">MOON 24.0</strong>
+                </div>
+                <div style="text-align: left;">
+                    <span class="stat-val" style="color:var(--green)">+1.2+</span>
+                </div>
+            </div>
+
+            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="closeLevelUpModal()">Continue mining ⚡</button>
+            <button class="btn-ad" style="width:100%; background:rgba(255,255,255,0.08);" onclick="shareAchievement()">Share achievement 🔗</button>
+        </div>
+    </div>
+
     <!-- نافذة سحب الأرباح المحدثة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-title">💳 سحب أرباح MoonTap</div>
             <div class="modal-desc">إدارة محفظتك وسحب الأرباح بكل سهولة وأمان.</div>
             
-            <!-- بطاقة إجمالي الرصيد وما يعادله بالدولار -->
             <div class="wallet-card-box">
                 <span class="label">إجمالي رصيدك المتاح</span>
                 <div class="value-moon"><span id="modalBal">0.00</span> MOON</div>
                 <div class="value-usd">≈ يعادل: $<span id="modalUsdVal">0.00</span> دولار</div>
             </div>
 
-            <!-- خانة كتابة المبلغ المراد سحبه -->
             <div style="font-size: 0.75rem; color: #94a3b8; margin: 8px 0 4px 0; text-align: right;">أدخل كمية MOON المراد سحبها:</div>
             <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="مثال: 5000" oninput="checkWithdrawAmountInput()">
             <div class="withdraw-warning-text" id="withdrawWarning">⚠️ المبلغ المدخل أقل من الحد الأدنى (5000 MOON = $0.20)</div>
 
-            <!-- خانة عنوان محفظة Tonkeeper -->
             <div style="font-size: 0.75rem; color: #94a3b8; margin: 6px 0 4px 0; text-align: right;">عنوان محفظة Tonkeeper:</div>
             <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON هنا...">
             
-            <!-- زر حفظ المحفظة اليدوي -->
             <button class="btn-save-wallet" onclick="manualSaveWallet()">💾 حفظ عنوان المحفظة في الجهاز</button>
 
             <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 طلب سحب الأرباح</button>
@@ -604,9 +649,11 @@
             let progressPercent = Math.min(100, (userState.balance / nextLevelTarget) * 100);
             document.getElementById('levelProgressBar').style.width = progressPercent + '%';
 
+            let oldLevel = userState.level;
             if (userState.balance >= nextLevelTarget && userState.level < 150) {
                 userState.level++;
                 renderLevelsList();
+                showLevelUpModal(userState.level); // إظهار واجهة إنجاز المستوى الفاخرة عند الترقية
             }
 
             const botUsername = "UsdtMysteryBox77_bot";
@@ -615,6 +662,26 @@
 
             updateTaskBadgeCount();
             saveUserState();
+        }
+
+        function showLevelUpModal(newLevel) {
+            document.getElementById('popupLevelNum').innerText = newLevel;
+            document.getElementById('popupThVal').innerText = `TH/${(newLevel * 1.10).toFixed(2)}`;
+            document.getElementById('popupDayVal').innerText = `MOON ${(newLevel * 24).toFixed(1)}`;
+            document.getElementById('levelUpModal').style.display = 'flex';
+        }
+
+        function closeLevelUpModal() {
+            document.getElementById('levelUpModal').style.display = 'none';
+        }
+
+        function shareAchievement() {
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            const text = encodeURIComponent(`لقد وصلت إلى المستوى (${userState.level}) في منصة MoonTap للتعدين السحابي! انضم إلي وابدأ التعدين الآن:\n\n${refLink}`);
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
+            if (tg) tg.openTelegramLink(shareUrl);
+            else window.open(shareUrl, '_blank');
         }
 
         renderLevelsList();
@@ -732,7 +799,6 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // إعلان التعدين باستخدام المعرف الصحيح int-56190
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -780,7 +846,6 @@
             }, 1500);
         }
 
-        // إعلان المهام باستخدام الصيغة المقبولة من Adsgram وهي int-56202
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
