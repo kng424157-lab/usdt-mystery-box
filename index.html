@@ -285,6 +285,13 @@
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
         localStorage.setItem('moontapUserId', userId);
 
+        // تنظيف البيانات القديمة المخزنة برقم 12 وإجبارها للبدء من الصفر والمستوى 1
+        let savedVersion = localStorage.getItem('moontap_version_v2');
+        if (!savedVersion) {
+            localStorage.removeItem('moontapState_' + userId);
+            localStorage.setItem('moontap_version_v2', 'true');
+        }
+
         let userState = JSON.parse(localStorage.getItem('moontapState_' + userId)) || {
             balance: 0.0,
             pending: 0.0,
@@ -298,7 +305,6 @@
             let elapsed = (now - userState.lastTick) / 1000;
             userState.lastTick = now;
 
-            // حساب المستوى تلقائياً كل 50 عملة
             let currentLevel = Math.floor(userState.balance / 50) + 1;
             let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
 
@@ -309,7 +315,6 @@
         setInterval(cloudMiningTick, 1000);
 
         function updateUI() {
-            // حساب المستوى تلقائياً بناءً على الرصيد (كل 50 عملة = مستوى جديد)
             let calculatedLevel = Math.floor(userState.balance / 50) + 1;
             let calculatedSpeed = 1.00 + (calculatedLevel - 1) * 0.15;
             let progressIntoLevel = userState.balance % 50;
