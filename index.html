@@ -415,11 +415,11 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // تم تحديث معرف الإعلان هنا ليعمل بالمعرف الجديد task-56202
+        // تم ضبط المعرف إلى الصيغة الصحيحة int-56190 لتعمل بدون أخطاء
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "task-56202" });
+                    const adController = window.Adsgram.init({ blockId: "int-56190" });
                     adController.show().then(() => {
                         userState.pending += 1.00;
                         updateUI();
@@ -457,11 +457,11 @@
             }, 1500);
         }
 
-        // استخدام المعرف الجديد task-56202 للمهام الإعلانية
+        // استخدام المعرف int-56190 للمهام الإعلانية أيضاً
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "task-56202" });
+                    const adController = window.Adsgram.init({ blockId: "int-56190" });
                     adController.show().then(() => {
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
@@ -549,4 +549,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
