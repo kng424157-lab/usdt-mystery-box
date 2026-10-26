@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منجم الدولار التلقائي USDT Auto Miner</title>
+    <title>MoonTap Cloud Mining</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
-            --bg-dark: #090d16;
-            --card-bg: #131b2e;
+            --bg-dark: #0b1120;
+            --card-bg: #151e36;
             --gold: #f59e0b;
             --gold-glow: rgba(245, 158, 11, 0.4);
             --green: #10b981;
@@ -18,7 +18,7 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
         body { 
-            background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%); 
+            background: var(--bg-dark); 
             color: var(--text-light); 
             min-height: 100vh; 
             display: flex; 
@@ -26,106 +26,247 @@
             justify-content: space-between; 
             overflow-x: hidden; 
         }
-        .header { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
-        .stat-card { background: var(--card-bg); padding: 12px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
-        .stat-card span { display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
-        .stat-card strong { font-size: 1.1rem; color: #fff; }
-        .usdt-text { color: var(--green) !important; }
-        .level-text { color: var(--gold) !important; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(21, 30, 54, 0.6); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .badge { background: rgba(245,158,11,0.15); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--gold); font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .balance-badge { background: rgba(59,130,246,0.15); border: 1px solid var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 5px; }
 
         .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
-        .mining-rig { width: 150px; height: 150px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.3); animation: pulseRig 2s infinite ease-in-out; }
-        @keyframes pulseRig {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(245,158,11,0.2); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(245,158,11,0.5); }
-        }
-        .rig-emoji { font-size: 85px; }
+        
+        .timer-box { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 5px 15px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 6px; }
+        .timer-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .mining-info-box { background: var(--card-bg); width: 100%; max-width: 330px; padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; }
-        .mining-info-box p { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .cloud-mining-title { font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px; }
+        .cloud-mining-brand { font-size: 1.5rem; font-weight: bold; color: #fff; margin-bottom: 15px; }
 
-        .actions { width: 100%; max-width: 330px; display: flex; flex-direction: column; gap: 10px; }
-        .btn { border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
-        .btn-claim { background: linear-gradient(135deg, #10b981, #059669); }
-        .btn-ad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+        .coin-wrapper { width: 180px; height: 180px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.4); position: relative; }
+        .coin-icon { font-size: 95px; }
 
-        .bottom-bar { background: var(--card-bg); padding: 12px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); }
-        .nav-item { background: none; border: none; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-item span { font-size: 1.3rem; }
+        .mining-reward-label { font-size: 0.8rem; color: #94a3b8; margin-top: 10px; }
+        .mining-reward-val { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .mining-speed-info { font-size: 0.8rem; color: #64748b; margin-bottom: 20px; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-        .modal-box { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 330px; text-align: center; border: 2px solid var(--gold); }
-        .modal-icon { font-size: 45px; margin-bottom: 10px; }
-        .modal-title { font-size: 1.2rem; color: var(--gold); margin-bottom: 10px; }
-        .modal-desc { font-size: 0.90rem; color: #e2e8f0; margin-bottom: 15px; line-height: 1.5; }
-        .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #090d16; color: #fff; margin-bottom: 12px; text-align: center; }
-        .ref-box { background: #090d16; padding: 10px; border-radius: 8px; border: 1px dashed var(--gold); font-size: 0.80rem; color: #fde68a; word-break: break-all; margin-bottom: 15px; }
+        .btn-claim { width: 100%; max-width: 330px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; padding: 15px; border-radius: 14px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(59,130,246,0.4); margin-bottom: 10px; }
+        .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; padding: 12px; border-radius: 14px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav { background: var(--card-bg); padding: 10px 5px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.75rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
+        .nav-btn span { font-size: 1.3rem; }
+        .nav-btn.active { color: var(--blue); }
+        .notification-dot { position: absolute; top: 0; right: 5px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; }
+
+        /* النوافذ المنبثقة */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; }
+        .modal-box { background: var(--card-bg); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; border: 2px solid var(--blue); max-height: 85vh; overflow-y: auto; }
+        .modal-title { font-size: 1.1rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
+        .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.4; }
+
+        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .friend-btn { background: var(--blue); border: none; padding: 10px; border-radius: 10px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .friend-btn.copy { background: #2563eb; }
+
+        .team-commission-card { background: #0b1120; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 15px; margin-bottom: 12px; text-align: center; }
+        .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+        .team-commission-card strong { font-size: 1.6rem; color: #fff; }
+
+        .invite-bonus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; background: #0b1120; padding: 10px; border-radius: 12px; text-align: center; }
+        .bonus-box span { display: block; font-size: 0.65rem; color: #94a3b8; margin-bottom: 3px; }
+        .bonus-box strong { font-size: 1rem; color: #fff; }
+
+        .miners-header-card { background: #0b1120; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+        .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
+        .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
+
+        .progress-container { background: #0b1120; padding: 10px; border-radius: 12px; margin-bottom: 15px; text-align: right; }
+        .progress-bar-bg { width: 100%; background: #151e36; height: 8px; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+        .progress-bar-fill { width: 85%; background: var(--blue); height: 100%; }
+
+        .miner-row-card { background: #0b1120; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
+        .miner-row-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
+        .miner-row-info p { font-size: 0.75rem; color: var(--gold); }
+
+        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #0b1120; padding: 10px; border-radius: 12px; }
+        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 2px; text-align: center; font-size: 0.7rem; color: #94a3b8; }
+        .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.15); color: var(--green); }
+        .checkin-day strong { display: block; font-size: 0.8rem; color: #fff; margin-top: 2px; }
+
+        .task-item { background: #0b1120; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
+        .task-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
+        .task-info p { font-size: 0.75rem; color: var(--gold); }
+        .task-btn { background: #3b82f6; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .task-btn.claimed { background: var(--green); }
+
+        .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: var(--bg-dark); color: #fff; margin-bottom: 12px; text-align: center; }
+        .ref-box { background: var(--bg-dark); padding: 8px; border-radius: 8px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="stat-card"><span>الرصيد القابل للسحب 💰</span><strong class="usdt-text"><span id="usdtBal">0.0000</span> $</strong></div>
-        <div class="stat-card"><span>مستوى المنجم ⚡</span><strong class="level-text" id="levelName">المستوى 1 (مبتدئ)</strong></div>
+    <div class="top-nav">
+        <div class="badge">⚡ مستوى <span id="userLevel">12</span></div>
+        <div class="balance-badge">🪙 MOON <span id="totalBal">500</span></div>
     </div>
 
     <div class="main-stage">
-        <div class="mining-rig"><div class="rig-emoji">🏭</div></div>
-
-        <div class="mining-info-box">
-            <p><span>الدخل اليومي المحدد:</span> <strong id="dailyIncome" style="color:var(--green)">0.0100 USDT</strong></p>
-            <p><span>الأرباح المتراكمة الآن:</span> <strong id="pendingBal" style="color:var(--gold)">0.0000 USDT</strong></p>
+        <div class="timer-box">
+            <div class="timer-dot"></div>
+            <span id="countdownTimer">23:58:38</span>
         </div>
 
-        <div class="actions">
-            <button class="btn btn-claim" onclick="claimEarnings()">📥 جمع الأرباح المتراكمة</button>
-            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForSpeed()">📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)</button>
+        <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">12</span></div>
+        <div class="cloud-mining-brand">MoonTap Mining</div>
+
+        <div class="coin-wrapper">
+            <div class="coin-icon">🌕</div>
         </div>
+
+        <div class="mining-reward-label">مكافأة التعدين غير المطالب بها</div>
+        <div class="mining-reward-val" id="pendingReward">0.054210</div>
+        <div class="mining-speed-info">TH/s <span id="speedTH">1.50</span> · $0.0001 ≈</div>
+
+        <button class="btn-claim" onclick="claimMiningReward()">مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.05</span></button>
+        <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
     </div>
 
-    <div class="bottom-bar">
-        <button class="nav-item" onclick="openWithdrawModal()"><span>💸</span> سحب الأرباح</button>
-        <button class="nav-item" onclick="openLevelsModal()"><span>⭐</span> ترقية المستويات</button>
-        <button class="nav-item" onclick="openRefModal()"><span>👥</span> دعوة الأصدقاء</button>
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-nav">
+        <button class="nav-btn" onclick="openWalletModal()"><span>💳</span> المحفظة</button>
+        <button class="nav-btn" onclick="openRefModal()"><span>👥</span> الأصدقاء</button>
+        <button class="nav-btn" onclick="openMinersModal()"><span>⚡</span> المعدنون</button>
+        <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot">3</div></button>
+        <button class="nav-btn active" onclick="openMiningTab()"><span>⛏️</span> التعدين</button>
     </div>
 
-    <!-- نافذة المستويات -->
-    <div class="modal-overlay" id="levelsModal">
-        <div class="modal-box">
-            <div class="modal-icon">⭐</div>
-            <div class="modal-title">ترقية مستويات التعدين</div>
-            <div class="modal-desc" style="text-align: right; font-size: 0.85rem;">
-                • <strong>المستوى 1:</strong> الدخل 0.01$ / يوم (مجاني)<br>
-                • <strong>المستوى 2:</strong> الدخل 0.03$ / يوم (مشاهدة 3 إعلانات)<br>
-                • <strong>المستوى 3:</strong> الدخل 0.08$ / يوم (عبر دعوة 3 أصدقاء)<br>
-            </div>
-            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="upgradeLevel()">ترقية للمستوى التالي</button>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('levelsModal')">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- نافذة الإحالة -->
-    <div class="modal-overlay" id="refModal">
-        <div class="modal-box">
-            <div class="modal-icon">👥</div>
-            <div class="modal-title">دعوة الأصدقاء</div>
-            <div class="modal-desc">اربح <strong>0.005 USDT</strong> فوراً وارفع قوة منجمك عن كل صديق ينضم لفريقك!</div>
-            <div class="ref-box" id="myRefLink">جاري إنشاء رابطك...</div>
-            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط</button>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('refModal')">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- نافذة السحب -->
-    <div class="modal-overlay" id="withdrawModal">
+    <!-- نافذة المحفظة -->
+    <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-icon">💳</div>
-            <div class="modal-title">سحب الأرباح</div>
-            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
-            <input type="text" class="input-wallet" id="walletInput" placeholder="ضع عنوان محفظة TON / USDT هنا">
-            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">تأكيد طلب السحب</button>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
+            <div class="modal-title">محفظة MoonTap وسحب الأرباح</div>
+            <div class="modal-desc">رصيدك الكلي: <strong id="modalBal" style="color:var(--green)">500</strong> MOON</div>
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON هنا">
+            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">طلب سحب الأرباح</button>
+            <button class="btn-ad" style="width:100%; background:#334155;" onclick="closeModal('walletModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة الأصدقاء والإحالة -->
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-box" style="max-width: 370px;">
+            <div class="modal-title" style="font-size: 1.2rem; margin-bottom: 5px;">دعوة الأصدقاء</div>
+            <div class="modal-desc">احصل على +50 MOON لكل صديق يبدأ التعدين، بالإضافة إلى 10% من إنتاج تعدينهم — مدى الحياة.</div>
+            
+            <div class="friends-actions">
+                <button class="friend-btn" onclick="shareReferral()">📤 مشاركة</button>
+                <button class="friend-btn copy" onclick="copyRefLink()">📋 نسخ</button>
+            </div>
+
+            <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">
+                <span>تعدين الفريق</span>
+                <span style="color:var(--green); background:rgba(16,185,129,0.15); padding:2px 8px; border-radius:10px;">10%</span>
+            </div>
+
+            <div class="team-commission-card">
+                <span>مجمع عمولة الفريق</span>
+                <span style="font-size: 0.7rem; color:var(--green); display:inline-block; margin-bottom:4px;">$0.000 ≈</span>
+                <strong>MOON 0.000</strong>
+            </div>
+
+            <button class="btn-claim" style="width:100%; margin-bottom:12px; padding:12px; font-size:0.9rem;" onclick="claimTeamCommission()">المطالبة بعمولة الفريق</button>
+
+            <div class="invite-bonus-grid">
+                <div class="bonus-box">
+                    <span>غير مطالب به</span>
+                    <strong>0</strong>
+                </div>
+                <div class="bonus-box">
+                    <span>إجمالي الفريق</span>
+                    <strong id="teamCount">0</strong>
+                </div>
+                <div class="bonus-box">
+                    <span>مؤهل</span>
+                    <strong>0</strong>
+                </div>
+            </div>
+
+            <button class="btn-ad" style="width:100%; background:#334155;" onclick="closeModal('refModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة متجر المعدنين والمستويات -->
+    <div class="modal-overlay" id="minersModal">
+        <div class="modal-box" style="max-width: 370px;">
+            <div class="modal-title">⚡ متجر المعدنين</div>
+            <div class="modal-desc">احتفظ بعملات MOON لفتح معدنين أسرع. مستواك يرتفع حسب رصيدك.</div>
+            
+            <div class="miners-header-card">
+                <div><span>أرباح اليوم</span><strong style="color:var(--green)">15.4+</strong></div>
+                <div><span>القمة</span><strong id="peakLevel">12</strong></div>
+                <div><span>المستوى</span><strong id="modalLevel">12</strong></div>
+            </div>
+
+            <div class="progress-container">
+                <span style="font-size:0.75rem; color:#94a3b8;">المستوى <span id="nextLevelNum">13</span> (MOON to go <span id="mrgNeeded">25.0</span>)</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+            </div>
+
+            <div class="miner-row-card" style="border-color:var(--blue);">
+                <div class="miner-row-info">
+                    <h4 style="color:var(--blue)">المستوى 12 (الحالي)</h4>
+                    <p>TH/s 1.50 · 15.4/day</p>
+                </div>
+                <strong>0.50$</strong>
+            </div>
+
+            <div class="miner-row-card">
+                <div class="miner-row-info">
+                    <h4>المستوى 13</h4>
+                    <p>TH/s 1.65 · تحتاج 25 MOON</p>
+                </div>
+                <button class="task-btn" onclick="upgradeLevel(13)">ترقية</button>
+            </div>
+
+            <button class="btn-ad" style="width:100%; margin-top:10px; background:#334155;" onclick="closeModal('minersModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة المهام -->
+    <div class="modal-overlay" id="tasksModal">
+        <div class="modal-box">
+            <div class="modal-title">كسب المكافآت</div>
+            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON مجاناً.</div>
+            
+            <div class="checkin-grid">
+                <div class="checkin-day active">D1 ✔️<strong>5+</strong></div>
+                <div class="checkin-day">D2<strong>10+</strong></div>
+                <div class="checkin-day">D3<strong>15+</strong></div>
+                <div class="checkin-day">D4<strong>20+</strong></div>
+                <div class="checkin-day">D5<strong>25+</strong></div>
+                <div class="checkin-day">D6<strong>30+</strong></div>
+                <div class="checkin-day">D7⭐<strong>50+</strong></div>
+            </div>
+
+            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة</div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <h4>الانضمام لقناة MoonTap الرسمية</h4>
+                    <p>مرة واحدة · MOON 20+</p>
+                </div>
+                <button class="task-btn" onclick="completeTask(20, this)">ابدأ</button>
+            </div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <h4>متابعة حسابنا على X (تويتر)</h4>
+                    <p>مرة واحدة · MOON 15+</p>
+                </div>
+                <button class="task-btn" onclick="completeTask(15, this)">ابدأ</button>
+            </div>
+
+            <button class="btn-ad" style="width:100%; margin-top:15px; background:#334155;" onclick="closeModal('tasksModal')">إغلاق</button>
         </div>
     </div>
 
@@ -133,138 +274,139 @@
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('autoMinerId') || 'user_' + Math.floor(Math.random() * 1000000);
+        let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('moontapUserId') || 'user_' + Math.floor(Math.random() * 1000000);
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
-        localStorage.setItem('autoMinerId', userId);
+        localStorage.setItem('moontapUserId', userId);
 
-        // مستويات التعدين والدخل اليومي المحدد
-        const levelsData = [
-            { name: "المستوى 1 (مبتدئ)", daily: 0.01 },
-            { name: "المستوى 2 (متوسط)", daily: 0.03 },
-            { name: "المستوى 3 (محترف)", daily: 0.08 }
-        ];
-
-        let userState = JSON.parse(localStorage.getItem('autoMinerState_' + userId)) || { 
-            usdt: 0.000, 
-            pending: 0.000,
-            level: 0,
+        let userState = JSON.parse(localStorage.getItem('moontapState_' + userId)) || {
+            balance: 500.0,
+            pending: 0.054210,
+            level: 12,
+            speed: 1.50,
+            teamCommission: 0.0,
             lastTick: Date.now()
         };
 
-        // حساب الأرباح التلقائية بناءً على الوقت المنقضي
-        function calculateAutoMining() {
+        // تعدين سحابي تلقائي بمرور الوقت
+        function cloudMiningTick() {
             let now = Date.now();
-            let elapsedSeconds = (now - userState.lastTick) / 1000;
+            let elapsed = (now - userState.lastTick) / 1000;
             userState.lastTick = now;
 
-            let currentDaily = levelsData[userState.level].daily;
-            let perSecondEarning = currentDaily / 86400; // تقسيم الدخل اليومي على ثواني اليوم
-
-            userState.pending += perSecondEarning * elapsedSeconds;
+            userState.pending += (userState.speed * 0.00001) * elapsed;
             updateUI();
         }
 
-        setInterval(calculateAutoMining, 1000);
+        setInterval(cloudMiningTick, 1000);
 
         function updateUI() {
-            localStorage.setItem('autoMinerState_' + userId, JSON.stringify(userState));
-            document.getElementById('usdtBal').innerText = userState.usdt.toFixed(4);
-            document.getElementById('pendingBal').innerText = userState.pending.toFixed(4);
-            document.getElementById('levelName').innerText = levelsData[userState.level].name;
-            document.getElementById('dailyIncome').innerText = levelsData[userState.level].daily.toFixed(4) + " USDT";
-        }
+            localStorage.setItem('moontapState_' + userId, JSON.stringify(userState));
+            document.getElementById('userLevel').innerText = userState.level;
+            document.getElementById('mainLevelBadge').innerText = userState.level;
+            document.getElementById('modalLevel').innerText = userState.level;
+            document.getElementById('peakLevel').innerText = userState.level;
+            document.getElementById('speedTH').innerText = userState.speed.toFixed(2);
+            document.getElementById('totalBal').innerText = userState.balance >= 1000 ? (userState.balance/1000).toFixed(1) + 'K' : userState.balance.toFixed(0);
+            document.getElementById('modalBal').innerText = userState.balance.toFixed(0) + ' MOON';
+            document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
+            document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
 
-        function claimEarnings() {
-            if (userState.pending < 0.0001) {
-                if (tg) tg.showAlert("⚠️ لا توجد أرباح كافية للجمع حالياً، انتظر قليلاً!");
+            const botUsername = "UsdtMysteryBox77_bot"; // قم بتغييره لمعرف بوتك الحالي
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            document.getElementById('myRefLink').innerText = refLink;
+        }
+        updateUI();
+
+        function claimMiningReward() {
+            if (userState.pending < 0.001) {
+                if (tg) tg.showAlert("⚠️ المكافأة غير كافية للمطالبة حالياً!");
                 return;
             }
-            userState.usdt += userState.pending;
-            userState.pending = 0;
+            userState.balance += userState.pending;
+            userState.pending = 0.0;
             updateUI();
-            if (tg) tg.showAlert("✅ تمت إضافة الأرباح إلى رصيدك القابل للسحب بنجاح!");
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح وأضيفت لرصيدك!");
         }
 
-        // إعلانات AdsGram لترقية الأرباح
-        function watchAdForSpeed() {
-            const btnAd = document.getElementById('btnWatchAd');
-            btnAd.disabled = true;
-            let secondsLeft = 15;
-            btnAd.innerText = `⏳ جاري تحميل الإعلان... (${secondsLeft} ثانية)`;
-
-            let countdown = setInterval(() => {
-                secondsLeft--;
-                if (secondsLeft > 0) {
-                    btnAd.innerText = `⏳ جاري تحميل الإعلان... (${secondsLeft} ثانية)`;
-                } else {
-                    clearInterval(countdown);
-                }
-            }, 1000);
-
-            let checkAds = setInterval(() => {
-                if (window.AdsGram && typeof window.AdsGram.init === 'function') {
-                    clearInterval(checkAds);
-                    clearInterval(countdown);
-                    btnAd.disabled = false;
-                    btnAd.innerText = "📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)";
-
-                    try {
-                        const adController = window.AdsGram.init({ blockId: "56031" });
-                        adController.show().then(() => {
-                            userState.pending += 0.01; // مكافأة فورية
-                            updateUI();
-                            if (tg) tg.showAlert("🚀 مبروك! حصلت على مكافأة تعدين فورية بسبب مشاهدة الإعلان.");
-                        }).catch(() => {
-                            if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
-                        });
-                    } catch (e) {
-                        console.log(e);
-                    }
-                }
-            }, 500);
-
-            setTimeout(() => {
-                if (btnAd.disabled) {
-                    clearInterval(checkAds);
-                    clearInterval(countdown);
-                    btnAd.disabled = false;
-                    btnAd.innerText = "📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)";
-                }
-            }, 15000);
+        function claimTeamCommission() {
+            if (userState.teamCommission <= 0) {
+                if (tg) tg.showAlert("⚠️ لا توجد عمولات فريق مطبقة حالياً!");
+                return;
+            }
+            userState.balance += userState.teamCommission;
+            userState.teamCommission = 0.0;
+            updateUI();
+            if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        function upgradeLevel() {
-            if (userState.level < levelsData.length - 1) {
-                userState.level++;
-                updateUI();
-                closeModal('levelsModal');
-                if (tg) tg.showAlert(`🎉 مبروك! تم ترقية منجمك إلى ${levelsData[userState.level].name}`);
+        // إعلانات AdsGram مرتبطة بالمعرف الأساسي الخاص بك 56031
+        function watchAdForMiningBoost() {
+            if (window.AdsGram && typeof window.AdsGram.init === 'function') {
+                try {
+                    const adController = window.AdsGram.init({ blockId: "56031" });
+                    adController.show().then(() => {
+                        userState.pending += 0.10;
+                        updateUI();
+                        if (tg) tg.showAlert("🚀 تم مضاعفة سرعة التعدين السحابي بنجاح!");
+                    }).catch(() => {
+                        if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
             } else {
-                if (tg) tg.showAlert("⭐ أنت في أعلى مستوى حالياً!");
+                alert("جاري تحميل نظام الإعلانات، حاول بعد قليل.");
             }
         }
 
-        function openLevelsModal() { document.getElementById('levelsModal').style.display = 'flex'; }
-        function openRefModal() {
-            const botUsername = "UsdtMysteryBox77_bot";
-            const refLink = `https://t.me/${botUsername}?start=${userId}`;
-            document.getElementById('myRefLink').innerText = refLink;
-            document.getElementById('refModal').style.display = 'flex';
+        function upgradeLevel(targetLevel) {
+            if (userState.balance >= 25) {
+                userState.level = targetLevel;
+                userState.speed += 0.15;
+                updateUI();
+                if (tg) tg.showAlert(`🎉 مبروك! تم الترقية إلى المستوى ${targetLevel} بنجاح!`);
+            } else {
+                if (tg) tg.showAlert("⚠️ رصيدك غير كافي للترقية، استمر في التعدين أو أكمل المهام!");
+            }
         }
-        function openWithdrawModal() {
-            document.getElementById('modalUsdtBal').innerText = userState.usdt.toFixed(4);
-            document.getElementById('withdrawModal').style.display = 'flex';
+
+        function copyRefLink() {
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            navigator.clipboard.writeText(refLink);
+            if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة بنجاح!");
+            else alert("تم نسخ الرابط!");
+        }
+
+        function completeTask(amount, btn) {
+            userState.balance += amount;
+            updateUI();
+            btn.innerText = "تم ✓";
+            btn.classList.add('claimed');
+            btn.disabled = true;
+            if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${amount} MOON مكافأة إنجاز المهمة.`);
+        }
+
+        function openRefModal() { document.getElementById('refModal').style.display = 'flex'; }
+        function openMinersModal() { document.getElementById('minersModal').style.display = 'flex'; }
+        function openTasksModal() { document.getElementById('tasksModal').style.display = 'flex'; }
+        function openWalletModal() { document.getElementById('walletModal').style.display = 'flex'; }
+        function openMiningTab() { 
+            document.getElementById('refModal').style.display = 'none';
+            document.getElementById('minersModal').style.display = 'none';
+            document.getElementById('tasksModal').style.display = 'none';
+            document.getElementById('walletModal').style.display = 'none';
         }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function submitWithdraw() {
             const wallet = document.getElementById('walletInput').value.trim();
-            if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT."); return; }
-            if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة صحيح."); return; }
+            if (userState.balance < 50) { alert("الحد الأدنى للسحب هو 50 MOON."); return; }
+            if (wallet.length < 10) { alert("أدخل عنوان محفظة صحيح."); return; }
 
             const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
             const chatId = "5630771182";
-            const message = `🚨 طلب سحب منجم تلقائي!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(4)} USDT\n💳 المحفظة:\n${wallet}`;
+            const message = `🚨 طلب سحب MOON جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.balance.toFixed(0)} MOON\n💳 المحفظة:\n${wallet}`;
 
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
@@ -272,16 +414,16 @@
                 body: JSON.stringify({ chat_id: chatId, text: message })
             }).catch(err => console.log(err));
 
-            alert("✅ تم إرسال طلب السحب بنجاح!");
-            userState.usdt = 0;
+            alert("✅ تم إرسال طلب السحب بنجاح وسيتم المراجعة قريباً!");
+            userState.balance = 0;
             updateUI();
-            closeModal('withdrawModal');
+            closeModal('walletModal');
         }
 
         function shareReferral() {
             const botUsername = "UsdtMysteryBox77_bot";
-            const refLink = `https://t.me/${botUsername}?start=${userId}`;
-            const text = encodeURIComponent(`شغل منجم الدولار التلقائي واربح أرباحاً يومية ثابتة! 🏭💎 استخدم رابطي واربح فوراً:\n\n${refLink}`);
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح عملات رقمية يومياً! 🌕⛏️ استخدم رابطي:\n\n${refLink}`);
             const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
             if (tg) {
                 tg.openTelegramLink(shareUrl);
@@ -291,4 +433,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
