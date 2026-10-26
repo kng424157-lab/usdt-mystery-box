@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منجم الدولار USDT Miner</title>
+    <title>منجم الدولار التلقائي USDT Auto Miner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
@@ -24,32 +24,29 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            overflow: hidden; 
+            overflow-x: hidden; 
         }
         .header { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
         .stat-card { background: var(--card-bg); padding: 12px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
         .stat-card span { display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
-        .stat-card strong { font-size: 1.2rem; color: #fff; }
+        .stat-card strong { font-size: 1.1rem; color: #fff; }
         .usdt-text { color: var(--green) !important; }
-        .energy-text { color: var(--gold) !important; }
-        
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; position: relative; }
-        .miner-circle { width: 190px; height: 190px; background: radial-gradient(circle, var(--gold-glow) 0%, rgba(59,130,246,0.2) 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; transition: transform 0.1s ease; border: 2px solid rgba(245,158,11,0.3); box-shadow: 0 0 30px rgba(245,158,11,0.2); }
-        .miner-circle:active { transform: scale(0.92); }
-        .coin-emoji { font-size: 105px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
-        
-        .floating-score { position: absolute; font-weight: bold; color: var(--gold); font-size: 1.4rem; pointer-events: none; animation: floatUp 0.8s ease-out forwards; }
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
+        .level-text { color: var(--gold) !important; }
+
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
+        .mining-rig { width: 150px; height: 150px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.3); animation: pulseRig 2s infinite ease-in-out; }
+        @keyframes pulseRig {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(245,158,11,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(245,158,11,0.5); }
         }
+        .rig-emoji { font-size: 85px; }
 
-        .energy-bar-container { width: 85%; max-width: 320px; background: var(--card-bg); border-radius: 10px; padding: 4px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.08); }
-        .energy-bar { height: 10px; background: linear-gradient(90deg, #f59e0b, #10b981); border-radius: 8px; width: 100%; transition: width 0.2s; }
-        .energy-info { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; width: 85%; max-width: 320px; margin-top: 6px; }
+        .mining-info-box { background: var(--card-bg); width: 100%; max-width: 330px; padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; }
+        .mining-info-box p { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px; display: flex; justify-content: space-between; }
 
-        .actions { width: 100%; max-width: 330px; display: flex; flex-direction: column; gap: 10px; padding: 15px; }
+        .actions { width: 100%; max-width: 330px; display: flex; flex-direction: column; gap: 10px; }
         .btn { border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; color: #fff; text-align: center; }
+        .btn-claim { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-ad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
 
@@ -69,40 +66,53 @@
 <body>
 
     <div class="header">
-        <div class="stat-card"><span>رصيد المنجم ⛏️</span><strong class="usdt-text"><span id="usdtBal">0.000</span> $</strong></div>
-        <div class="stat-card"><span>طاقة التعدين ⚡</span><strong class="energy-text"><span id="energyBal">1000</span>/1000</strong></div>
+        <div class="stat-card"><span>الرصيد القابل للسحب 💰</span><strong class="usdt-text"><span id="usdtBal">0.0000</span> $</strong></div>
+        <div class="stat-card"><span>مستوى المنجم ⚡</span><strong class="level-text" id="levelName">المستوى 1 (مبتدئ)</strong></div>
     </div>
 
     <div class="main-stage">
-        <div class="miner-circle" id="minerBtn" onclick="tapCoin(event)"><div class="coin-emoji">🪙</div></div>
-        
-        <div class="energy-bar-container">
-            <div class="energy-bar" id="energyBar"></div>
-        </div>
-        <div class="energy-info">
-            <span>تجديد الطاقة تلقائياً</span>
-            <span style="color:var(--green)">+5 كل ثانية</span>
+        <div class="mining-rig"><div class="rig-emoji">🏭</div></div>
+
+        <div class="mining-info-box">
+            <p><span>الدخل اليومي المحدد:</span> <strong id="dailyIncome" style="color:var(--green)">0.0100 USDT</strong></p>
+            <p><span>الأرباح المتراكمة الآن:</span> <strong id="pendingBal" style="color:var(--gold)">0.0000 USDT</strong></p>
         </div>
 
         <div class="actions">
-            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForEnergy()">📺 شاهد إعلاناً لشحن الطاقة (+500 طاقة)</button>
+            <button class="btn btn-claim" onclick="claimEarnings()">📥 جمع الأرباح المتراكمة</button>
+            <button class="btn btn-ad" id="btnWatchAd" onclick="watchAdForSpeed()">📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)</button>
         </div>
     </div>
 
     <div class="bottom-bar">
         <button class="nav-item" onclick="openWithdrawModal()"><span>💸</span> سحب الأرباح</button>
+        <button class="nav-item" onclick="openLevelsModal()"><span>⭐</span> ترقية المستويات</button>
         <button class="nav-item" onclick="openRefModal()"><span>👥</span> دعوة الأصدقاء</button>
-        <button class="nav-item" onclick="openBoostModal()"><span>🚀</span> تعزيز السرعة</button>
+    </div>
+
+    <!-- نافذة المستويات -->
+    <div class="modal-overlay" id="levelsModal">
+        <div class="modal-box">
+            <div class="modal-icon">⭐</div>
+            <div class="modal-title">ترقية مستويات التعدين</div>
+            <div class="modal-desc" style="text-align: right; font-size: 0.85rem;">
+                • <strong>المستوى 1:</strong> الدخل 0.01$ / يوم (مجاني)<br>
+                • <strong>المستوى 2:</strong> الدخل 0.03$ / يوم (مشاهدة 3 إعلانات)<br>
+                • <strong>المستوى 3:</strong> الدخل 0.08$ / يوم (عبر دعوة 3 أصدقاء)<br>
+            </div>
+            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="upgradeLevel()">ترقية للمستوى التالي</button>
+            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('levelsModal')">إغلاق</button>
+        </div>
     </div>
 
     <!-- نافذة الإحالة -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box">
             <div class="modal-icon">👥</div>
-            <div class="modal-title">نظام دعوة الأصدقاء</div>
-            <div class="modal-desc">اربح <strong>0.005 USDT</strong> فوراً عن كل صديق ينضم عبر رابطك الخاص!</div>
+            <div class="modal-title">دعوة الأصدقاء</div>
+            <div class="modal-desc">اربح <strong>0.005 USDT</strong> فوراً وارفع قوة منجمك عن كل صديق ينضم لفريقك!</div>
             <div class="ref-box" id="myRefLink">جاري إنشاء رابطك...</div>
-            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط مع الأصدقاء</button>
+            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط</button>
             <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('refModal')">إغلاق</button>
         </div>
     </div>
@@ -111,22 +121,11 @@
     <div class="modal-overlay" id="withdrawModal">
         <div class="modal-box">
             <div class="modal-icon">💳</div>
-            <div class="modal-title">سحب أرباح التعدين</div>
-            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
+            <div class="modal-title">سحب الأرباح</div>
+            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
             <input type="text" class="input-wallet" id="walletInput" placeholder="ضع عنوان محفظة TON / USDT هنا">
             <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">تأكيد طلب السحب</button>
             <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- نافذة التعزيز -->
-    <div class="modal-overlay" id="boostModal">
-        <div class="modal-box">
-            <div class="modal-icon">🚀</div>
-            .div class="modal-title">تعزيز التعدين المضاعف</div>
-            <div class="modal-desc">شاهد إعلاناً لتحصل على مضاعفة أرباح النقرات لمدة دقيقتين كاملتين!</div>
-            <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="watchAdForBoost()">🚀 تفعيل التعزيز عبر الإعلان</button>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('boostModal')">إغلاق</button>
         </div>
     </div>
 
@@ -134,64 +133,60 @@
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('minerUserId') || 'user_' + Math.floor(Math.random() * 1000000);
+        let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('autoMinerId') || 'user_' + Math.floor(Math.random() * 1000000);
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
-        localStorage.setItem('minerUserId', userId);
+        localStorage.setItem('autoMinerId', userId);
 
-        let userState = JSON.parse(localStorage.getItem('minerState_' + userId)) || { 
+        // مستويات التعدين والدخل اليومي المحدد
+        const levelsData = [
+            { name: "المستوى 1 (مبتدئ)", daily: 0.01 },
+            { name: "المستوى 2 (متوسط)", daily: 0.03 },
+            { name: "المستوى 3 (محترف)", daily: 0.08 }
+        ];
+
+        let userState = JSON.parse(localStorage.getItem('autoMinerState_' + userId)) || { 
             usdt: 0.000, 
-            energy: 1000, 
-            maxEnergy: 1000,
-            tapValue: 0.0001,
-            boostActive: false
+            pending: 0.000,
+            level: 0,
+            lastTick: Date.now()
         };
 
-        // تجديد الطاقة تلقائياً كل ثانية
-        setInterval(() => {
-            if (userState.energy < userState.maxEnergy) {
-                userState.energy = Math.min(userState.maxEnergy, userState.energy + 5);
-                updateUI();
-            }
-        }, 1000);
+        // حساب الأرباح التلقائية بناءً على الوقت المنقضي
+        function calculateAutoMining() {
+            let now = Date.now();
+            let elapsedSeconds = (now - userState.lastTick) / 1000;
+            userState.lastTick = now;
+
+            let currentDaily = levelsData[userState.level].daily;
+            let perSecondEarning = currentDaily / 86400; // تقسيم الدخل اليومي على ثواني اليوم
+
+            userState.pending += perSecondEarning * elapsedSeconds;
+            updateUI();
+        }
+
+        setInterval(calculateAutoMining, 1000);
 
         function updateUI() {
-            localStorage.setItem('minerState_' + userId, JSON.stringify(userState));
+            localStorage.setItem('autoMinerState_' + userId, JSON.stringify(userState));
             document.getElementById('usdtBal').innerText = userState.usdt.toFixed(4);
-            document.getElementById('energyBal').innerText = `${userState.energy}/${userState.maxEnergy}`;
-            let percent = (userState.energy / userState.maxEnergy) * 100;
-            document.getElementById('energyBar').style.width = percent + '%';
+            document.getElementById('pendingBal').innerText = userState.pending.toFixed(4);
+            document.getElementById('levelName').innerText = levelsData[userState.level].name;
+            document.getElementById('dailyIncome').innerText = levelsData[userState.level].daily.toFixed(4) + " USDT";
         }
-        updateUI();
 
-        // التعدين بالنقر (Tap-to-Earn)
-        function tapCoin(event) {
-            if (userState.energy <= 0) {
-                if (tg) tg.showAlert("⚠️ نفدت طاقتك! انتظر لتجديدها أو شاهد إعلاناً للشحن الفوري.");
+        function claimEarnings() {
+            if (userState.pending < 0.0001) {
+                if (tg) tg.showAlert("⚠️ لا توجد أرباح كافية للجمع حالياً، انتظر قليلاً!");
                 return;
             }
-
-            let earned = userState.tapValue * (userState.boostActive ? 3 : 1);
-            userState.usdt += earned;
-            userState.energy -= 1;
+            userState.usdt += userState.pending;
+            userState.pending = 0;
             updateUI();
-
-            // تأثير ظهور العملة عند النقر
-            let rect = event.target.getBoundingClientRect();
-            let x = event.clientX || (rect.left + rect.width / 2);
-            let y = event.clientY || (rect.top + rect.height / 2);
-
-            let floatEl = document.createElement('div');
-            floatEl.className = 'floating-score';
-            floatEl.innerText = `+${earned.toFixed(4)}`;
-            floatEl.style.left = (x - 20) + 'px';
-            floatEl.style.top = (y - 30) + 'px';
-            document.body.appendChild(floatEl);
-
-            setTimeout(() => { floatEl.remove(); }, 800);
+            if (tg) tg.showAlert("✅ تمت إضافة الأرباح إلى رصيدك القابل للسحب بنجاح!");
         }
 
-        // نظام إعلانات AdsGram لشحن الطاقة
-        function watchAdForEnergy() {
+        // إعلانات AdsGram لترقية الأرباح
+        function watchAdForSpeed() {
             const btnAd = document.getElementById('btnWatchAd');
             btnAd.disabled = true;
             let secondsLeft = 15;
@@ -211,14 +206,14 @@
                     clearInterval(checkAds);
                     clearInterval(countdown);
                     btnAd.disabled = false;
-                    btnAd.innerText = "📺 شاهد إعلاناً لشحن الطاقة (+500 طاقة)";
+                    btnAd.innerText = "📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)";
 
                     try {
                         const adController = window.AdsGram.init({ blockId: "56031" });
                         adController.show().then(() => {
-                            userState.energy = userState.maxEnergy;
+                            userState.pending += 0.01; // مكافأة فورية
                             updateUI();
-                            if (tg) tg.showAlert("⚡ مبروك! تمت تعبئة طاقة التعدين بالكامل.");
+                            if (tg) tg.showAlert("🚀 مبروك! حصلت على مكافأة تعدين فورية بسبب مشاهدة الإعلان.");
                         }).catch(() => {
                             if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
                         });
@@ -233,50 +228,43 @@
                     clearInterval(checkAds);
                     clearInterval(countdown);
                     btnAd.disabled = false;
-                    btnAd.innerText = "📺 شاهد إعلاناً لشحن الطاقة (+500 طاقة)";
+                    btnAd.innerText = "📺 مضاعفة الأرباح ليوم كامل (عبر الإعلان)";
                 }
             }, 15000);
         }
 
-        function watchAdForBoost() {
-            if (window.AdsGram && typeof window.AdsGram.init === 'function') {
-                const adController = window.AdsGram.init({ blockId: "56031" });
-                adController.show().then(() => {
-                    userState.boostActive = true;
-                    setTimeout(() => { userState.boostActive = false; }, 120000); // 2 minutes boost
-                    closeModal('boostModal');
-                    if (tg) tg.showAlert("🚀 تم تفعيل مضاعفة الأرباح 3X لمدة دقيقتين!");
-                }).catch(() => {
-                    if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً لتفعيل التعزيز!");
-                });
+        function upgradeLevel() {
+            if (userState.level < levelsData.length - 1) {
+                userState.level++;
+                updateUI();
+                closeModal('levelsModal');
+                if (tg) tg.showAlert(`🎉 مبروك! تم ترقية منجمك إلى ${levelsData[userState.level].name}`);
             } else {
-                alert("مكتبة الإعلانات لم تتحمل بعد، حاول مجدداً.");
+                if (tg) tg.showAlert("⭐ أنت في أعلى مستوى حالياً!");
             }
         }
 
+        function openLevelsModal() { document.getElementById('levelsModal').style.display = 'flex'; }
         function openRefModal() {
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
             document.getElementById('refModal').style.display = 'flex';
         }
-
         function openWithdrawModal() {
             document.getElementById('modalUsdtBal').innerText = userState.usdt.toFixed(4);
             document.getElementById('withdrawModal').style.display = 'flex';
         }
-
-        function openBoostModal() { document.getElementById('boostModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function submitWithdraw() {
             const wallet = document.getElementById('walletInput').value.trim();
-            if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT. استمر في التعدين!"); return; }
-            if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة TON أو USDT صحيح."); return; }
+            if (userState.usdt < 0.1) { alert("الحد الأدنى للسحب هو 0.1 USDT."); return; }
+            if (wallet.length < 10) { alert("يرجى إدخال عنوان محفظة صحيح."); return; }
 
             const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
             const chatId = "5630771182";
-            const message = `🚨 طلب سحب منجم جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(4)} USDT\n💳 المحفظة:\n${wallet}`;
+            const message = `🚨 طلب سحب منجم تلقائي!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.usdt.toFixed(4)} USDT\n💳 المحفظة:\n${wallet}`;
 
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
@@ -284,7 +272,7 @@
                 body: JSON.stringify({ chat_id: chatId, text: message })
             }).catch(err => console.log(err));
 
-            alert("✅ تم إرسال طلب السحب بنجاح وسيتم مراجعته وتحويل الأرباح قريباً!");
+            alert("✅ تم إرسال طلب السحب بنجاح!");
             userState.usdt = 0;
             updateUI();
             closeModal('withdrawModal');
@@ -293,7 +281,7 @@
         function shareReferral() {
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=${userId}`;
-            const text = encodeURIComponent(`عدّن عملات USDT مجاناً معي في منجم الدولار! ⛏️💎 استخدم رابطي وابدأ الربح فوراً:\n\n${refLink}`);
+            const text = encodeURIComponent(`شغل منجم الدولار التلقائي واربح أرباحاً يومية ثابتة! 🏭💎 استخدم رابطي واربح فوراً:\n\n${refLink}`);
             const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
             if (tg) {
                 tg.openTelegramLink(shareUrl);
