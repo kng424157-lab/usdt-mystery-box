@@ -732,7 +732,7 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // إعلان التعدين باستخدام المعرف int-56190 مع التعويض الذكي عند نفاد الإعلانات المؤقت
+        // إعلان التعدين باستخدام المعرف الصحيح int-56190
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -780,11 +780,11 @@
             }, 1500);
         }
 
-        // إعلان المهام باستخدام المعرف task-56202 مع التعويض الذكي عند نفاد الإعلانات المؤقت
+        // إعلان المهام باستخدام الصيغة المقبولة من Adsgram وهي int-56202
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "task-56202" });
+                    const adController = window.Adsgram.init({ blockId: "int-56202" });
                     adController.show().then(() => {
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
