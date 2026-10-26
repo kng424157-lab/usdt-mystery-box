@@ -96,6 +96,7 @@
         .task-info p { font-size: 0.75rem; color: var(--gold); }
         .task-btn { background: #3b82f6; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
         .task-btn.claimed { background: var(--green); }
+        .task-btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
 
         .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: var(--bg-dark); color: #fff; margin-bottom: 12px; text-align: center; }
         .ref-box { background: #0b1120; padding: 8px; border-radius: 8px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
@@ -134,7 +135,7 @@
         <button class="nav-btn" onclick="openWalletModal()"><span>💳</span> المحفظة</button>
         <button class="nav-btn" onclick="openRefModal()"><span>👥</span> الأصدقاء</button>
         <button class="nav-btn" onclick="openMinersModal()"><span>⚡</span> المعدنون</button>
-        <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot">4</div></button>
+        <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
         <button class="nav-btn active" onclick="openMiningTab()"><span>⛏️</span> التعدين</button>
     </div>
 
@@ -154,7 +155,7 @@
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 370px;">
             <div class="modal-title" style="font-size: 1.2rem; margin-bottom: 5px;">دعوة الأصدقاء</div>
-            <div class="modal-desc">احصل على +50 MOON لكل صديق يبدأ التعدين، بالإضافة إلى 10% من إنتاج تعدينهم — مدى الحياة.</div>
+            <div class="modal-desc">احصل على +50 MOON لكل صديق يبدأ التعدين، بالإضافة إلى 10% من إنتاج تعدينهم — مدى الحياة[span_1](start_span)[span_1](end_span).</div>
             
             <div class="friends-actions">
                 <button class="friend-btn" onclick="shareReferral()">📤 مشاركة</button>
@@ -223,54 +224,59 @@
         </div>
     </div>
 
-    <!-- نافذة المهام المتعددة -->
+    <!-- نافذة المهام وتسجيل الدخول اليومي (المعدلة حسب طلبك) -->
     <div class="modal-overlay" id="tasksModal">
         <div class="modal-box">
             <div class="modal-title">كسب المكافآت</div>
-            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON ورفع مستواك تلقائياً.</div>
+            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON ورفع مستواك تلقائياً[span_2](start_span)[span_2](end_span).</div>
             
+            <!-- شبكة تسجيل الدخول اليومي مع زر الاستلام عند اكتمال 24 ساعة -->
             <div class="checkin-grid">
-                <div class="checkin-day active">D1 ✔️<strong>5+</strong></div>
-                <div class="checkin-day">D2<strong>10+</strong></div>
-                <div class="checkin-day">D3<strong>15+</strong></div>
-                <div class="checkin-day">D4<strong>20+</strong></div>
-                <div class="checkin-day">D5<strong>25+</strong></div>
-                <div class="checkin-day">D6<strong>30+</strong></div>
-                <div class="checkin-day">D7⭐<strong>50+</strong></div>
+                <div class="checkin-day active" id="day1Box">D1<br><strong id="d1Val">5+</strong></div>
+                <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
+                <div class="checkin-day" id="day3Box">D3<br><strong>15+</strong></div>
+                <div class="checkin-day" id="day4Box">D4<br><strong>20+</strong></div>
+                <div class="checkin-day" id="day5Box">D5<br><strong>25+</strong></div>
+                <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
+                <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
             </div>
 
-            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة</div>
+            <button class="btn-claim" id="btnCheckinClaim" style="margin-bottom:15px; padding:10px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول اليومي</button>
+
+            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة (مواد إعلانية للربح)[span_3](start_span)[span_3](end_span)</div>
 
             <div class="task-item">
                 <div class="task-info">
-                    <h4>انضم لقناة التليجرام الرسمية</h4>
+                    <h4>انضم لقناة التليجرام الرسمية[span_4](start_span)[span_4](end_span)</h4>
                     <p>مرة واحدة · MOON 20+</p>
                 </div>
-                <button class="task-btn" onclick="startTaskLink('https://t.me/your_channel_username', 20, this)">اشتراك</button>
+                <button class="task-btn" id="taskBtn1" onclick="startTaskLink('https://t.me/your_channel_username', 20, 'task1', this)">اشتراك</button>
             </div>
 
             <div class="task-item">
                 <div class="task-info">
-                    <h4>انضم لمجموعة النقاش العامة</h4>
+                    <h4>انضم لمجموعة النقاش العامة[span_5](start_span)[span_5](end_span)</h4>
                     <p>مرة واحدة · MOON 15+</p>
                 </div>
-                <button class="task-btn" onclick="startTaskLink('https://t.me/your_group_username', 15, this)">اشتراك</button>
+                <button class="task-btn" id="taskBtn2" onclick="startTaskLink('https://t.me/your_group_username', 15, 'task2', this)">اشتراك</button>
             </div>
 
+            <!-- بديل تويتر: مشاهدة إعلان المستوى 1 للحصول على 15 عملة -->
             <div class="task-item">
                 <div class="task-info">
-                    <h4>تابعنا على منصة X (تويتر)</h4>
-                    <p>مرة واحدة · MOON 15+</p>
+                    <h4>شاهد إعلان المستوى 1 للحصول على عملات</h4>
+                    <p>إعلان ترويجي · MOON 15+</p>
                 </div>
-                <button class="task-btn" onclick="startTaskLink('https://twitter.com', 15, this)">متابعة</button>
+                <button class="task-btn" id="taskBtnAd1" onclick="watchAdTaskLevel(15, 'ad1', this)">شاهد (15)</button>
             </div>
 
+            <!-- بديل تويتر: مشاهدة إعلان المستوى 2 للحصول على 20 عملة -->
             <div class="task-item">
                 <div class="task-info">
-                    <h4>شاهد إعلاناً يومياً سريعاً</h4>
-                    <p>يومي · MOON 10+</p>
+                    <h4>شاهد إعلان المستوى 2 للحصول على عملات</h4>
+                    <p>إعلان ترويجي · MOON 20+</p>
                 </div>
-                <button class="task-btn" onclick="watchAdTask(10, this)">شاهد</button>
+                <button class="task-btn" id="taskBtnAd2" onclick="watchAdTaskLevel(20, 'ad2', this)">شاهد (20)</button>
             </div>
 
             <button class="btn-ad" style="width:100%; margin-top:15px; background:#334155;" onclick="closeModal('tasksModal')">إغلاق</button>
@@ -290,16 +296,18 @@
             pending: 0.0,
             teamCommission: 0.0,
             dailyEarned: 0.0,
-            startTime: Date.now()
+            startTime: Date.now(),
+            lastCheckinTime: 0,
+            checkinDay: 1,
+            completedTasks: []
         };
 
-        // فحص وإصلاح وقت البداية إذا كان منتهياً أو غير صالح
-        const SESSION_DURATION = 24 * 60 * 60 * 1000;
+        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 ساعة
         if (!userState.startTime || (Date.now() - userState.startTime > SESSION_DURATION)) {
             userState.startTime = Date.now();
         }
 
-        // محرك التعدين المستمر والفعال لحظياً
+        // محرك التعدين السحابي اللحظي
         function cloudMiningTick() {
             let now = Date.now();
             let elapsedSessionTime = now - userState.startTime;
@@ -321,7 +329,6 @@
             let currentLevel = Math.floor(userState.balance / 50) + 1;
             let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
             
-            // زيادة الرصيد المعلق (pending) باستمرار كل ثانية
             userState.pending += (currentSpeed * 0.005);
             updateUI();
         }
@@ -344,7 +351,6 @@
             document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
             
             document.getElementById('totalBal').innerText = userState.balance >= 1000 ? (userState.balance/1000).toFixed(1) + 'K' : userState.balance.toFixed(0);
-            
             document.getElementById('modalBal').innerText = userState.balance.toFixed(0) + ' MOON';
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(4);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
@@ -352,11 +358,48 @@
             document.getElementById('mrgNeeded').innerText = (50 - progressIntoLevel).toFixed(0);
             document.getElementById('levelProgressBar').style.width = progressPercent + '%';
 
+            // فحص حالة زر استلام مكافأة تسجيل الدخول اليومي (كل 24 ساعة)
+            let timeSinceLastCheckin = Date.now() - (userState.lastCheckinTime || 0);
+            const btnCheckin = document.getElementById('btnCheckinClaim');
+            if (timeSinceLastCheckin < SESSION_DURATION) {
+                let hoursLeft = Math.ceil((SESSION_DURATION - timeSinceLastCheckin) / (1000 * 60 * 60));
+                btnCheckin.innerText = `⏳ متاح بعد ${hoursLeft} ساعة للاستلام اليومي`;
+                btnCheckin.disabled = true;
+            } else {
+                btnCheckin.innerText = `📥 استلام مكافأة تسجيل الدخول اليومي (اليوم ${userState.checkinDay})`;
+                btnCheckin.disabled = false;
+            }
+
+            // تحديث حالة الأزرار والمهام المُنجزة
+            if (userState.completedTasks) {
+                userState.completedTasks.forEach(taskId => {
+                    let btn = document.getElementById(taskId);
+                    if (btn) {
+                        btn.innerText = "تم ✓";
+                        btn.classList.add('claimed');
+                        btn.disabled = true;
+                    }
+                });
+            }
+
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
         }
-        updateUI();
+
+        // دالة استلام مكافأة تسجيل الدخول اليومي عند وصول 24 ساعة
+        function claimDailyCheckin() {
+            let checkinRewards = [5, 10, 15, 20, 25, 30, 50];
+            let reward = checkinRewards[(userState.checkinDay - 1) % 7];
+
+            userState.balance += reward;
+            userState.dailyEarned += reward;
+            userState.lastCheckinTime = Date.now();
+            userState.checkinDay++;
+            updateUI();
+
+            if (tg) tg.showAlert(`🎉 مبروك! استلمت ${reward} MOON مكافأة تسجيل الدخول اليومي بنجاح.`);
+        }
 
         function claimMiningReward() {
             if (userState.pending < 0.01) {
@@ -367,7 +410,7 @@
             userState.balance += claimedAmount;
             userState.dailyEarned += claimedAmount;
             userState.pending = 0.0;
-            userState.startTime = Date.now(); // بدء 24 ساعة جديدة
+            userState.startTime = Date.now();
             updateUI();
             
             if (tg) tg.showAlert("✅ تمت مطالبة المكافأة وإضافتها للرصيد بنجاح، وبدء دورة 24 ساعة جديدة!");
@@ -390,7 +433,7 @@
                 try {
                     const adController = window.AdsGram.init({ blockId: "56031" });
                     adController.show().then(() => {
-                        userState.pending += 1.00; // زيادة مكافأة سريعة عبر الإعلان
+                        userState.pending += 1.00;
                         updateUI();
                         if (tg) tg.showAlert("🚀 تم إضافة أرباح فورية بنجاح عبر الإعلان!");
                     }).catch(() => {
@@ -404,7 +447,8 @@
             }
         }
 
-        function startTaskLink(url, rewardAmount, btn) {
+        // المهام الخارجية (مثل قنوات التليجرام)
+        function startTaskLink(url, rewardAmount, taskId, btn) {
             if (tg && tg.openTelegramLink) {
                 tg.openTelegramLink(url);
             } else {
@@ -412,30 +456,32 @@
             }
 
             setTimeout(() => {
-                userState.balance += rewardAmount;
-                userState.dailyEarned += rewardAmount;
-                updateUI();
-                btn.innerText = "تم ✓";
-                btn.classList.add('claimed');
-                btn.disabled = true;
-                if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON وتسجيلها في أرباح اليوم.`);
+                if (!userState.completedTasks.includes('taskBtn' + (taskId === 'task1' ? '1' : '2'))) {
+                    userState.completedTasks.push('taskBtn' + (taskId === 'task1' ? '1' : '2'));
+                    userState.balance += rewardAmount;
+                    userState.dailyEarned += rewardAmount;
+                    updateUI();
+                    if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON لإتمام المهمة.`);
+                }
             }, 1500);
         }
 
-        function watchAdTask(rewardAmount, btn) {
+        // مشاهدة إعلانات المواد الإعلانية الجديدة (المستوى 1 و المستوى 2 للربح)
+        function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.AdsGram && typeof window.AdsGram.init === 'function') {
                 try {
                     const adController = window.AdsGram.init({ blockId: "56031" });
                     adController.show().then(() => {
-                        userState.balance += rewardAmount;
-                        userState.dailyEarned += rewardAmount;
-                        updateUI();
-                        btn.innerText = "تم ✓";
-                        btn.classList.add('claimed');
-                        btn.disabled = true;
-                        if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON بعد مشاهدة الإعلان.`);
+                        let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
+                        if (!userState.completedTasks.includes(btnKey)) {
+                            userState.completedTasks.push(btnKey);
+                            userState.balance += rewardAmount;
+                            userState.dailyEarned += rewardAmount;
+                            updateUI();
+                            if (tg) tg.showAlert(`🚀 مبروك! شاهدت الإعلان وحصلت على ${rewardAmount} MOON بنجاح.`);
+                        }
                     }).catch(() => {
-                        if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
+                        if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على العملات!");
                     });
                 } catch (e) {
                     alert("تعذر تشغيل الإعلان حالياً.");
@@ -498,5 +544,5 @@
             }
         }
     </script>
-</body>
-</html> 
+</body> 
+</html>
