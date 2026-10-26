@@ -732,7 +732,7 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        /* 1. إعلان مضاعفة سرعة التعدين باستخدام المعرف: int-56190 */
+        // إعلان التعدين باستخدام المعرف int-56190 مع التعويض الذكي عند نفاد الإعلانات المؤقت
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -742,8 +742,12 @@
                         renderLevelsList();
                         updateUI();
                         if (tg) tg.showAlert("🚀 تم إضافة أرباح فورية بنجاح عبر الإعلان!");
-                    }).catch(() => {
-                        if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على المكافأة!");
+                    }).catch((err) => {
+                        console.log("Adsgram Error:", err);
+                        userState.pending += 1.00;
+                        renderLevelsList();
+                        updateUI();
+                        if (tg) tg.showAlert("🚀 نظراً لعدم توفر إعلانات حالياً بالمنصة، تم منحك المكافأة كهدية!");
                     });
                 } catch (e) {
                     console.log(e);
@@ -776,7 +780,7 @@
             }, 1500);
         }
 
-        /* 2. إعلان مهام التعدين باستخدام المعرف: task-56202 */
+        // إعلان المهام باستخدام المعرف task-56202 مع التعويض الذكي عند نفاد الإعلانات المؤقت
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -794,8 +798,18 @@
                             updateUI();
                             if (tg) tg.showAlert(`🚀 مبروك! حصلت على ${rewardAmount} MOON. يمكنك إعادة مشاهدة الإعلان بعد ساعتين.`);
                         }
-                    }).catch(() => {
-                        if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على العملات!");
+                    }).catch((err) => {
+                        console.log("Adsgram Error:", err);
+                        let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
+                        if (!userState.completedTasks.includes(btnKey)) {
+                            userState.completedTasks.push(btnKey);
+                            userState.balance += rewardAmount;
+                            userState.dailyEarned += rewardAmount;
+                            userState.adCooldowns[adId] = Date.now() + AD_COOLDOWN_TIME;
+                            renderLevelsList();
+                            updateUI();
+                            if (tg) tg.showAlert(`🚀 نظراً لعدم توفر إعلانات حالياً بالمنصة، تم منحك مكافأة المهمة (${rewardAmount} MOON)!`);
+                        }
                     });
                 } catch (e) {
                     alert("تعذر تشغيل الإعلان حالياً.");
