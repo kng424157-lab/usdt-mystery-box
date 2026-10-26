@@ -6,7 +6,6 @@
     <title>MoonTap Cloud Mining</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <!-- استدعاء مكتبة TON Connect الرسمية لدعم Tonkeeper وباقي المحافظ -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
@@ -100,7 +99,8 @@
         .task-btn.claimed { background: var(--green); }
         .task-btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
 
-        #ton-connect-button { display: flex; justify-content: center; margin-bottom: 12px; width: 100%; }
+        #ton-connect-button { display: flex; justify-content: center; margin-bottom: 10px; width: 100%; min-height: 45px; }
+        .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: var(--bg-dark); color: #fff; margin-bottom: 12px; text-align: center; font-size: 0.85rem; }
         .ref-box { background: #0b1120; padding: 8px; border-radius: 8px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
     </style>
 </head>
@@ -141,19 +141,18 @@
         <button class="nav-btn active" onclick="openMiningTab()"><span>⛏️</span> التعدين</button>
     </div>
 
-    <!-- نافذة المحفظة وربط Tonkeeper الرسمي -->
+    <!-- نافذة المحفظة (مع زر Tonkeeper + خانة إدخال يدوية لإرسال رسالة السحب لبوتك) -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-icon">💳</div>
             <div class="modal-title">محفظة MoonTap وسحب الأرباح</div>
             <div class="modal-desc">رصيدك الكلي: <strong id="modalBal" style="color:var(--green)">0</strong> MOON</div>
             
-            <!-- زر ربط المحفظة التلقائي (Tonkeeper, MyTonWallet, إلخ) -->
+            <!-- زر ربط المحفظة التلقائي -->
             <div id="ton-connect-button"></div>
 
-            <div id="connectedWalletInfo" style="font-size:0.75rem; color:var(--green); margin-bottom:10px; display:none;">
-                ✅ متصل بالمحفظة بنجاح
-            </div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin: 8px 0 4px 0; text-align: right;">أو أدخل عنوان محفظتك يدوياً:</div>
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON هنا...">
 
             <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">طلب سحب الأرباح</button>
             <button class="btn-ad" style="width:100%; background:#334155;" onclick="closeModal('walletModal')">إغلاق</button>
@@ -164,7 +163,7 @@
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 370px;">
             <div class="modal-title" style="font-size: 1.2rem; margin-bottom: 5px;">دعوة الأصدقاء</div>
-            <div class="modal-desc">احصل على +50 MOON لكل صديق يبدأ التعدين، بالإضافة إلى 10% من إنتاج تعدينهم — مدى الحياة[span_0](start_span)[span_0](end_span).</div>
+            <div class="modal-desc">احصل على +50 MOON لكل صديق يبدأ التعدين، بالإضافة إلى 10% من إنتاج تعدينهم — مدى الحياة.</div>
             
             <div class="friends-actions">
                 <button class="friend-btn" onclick="shareReferral()">📤 مشاركة</button>
@@ -237,7 +236,7 @@
     <div class="modal-overlay" id="tasksModal">
         <div class="modal-box">
             <div class="modal-title">كسب المكافآت</div>
-            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON ورفع مستواك تلقائياً[span_1](start_span)[span_1](end_span).</div>
+            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON ورفع مستواك تلقائياً.</div>
             
             <div class="checkin-grid">
                 <div class="checkin-day active" id="day1Box">D1<br><strong id="d1Val">5+</strong></div>
@@ -251,11 +250,11 @@
 
             <button class="btn-claim" id="btnCheckinClaim" style="margin-bottom:15px; padding:10px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول اليومي</button>
 
-            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة (مواد إعلانية للربح)[span_2](start_span)[span_2](end_span)</div>
+            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة (مواد إعلانية للربح)</div>
 
             <div class="task-item">
                 <div class="task-info">
-                    <h4>انضم لقناة التليجرام الرسمية[span_3](start_span)[span_3](end_span)</h4>
+                    <h4>انضم لقناة التليجرام الرسمية</h4>
                     <p>مرة واحدة · MOON 20+</p>
                 </div>
                 <button class="task-btn" id="taskBtn1" onclick="startTaskLink('https://t.me/your_channel_username', 20, 'task1', this)">اشتراك</button>
@@ -263,7 +262,7 @@
 
             <div class="task-item">
                 <div class="task-info">
-                    <h4>انضم لمجموعة النقاش العامة[span_4](start_span)[span_4](end_span)</h4>
+                    <h4>انضم لمجموعة النقاش العامة</h4>
                     <p>مرة واحدة · MOON 15+</p>
                 </div>
                 <button class="task-btn" id="taskBtn2" onclick="startTaskLink('https://t.me/your_group_username', 15, 'task2', this)">اشتراك</button>
@@ -293,23 +292,26 @@
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // تهيئة محفظة TON Connect (تتيح للمستخدم ربط Tonkeeper بضغطة زر)
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://raw.githubusercontent.com/ton-connect/sdk/master/packages/tonconnect-ui/demo/public/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect-button'
-        });
+        let tonConnectUI = null;
+        let connectedWalletAddr = "";
 
-        let userWalletAddress = "";
-        tonConnectUI.onStatusChange(wallet => {
-            if (wallet) {
-                userWalletAddress = wallet.account.address;
-                document.getElementById('connectedWalletInfo').style.display = 'block';
-                document.getElementById('connectedWalletInfo').innerText = "✅ متصل: " + userWalletAddress.substring(0, 6) + "..." + userWalletAddress.substring(userWalletAddress.length - 4);
-            } else {
-                userWalletAddress = "";
-                document.getElementById('connectedWalletInfo').style.display = 'none';
-            }
-        });
+        try {
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://raw.githubusercontent.com/ton-connect/sdk/master/packages/tonconnect-ui/demo/public/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect-button'
+            });
+
+            tonConnectUI.onStatusChange(wallet => {
+                if (wallet) {
+                    connectedWalletAddr = wallet.account.address;
+                    document.getElementById('walletInput').value = connectedWalletAddr; // وضع العنوان تلقائياً في الخانة
+                } else {
+                    connectedWalletAddr = "";
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
 
         let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('moontapUserId') || 'user_' + Math.floor(Math.random() * 1000000);
         let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
@@ -528,16 +530,19 @@
             document.getElementById('tasksModal').style.display = 'none';
             document.getElementById('walletModal').style.display = 'none';
         }
+        function closeModal(id) { document.getElementById('id').style.display = 'none'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // إرسال طلب السحب مع عنوان المحفظة المربوطة عبر Tonkeeper تلقائياً
+        // إرسال تفاصيل السحب وعنوان المحفظة (المكتوبة يدوياً أو المربوطة) إلى بوت تيليجرام الخاص بك مباشرة
         function submitWithdraw() {
+            const walletInputVal = document.getElementById('walletInput').value.trim();
+            
             if (userState.balance < 50) { alert("الحد الأدنى للسحب هو 50 MOON."); return; }
-            if (!userWalletAddress) { alert("يرجى ربط محفظة Tonkeeper أولاً عبر زر الربط بالأعلى!"); return; }
+            if (!walletInputVal || walletInputVal.length < 10) { alert("يرجى ربط المحفظة أو كتابة عنوان المحفظة بشكل صحيح!"); return; }
 
             const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
             const chatId = "5630771182";
-            const message = `🚨 طلب سحب MOON جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.balance.toFixed(0)} MOON\n💳 محفظة Tonkeeper المربوطة:\n${userWalletAddress}`;
+            const message = `🚨 طلب سحب MOON جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ: ${userState.balance.toFixed(0)} MOON\n💳 عنوان محفظة المستخدم:\n${walletInputVal}`;
 
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
@@ -545,7 +550,7 @@
                 body: JSON.stringify({ chat_id: chatId, text: message })
             }).catch(err => console.log(err));
 
-            alert("✅ تم إرسال طلب السحب بنجاح إلى محفظتك المربوطة وسيتم المراجعة قريباً!");
+            alert("✅ تم إرسال طلب السحب بنجاح إلى البوت الخاص بك وسيتم المراجعة قريباً!");
             userState.balance = 0;
             updateUI();
             closeModal('walletModal');
