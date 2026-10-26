@@ -124,7 +124,8 @@
 
         <div class="mining-reward-label">مكافأة التعدين غير المطالب بها</div>
         <div class="mining-reward-val" id="pendingReward">0.000000</div>
-        <div class="mining-speed-info">TH/s <span id="speedTH">1.00</span> · القيمة 5000 = $0.20</div>
+        <!-- الخوارزمية الجديدة لحساب القيمة التنافسية التلقائية -->
+        <div class="mining-speed-info">TH/s 1.00 · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
         <button class="btn-claim" id="btnClaim" onclick="claimMiningReward()">مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
@@ -252,7 +253,6 @@
                     <h4>انضم لقناة التليجرام الرسمية</h4>
                     <p>مرة واحدة · MOON 20+</p>
                 </div>
-                <!-- تم وضع رابط قناتك الجديد هنا -->
                 <button class="task-btn" id="taskBtn1" onclick="startTaskLink('https://t.me/udt001', 20, 'task1', this)">اشتراك</button>
             </div>
 
@@ -304,6 +304,8 @@
             startTime: Date.now()
         };
 
+        const CYCLE_TIME = 24 * 60 * 60 * 1000;
+
         function updateUI() {
             document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
             document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
@@ -314,6 +316,12 @@
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
             document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
+
+            // خوارزمية حساب السعر التنافسي المتصاعد تناسبياً حتى 5000 حبة = 0.20$
+            let currentTotalForCalc = userState.balance + userState.pending;
+            let calculatedUsdValue = (currentTotalForCalc / 5000) * 0.20;
+            if (calculatedUsdValue > 0.20) calculatedUsdValue = 0.20; // سقف القيمة عند الحد الأدنى للسحب
+            document.getElementById('dynamicPriceVal').innerText = calculatedUsdValue.toFixed(4);
 
             let nextLevelTarget = userState.level * 50;
             document.getElementById('mrgNeeded').innerText = nextLevelTarget;
@@ -330,10 +338,26 @@
         }
         updateUI();
 
-        // التعدين التلقائي كل ثانية
+        // محرك التعدين والتحديث المستمر
         setInterval(() => {
             userState.pending += 0.000010;
-            document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
+            updateUI(); // تحديث واجهة الرصيد والقيمة التنافسية تلقائياً كل ثانية
+
+            let elapsed = Date.now() - userState.startTime;
+            let remaining = CYCLE_TIME - elapsed;
+
+            if (remaining <= 0) {
+                document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز)";
+            } else {
+                let hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdownTimer').innerText = 
+                    String(hours).padStart(2, '0') + ":" + 
+                    String(minutes).padStart(2, '0') + ":" + 
+                    String(seconds).padStart(2, '0');
+            }
         }, 1000);
 
         function claimDailyCheckin() {
