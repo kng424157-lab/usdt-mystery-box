@@ -210,12 +210,10 @@
             const refLink = `https://t.me/${botUsername}?start=${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
 
-            // تحديث نافذة الحساب
             document.getElementById('accUserId').innerText = userId;
             document.getElementById('accUsdt').innerText = userState.usdt.toFixed(3);
             document.getElementById('accKeys').innerText = userState.keys;
 
-            // تحديث السجل
             let historyHTML = '';
             if (userState.history.length > 0) {
                 userState.history.forEach(item => {
@@ -226,7 +224,6 @@
             }
             document.getElementById('historyList').innerHTML = historyHTML;
 
-            // تحديث قائمة الفريق
             let teamHTML = '';
             if (userState.referrals.length > 0) {
                 userState.referrals.forEach((ref, index) => {
@@ -239,7 +236,7 @@
         }
         saveAndRefreshUI();
 
-        // نظام الإعلانات مع عداد تنازلي (15 ثانية)
+        // نظام إعلانات ذكي مع عداد تنازلي لمدة 15 ثانية ويختفي فور جاهزية الإعلان
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
