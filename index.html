@@ -361,6 +361,7 @@
         let username = tg?.initDataUnsafe?.user?.username ? ('@' + tg?.initDataUnsafe?.user?.username) : ('مستخدم_' + userId);
         localStorage.setItem('moontapUserId', userId);
 
+        // هيكل البيانات الافتراضي
         let userState = {
             balance: 0,
             pending: 0.05,
@@ -375,6 +376,21 @@
             claimAttemptsCount: 0,
             startTime: Date.now()
         };
+
+        // استرجاع البيانات المحفوظة سابقاً من التخزين المحلي (LocalStorage) لضمان عدم ضياع أي تقدم عند التحديث أو الخروج
+        const savedStateKey = 'moontap_user_state_' + userId;
+        const savedDataJson = localStorage.getItem(savedStateKey);
+        if (savedDataJson) {
+            try {
+                let parsed = JSON.parse(savedDataJson);
+                userState = { ...userState, ...parsed };
+            } catch(e) { console.log(e); }
+        }
+
+        // دالة حفظ الحالة الحالية تلقائياً في التخزين المحلي
+        function saveUserState() {
+            localStorage.setItem(savedStateKey, JSON.stringify(userState));
+        }
 
         const CYCLE_TIME = 24 * 60 * 60 * 1000;
         const AD_COOLDOWN_TIME = 2 * 60 * 60 * 1000;
@@ -601,6 +617,7 @@
             document.getElementById('myRefLink').innerText = refLink;
 
             updateTaskBadgeCount();
+            saveUserState(); // حفظ التقدم مع كل تحديث للواجهة
         }
 
         renderLevelsList();
@@ -718,7 +735,7 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // استخدام معرف الإعلان الجديد int-56211
+        // استخدام معرف الإعلان الجديد int-56211 للإعلانات
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -881,4 +898,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
