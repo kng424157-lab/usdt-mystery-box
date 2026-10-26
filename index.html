@@ -139,7 +139,7 @@
         <button class="nav-btn active" onclick="openMiningTab()"><span>⛏️</span> التعدين</button>
     </div>
 
-    <!-- نافذة المحفظة (خانة إدخال يدوية فقط) -->
+    <!-- نافذة المحفظة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-icon">💳</div>
@@ -252,7 +252,8 @@
                     <h4>انضم لقناة التليجرام الرسمية</h4>
                     <p>مرة واحدة · MOON 20+</p>
                 </div>
-                <button class="task-btn" id="taskBtn1" onclick="startTaskLink('https://t.me/your_channel_username', 20, 'task1', this)">اشتراك</button>
+                <!-- تم وضع رابط قناتك الجديد هنا -->
+                <button class="task-btn" id="taskBtn1" onclick="startTaskLink('https://t.me/udt001', 20, 'task1', this)">اشتراك</button>
             </div>
 
             <div class="task-item">
@@ -260,7 +261,7 @@
                     <h4>انضم لمجموعة النقاش العامة</h4>
                     <p>مرة واحدة · MOON 15+</p>
                 </div>
-                <button class="task-btn" id="taskBtn2" onclick="startTaskLink('https://t.me/your_group_username', 15, 'task2', this)">اشتراك</button>
+                <button class="task-btn" id="taskBtn2" onclick="startTaskLink('https://t.me/udt001', 15, 'task2', this)">اشتراك</button>
             </div>
 
             <div class="task-item">
@@ -483,7 +484,6 @@
         function submitWithdraw() {
             const walletInputVal = document.getElementById('walletInput').value.trim();
             
-            // الحد الأدنى الجديد للسحب 5000 عملة
             if (userState.balance < 5000) { 
                 if(tg) tg.showAlert("⚠️ الحد الأدنى للسحب هو 5000 MOON ($0.20).");
                 else alert("الحد الأدنى للسحب هو 5000 MOON."); 
