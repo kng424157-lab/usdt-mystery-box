@@ -80,7 +80,7 @@
 
         .progress-container { background: #0b1120; padding: 10px; border-radius: 12px; margin-bottom: 15px; text-align: right; }
         .progress-bar-bg { width: 100%; background: #151e36; height: 8px; border-radius: 4px; margin-top: 6px; overflow: hidden; }
-        .progress-bar-fill { width: 15%; background: var(--blue); height: 100%; }
+        .progress-bar-fill { width: 0%; background: var(--blue); height: 100%; transition: width 0.3s; }
 
         .miner-row-card { background: #0b1120; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
         .miner-row-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
@@ -195,48 +195,39 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين والمستويات -->
+    <!-- نافذة متجر المعدنين والمستويات (تحديث تلقائي) -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 370px;">
             <div class="modal-title">⚡ متجر المعدنين</div>
-            <div class="modal-desc">احتفظ بعملات MOON لفتح معدنين أسرع. مستواك يرتفع حسب رصيدك.</div>
+            <div class="modal-desc">كلما جمعت رصيداً أكبر من عملات MOON، يرتفع مستواك تلقائياً لتعدين أسرع!</div>
             
             <div class="miners-header-card">
-                <div><span>أرباح اليوم</span><strong style="color:var(--green)">0.0+</strong></div>
+                <div><span>أرباح اليوم</span><strong style="color:var(--green)" id="dailyProfit">10.0+</strong></div>
                 <div><span>القمة</span><strong id="peakLevel">1</strong></div>
                 <div><span>المستوى</span><strong id="modalLevel">1</strong></div>
             </div>
 
             <div class="progress-container">
-                <span style="font-size:0.75rem; color:#94a3b8;">المستوى <span id="nextLevelNum">2</span> (MOON to go <span id="mrgNeeded">20.0</span>)</span>
-                <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+                <span style="font-size:0.75rem; color:#94a3b8;">المستوى التالي بعد جمع: <span id="mrgNeeded">50</span> عملة MOON</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="levelProgressBar"></div></div>
             </div>
 
             <div class="miner-row-card" style="border-color:var(--blue);">
                 <div class="miner-row-info">
-                    <h4 style="color:var(--blue)">المستوى 1 (الحالي)</h4>
-                    <p>TH/s 1.00 · 10.0/day</p>
+                    <h4 style="color:var(--blue)">المستوى الحالي متصل برصيدك</h4>
+                    <p>يرتفع المستوى تلقائياً كل 50 عملة موּن يتم تجميعها.</p>
                 </div>
-                <strong>0.00$</strong>
-            </div>
-
-            <div class="miner-row-card">
-                <div class="miner-row-info">
-                    <h4>المستوى 2</h4>
-                    <p>TH/s 1.20 · تحتاج 20 MOON</p>
-                </div>
-                <button class="task-btn" onclick="upgradeLevel(2, 20)">ترقية</button>
             </div>
 
             <button class="btn-ad" style="width:100%; margin-top:10px; background:#334155;" onclick="closeModal('minersModal')">إغلاق</button>
         </div>
     </div>
 
-    <!-- نافذة المهام المتعددة (مع التحويل المباشر للقنوات والروابط) -->
+    <!-- نافذة المهام المتعددة -->
     <div class="modal-overlay" id="tasksModal">
         <div class="modal-box">
             <div class="modal-title">كسب المكافآت</div>
-            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON مجاناً.</div>
+            <div class="modal-desc">أكمل المهام وسجل الدخول يومياً لربح عملات MOON ورفع مستواك تلقائياً.</div>
             
             <div class="checkin-grid">
                 <div class="checkin-day active">D1 ✔️<strong>5+</strong></div>
@@ -248,9 +239,8 @@
                 <div class="checkin-day">D7⭐<strong>50+</strong></div>
             </div>
 
-            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة (تعددي وجذاب)</div>
+            <div style="text-align: right; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color:#fff;">المهام المتاحة</div>
 
-            <!-- مهمة قناة تليجرام 1 (تفتح الرابط مباشرة) -->
             <div class="task-item">
                 <div class="task-info">
                     <h4>انضم لقناة التليجرام الرسمية</h4>
@@ -259,7 +249,6 @@
                 <button class="task-btn" onclick="startTaskLink('https://t.me/your_channel_username', 20, this)">اشتراك</button>
             </div>
 
-            <!-- مهمة قناة تليجرام 2 -->
             <div class="task-item">
                 <div class="task-info">
                     <h4>انضم لمجموعة النقاش العامة</h4>
@@ -268,7 +257,6 @@
                 <button class="task-btn" onclick="startTaskLink('https://t.me/your_group_username', 15, this)">اشتراك</button>
             </div>
 
-            <!-- مهمة تويتر / X -->
             <div class="task-item">
                 <div class="task-info">
                     <h4>تابعنا على منصة X (تويتر)</h4>
@@ -277,7 +265,6 @@
                 <button class="task-btn" onclick="startTaskLink('https://twitter.com', 15, this)">متابعة</button>
             </div>
 
-            <!-- مهمة مشاهدة إعلان متجددة -->
             <div class="task-item">
                 <div class="task-info">
                     <h4>شاهد إعلاناً يومياً سريعاً</h4>
@@ -301,8 +288,6 @@
         let userState = JSON.parse(localStorage.getItem('moontapState_' + userId)) || {
             balance: 0.0,
             pending: 0.0,
-            level: 1,
-            speed: 1.00,
             teamCommission: 0.0,
             lastTick: Date.now()
         };
@@ -313,23 +298,39 @@
             let elapsed = (now - userState.lastTick) / 1000;
             userState.lastTick = now;
 
-            userState.pending += (userState.speed * 0.00001) * elapsed;
+            // حساب المستوى تلقائياً كل 50 عملة
+            let currentLevel = Math.floor(userState.balance / 50) + 1;
+            let currentSpeed = 1.00 + (currentLevel - 1) * 0.15;
+
+            userState.pending += (currentSpeed * 0.00001) * elapsed;
             updateUI();
         }
 
         setInterval(cloudMiningTick, 1000);
 
         function updateUI() {
+            // حساب المستوى تلقائياً بناءً على الرصيد (كل 50 عملة = مستوى جديد)
+            let calculatedLevel = Math.floor(userState.balance / 50) + 1;
+            let calculatedSpeed = 1.00 + (calculatedLevel - 1) * 0.15;
+            let progressIntoLevel = userState.balance % 50;
+            let progressPercent = (progressIntoLevel / 50) * 100;
+
             localStorage.setItem('moontapState_' + userId, JSON.stringify(userState));
-            document.getElementById('userLevel').innerText = userState.level;
-            document.getElementById('mainLevelBadge').innerText = userState.level;
-            document.getElementById('modalLevel').innerText = userState.level;
-            document.getElementById('peakLevel').innerText = userState.level;
-            document.getElementById('speedTH').innerText = userState.speed.toFixed(2);
+            
+            document.getElementById('userLevel').innerText = calculatedLevel;
+            document.getElementById('mainLevelBadge').innerText = calculatedLevel;
+            document.getElementById('modalLevel').innerText = calculatedLevel;
+            document.getElementById('peakLevel').innerText = calculatedLevel;
+            document.getElementById('speedTH').innerText = calculatedSpeed.toFixed(2);
+            document.getElementById('dailyProfit').innerText = (calculatedSpeed * 10).toFixed(1) + '+';
+            
             document.getElementById('totalBal').innerText = userState.balance >= 1000 ? (userState.balance/1000).toFixed(1) + 'K' : userState.balance.toFixed(0);
             document.getElementById('modalBal').innerText = userState.balance.toFixed(0) + ' MOON';
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
+
+            document.getElementById('mrgNeeded').innerText = (50 - progressIntoLevel).toFixed(0);
+            document.getElementById('levelProgressBar').style.width = progressPercent + '%';
 
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
@@ -345,7 +346,7 @@
             userState.balance += userState.pending;
             userState.pending = 0.0;
             updateUI();
-            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح وأضيفت لرصيدك!");
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة بنجاح وأضيفت لرصيدك، وارتفع مستواك تلقائياً!");
         }
 
         function claimTeamCommission() {
@@ -359,7 +360,7 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // إعلانات AdsGram مرتبطة بالمعرف الأساسي 56031
+        // إعلانات AdsGram المرتبطة بالمعرف الأساسي 56031
         function watchAdForMiningBoost() {
             if (window.AdsGram && typeof window.AdsGram.init === 'function') {
                 try {
@@ -379,23 +380,20 @@
             }
         }
 
-        // دالة لفتح رابط القناة مباشرة وتحويل المستخدم خارج التطبيق بلحظتها
         function startTaskLink(url, rewardAmount, btn) {
-            // فتح الرابط مباشرة في تيليجرام أو متصفح الهاتف
             if (tg && tg.openTelegramLink) {
                 tg.openTelegramLink(url);
             } else {
                 window.open(url, '_blank');
             }
 
-            // منح المكافأة بعد العودة أو بعد الضغط (مع تحديث الزر)
             setTimeout(() => {
                 userState.balance += rewardAmount;
                 updateUI();
                 btn.innerText = "تم ✓";
                 btn.classList.add('claimed');
                 btn.disabled = true;
-                if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON مكافأة إتمام المهمة.`);
+                if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON مكافأة إتمام المهمة وارتفع مستواك.`);
             }, 1500);
         }
 
@@ -418,18 +416,6 @@
                 }
             } else {
                 alert("نظام الإعلانات غير متوفر حالياً.");
-            }
-        }
-
-        function upgradeLevel(targetLevel, cost) {
-            if (userState.balance >= cost) {
-                userState.balance -= cost;
-                userState.level = targetLevel;
-                userState.speed += 0.20;
-                updateUI();
-                if (tg) tg.showAlert(`🎉 مبروك! تم الترقية إلى المستوى ${targetLevel} بنجاح!`);
-            } else {
-                if (tg) tg.showAlert(`⚠️ رصيدك غير كافي للترقية (تحتاج ${cost} MOON)!`);
             }
         }
 
