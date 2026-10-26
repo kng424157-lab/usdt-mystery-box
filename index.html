@@ -28,7 +28,7 @@
         }
         .ticker-wrap { background: rgba(245, 158, 11, 0.15); border-bottom: 1px solid var(--gold); padding: 8px 15px; font-size: 0.85rem; text-align: center; color: #fde68a; font-weight: bold; }
         .header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .stat-card { background: var(--card-bg); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+        .stat-card { background: var(--card-bg); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
         .stat-card span { display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
         .stat-card strong { font-size: 1.1rem; color: #fff; }
         .usdt-text { color: var(--green) !important; }
@@ -53,14 +53,12 @@
         .nav-item { background: none; border: none; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item span { font-size: 1.3rem; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-        .modal-box { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 330px; text-align: center; border: 2px solid var(--gold); max-height: 80vh; overflow-y: auto; }
-        .modal-icon { font-size: 45px; margin-bottom: 10px; }
+        .modal-box { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 100%; max-width: 330px; text-align: center; border: 2px solid var(--gold); }
+        .modal-icon { font-size: 55px; margin-bottom: 10px; }
         .modal-title { font-size: 1.2rem; color: var(--gold); margin-bottom: 10px; }
-        .modal-desc { font-size: 0.90rem; color: #e2e8f0; margin-bottom: 15px; line-height: 1.5; text-align: right; }
+        .modal-desc { font-size: 0.95rem; color: #e2e8f0; margin-bottom: 20px; line-height: 1.5; }
         .input-wallet { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 12px; text-align: center; }
-        .ref-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed var(--gold); font-size: 0.80rem; color: #fde68a; word-break: break-all; margin-bottom: 15px; }
-        .history-list { background: #0f172a; padding: 10px; border-radius: 10px; max-height: 150px; overflow-y: auto; text-align: right; font-size: 0.8rem; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        .history-item { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+        .ref-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed var(--gold); font-size: 0.85rem; color: #fde68a; word-break: break-all; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -68,9 +66,9 @@
     <div class="ticker-wrap" id="liveTicker">🎉 الفائز @Ahmed_99 ربح للتو 0.10 USDT من الصندوق!</div>
 
     <div class="header">
-        <div class="stat-card" onclick="openAccountModal()"><span>حسابي الشخصي 👤</span><strong class="usdt-text" style="font-size:0.9rem;">مراجعة الملف</strong></div>
-        <div class="stat-card" onclick="openRefModal()"><span>المفاتيح 🔑</span><strong class="key-text" id="keysBal">1</strong></div>
-        <div class="stat-card" onclick="openTeamModal()"><span>فريقك 👥</span><strong class="ticket-text" id="refCountBal">0</strong></div>
+        <div class="stat-card"><span>رصيد الدولار</span><strong class="usdt-text"><span id="usdtBal">0.000</span> $</strong></div>
+        <div class="stat-card"><span>المفاتيح 🔑</span><strong class="key-text" id="keysBal">1</strong></div>
+        <div class="stat-card"><span>فريقك 👥</span><strong class="ticket-text" id="refCountBal">0</strong></div>
     </div>
 
     <div class="main-stage">
@@ -84,42 +82,8 @@
 
     <div class="bottom-bar">
         <button class="nav-item" onclick="openWithdrawModal()"><span>💸</span> سحب الأرباح</button>
-        <button class="nav-item" onclick="openTeamModal()"><span>👥</span> فريقي والأصدقاء</button>
-        <button class="nav-item" onclick="openAccountModal()"><span>📊</span> السجل والأداء</button>
-    </div>
-
-    <!-- نافذة حسابي الشخصي وسجل المهام -->
-    <div class="modal-overlay" id="accountModal">
-        <div class="modal-box">
-            <div class="modal-icon">📊</div>
-            <div class="modal-title">سجل الحساب والمهام</div>
-            <div class="modal-desc">
-                👤 <strong>المعرف:</strong> <span id="accUserId">جاري التحميل...</span><br>
-                💰 <strong>الرصيد الكلي:</strong> <span id="accUsdt" style="color:var(--green)">0.000</span> USDT<br>
-                🔑 <strong>المفاتيح المتبقية:</strong> <span id="accKeys" style="color:var(--gold)">0</span>
-            </div>
-            <div class="modal-title" style="font-size: 1rem; margin-top: 10px;">📜 سجل الإضافات والمهام المكتملة:</div>
-            <div class="history-list" id="historyList">
-                <div class="history-item">لا توجد سجلات حديثة بعد.</div>
-            </div>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('accountModal')">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- نافذة تفاصيل الفريق والأصدقاء -->
-    <div class="modal-overlay" id="teamModal">
-        <div class="modal-box">
-            <div class="modal-icon">👥</div>
-            <div class="modal-title">فريقك وشبكة أصدقائك</div>
-            <div class="modal-desc">شارك رابطك الخاص واربح <strong>0.001 USDT + مفتاح 🔑</strong> عن كل صديق ينضم لفريقك!</div>
-            <div class="ref-box" id="myRefLink">جاري إنشاء رابطك...</div>
-            <div class="modal-title" style="font-size: 0.95rem; text-align: right;">📋 قائمة أعضاء الفريق المنضمين:</div>
-            <div class="history-list" id="teamList">
-                <div class="history-item">لم ينضم أحد لفريقك حتى الآن. شارك الرابط وابدأ الربح!</div>
-            </div>
-            <button class="btn btn-open" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط مع الأصدقاء</button>
-            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('teamModal')">إغلاق</button>
-        </div>
+        <button class="nav-item" onclick="openRefModal()"><span>👥</span> نظام الإحالة وفريقي</button>
+        <button class="nav-item" onclick="openWithdrawModal()"><span>💎</span> محفظة TON</button>
     </div>
 
     <!-- نافذة الجوائز المنبثقة -->
@@ -127,8 +91,20 @@
         <div class="modal-box">
             <div class="modal-icon" id="modalIcon">🎉</div>
             <div class="modal-title" id="modalTitle">مبروك!</div>
-            <div class="modal-desc" id="modalDesc" style="text-align: center;">لقد ربحت جائزة</div>
+            <div class="modal-desc" id="modalDesc">لقد ربحت جائزة</div>
             <button class="btn btn-open" style="width:100%" onclick="closeModal('rewardModal')">استلام ومتابعة</button>
+        </div>
+    </div>
+
+    <!-- نافذة الإحالة -->
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-box">
+            <div class="modal-icon">👥</div>
+            <div class="modal-title">شبكة أصدقائك وفريقك</div>
+            <div class="modal-desc">شارك رابطك الخاص واربح <strong>0.001 USDT + مفتاح 🔑</strong> عن كل صديق ينضم لفريقك!</div>
+            <div class="ref-box" id="myRefLink">جاري إنشاء رابطك...</div>
+            <button class="btn btn-open" style="width:100%; margin-bottom:8px;" onclick="shareReferral()">📤 مشاركة الرابط مع الأصدقاء</button>
+            <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('refModal')">إغلاق</button>
         </div>
     </div>
 
@@ -137,7 +113,7 @@
         <div class="modal-box">
             <div class="modal-icon">💳</div>
             <div class="modal-title">سحب الأرباح ومحفظة TON</div>
-            <div class="modal-desc" style="text-align: center;">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
+            <div class="modal-desc">الحد الأدنى للسحب <strong>0.1 USDT</strong>.<br>رصيدك الحالي: <span id="modalUsdtBal" style="color:var(--green);font-weight:bold;">0.000</span> $</div>
             <input type="text" class="input-wallet" id="walletInput" placeholder="ضع عنوان محفظة TON / USDT هنا">
             <button class="btn btn-ad" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">حفظ وسحب الأرباح</button>
             <button class="btn" style="width:100%; background:#334155;" onclick="closeModal('withdrawModal')">إغلاق</button>
@@ -149,15 +125,14 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let userId = tg?.initDataUnsafe?.user?.id || localStorage.getItem('mysteryBoxUserId') || 'user_' + Math.floor(Math.random() * 1000000);
-        let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'مستخدم_' + userId;
+        let username = tg?.initDataUnsafe?.user?.username ? '@' + tg?.initDataUnsafe?.user?.username : 'بدون معرف';
         localStorage.setItem('mysteryBoxUserId', userId);
 
         let todayStr = new Date().toDateString();
         let userState = JSON.parse(localStorage.getItem('mysteryBoxState_' + userId)) || { 
             usdt: 0.000, 
             keys: 1, 
-            referrals: [], 
-            history: ['🎁 بدء استخدام البوت وحصلت على مفتاح هدية ترحيبية.'],
+            referrals: 0, 
             dailyEarned: 0, 
             lastDate: todayStr,
             adsCount: 0,
@@ -172,23 +147,21 @@
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('ref');
         
-        if (startParam && startParam !== userId && !localStorage.getItem('referred_processed_' + userId)) {
-            localStorage.setItem('referred_processed_' + userId, 'true');
-            let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: [], history: [], dailyEarned: 0 };
+        if (startParam && startParam !== userId && !localStorage.getItem('referred_processed')) {
+            localStorage.setItem('referred_processed', 'true');
+            let referrerState = JSON.parse(localStorage.getItem('mysteryBoxState_' + startParam)) || { usdt: 0.000, keys: 1, referrals: 0, dailyEarned: 0 };
             referrerState.usdt += 0.001; 
             referrerState.keys += 1;     
-            referrerState.referrals.push({ name: username, date: new Date().toLocaleDateString() });
-            referrerState.history.unshift(`👥 انضم صديق جديد (${username}) لفريقك (+0.001 USDT + مفتاح)`);
+            referrerState.referrals += 1; 
             localStorage.setItem('mysteryBoxState_' + startParam, JSON.stringify(referrerState));
             userState.keys += 1;
-            userState.history.unshift(`🎁 انضممت عبر رابط إحالة صديق وحصلت على مفتاح إضافي.`);
         }
 
         function saveAndRefreshUI() {
             localStorage.setItem('mysteryBoxState_' + userId, JSON.stringify(userState));
             document.getElementById('usdtBal').innerText = userState.usdt.toFixed(3);
             document.getElementById('keysBal').innerText = userState.keys;
-            document.getElementById('refCountBal').innerText = userState.referrals.length;
+            document.getElementById('refCountBal').innerText = userState.referrals;
 
             let now = Date.now();
             if (now > userState.adsResetTime) {
@@ -209,34 +182,10 @@
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
-
-            document.getElementById('accUserId').innerText = userId;
-            document.getElementById('accUsdt').innerText = userState.usdt.toFixed(3);
-            document.getElementById('accKeys').innerText = userState.keys;
-
-            let historyHTML = '';
-            if (userState.history.length > 0) {
-                userState.history.forEach(item => {
-                    historyHTML += `<div class="history-item">📌 ${item}</div>`;
-                });
-            } else {
-                historyHTML = `<div class="history-item">لا توجد سجلات حديثة بعد.</div>`;
-            }
-            document.getElementById('historyList').innerHTML = historyHTML;
-
-            let teamHTML = '';
-            if (userState.referrals.length > 0) {
-                userState.referrals.forEach((ref, index) => {
-                    teamHTML += `<div class="history-item">👤 ${index + 1}. العضو: ${ref.name} (${ref.date})</div>`;
-                });
-            } else {
-                teamHTML = `<div class="history-item">لم ينضم أحد لفريقك حتى الآن. شارك الرابط وابدأ الربح!</div>`;
-            }
-            document.getElementById('teamList').innerHTML = teamHTML;
         }
         saveAndRefreshUI();
 
-        // نظام إعلانات ذكي مع عداد تنازلي لمدة 15 ثانية ويختفي فور جاهزية الإعلان
+        // نظام إعلانات ذكي مع عداد تنازلي (15 ثانية) يختفي فور جاهزية الإعلان
         function watchAdForKey() {
             let now = Date.now();
             if (now < userState.adsResetTime) {
@@ -279,7 +228,6 @@
                         adController.show().then((result) => {
                             userState.keys += 1;
                             userState.adsCount += 1;
-                            userState.history.unshift(`📺 مشاهدة إعلان بنجاح (+1 مفتاح)`);
                             if (userState.adsCount >= 3) {
                                 userState.adsResetTime = Date.now() + (2 * 60 * 60 * 1000);
                             }
@@ -326,12 +274,10 @@
 
                 if (userState.dailyEarned >= 0.05) {
                     userState.keys += 1;
-                    userState.history.unshift(`🎁 فتح صندوق (وصلت للحد اليومي، ربحت مفتاح بديل)`);
                     showCustomModal("🔑", "ربحت مفتاح إضافي!", "لقد وصلت للحد الأقصى للربح اليومي (0.05 $)، لكنك ربحت مفتاحاً إضافياً!");
                 } else {
                     if (roll < 70) {
                         userState.keys += 1;
-                        userState.history.unshift(`🎁 فتح صندوق (عثرت على مفتاح جديد)`);
                         showCustomModal("🔑", "ربحت مفتاح إضافي!", "رائع! لقد عثرت على مفتاح جديد داخل الصندوق.");
                     } else if (roll < 97) {
                         let wonUsdt = parseFloat((Math.random() * (0.008 - 0.002) + 0.002).toFixed(3));
@@ -340,7 +286,6 @@
                         }
                         userState.usdt += wonUsdt;
                         userState.dailyEarned += wonUsdt;
-                        userState.history.unshift(`💵 فتح صندوق (ربحت ${wonUsdt} USDT)`);
                         showCustomModal("💵", "ربحت رصيد USDT!", `مبروك! تمت إضافة ${wonUsdt} USDT مباشرة إلى رصيدك.`);
                     } else {
                         let wonUsdt = 0.020;
@@ -349,7 +294,6 @@
                         }
                         userState.usdt += wonUsdt;
                         userState.dailyEarned += wonUsdt;
-                        userState.history.unshift(`💎 ضربة حظ نادرة (${wonUsdt} USDT)`);
                         showCustomModal("💎", "ضربة حظ نادرة!", `رائع! لقد ربحت جائزة بقيمة ${wonUsdt} USDT!`);
                     }
                 }
@@ -365,8 +309,7 @@
         }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-        function openTeamModal() { document.getElementById('teamModal').style.display = 'flex'; }
-        function openAccountModal() { document.getElementById('accountModal').style.display = 'flex'; }
+        function openRefModal() { document.getElementById('refModal').style.display = 'flex'; }
         function openWithdrawModal() {
             document.getElementById('modalUsdtBal').innerText = userState.usdt.toFixed(3);
             document.getElementById('withdrawModal').style.display = 'flex';
@@ -387,7 +330,6 @@
                 body: JSON.stringify({ chat_id: chatId, text: message })
             }).catch(err => console.log(err));
 
-            userState.history.unshift(`💳 طلب سحب أرباح بقيمة ${userState.usdt.toFixed(3)} USDT`);
             alert("✅ تم إرسال طلب السحب بنجاح وسيتم مراجعته وتحويل الأرباح قريباً!");
             userState.usdt = 0; 
             saveAndRefreshUI();
@@ -407,4 +349,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
