@@ -387,7 +387,6 @@
             }
         });
 
-        // دالة حفظ المحفظة يدوياً عبر الزر
         function manualSaveWallet() {
             const walletVal = document.getElementById('walletInput').value.trim();
             if (!walletVal || walletVal.length < 10) {
@@ -440,7 +439,6 @@
             }
         }
 
-        // برمجة تمرين السحب الخفيف (Swipe Captcha)
         const slider = document.getElementById('captchaSlider');
         const track = document.getElementById('captchaTrack');
         const progress = document.getElementById('captchaProgress');
@@ -720,10 +718,11 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
+        // استخدام معرف الإعلان الجديد int-56211
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56190" });
+                    const adController = window.Adsgram.init({ blockId: "int-56211" });
                     adController.show().then(() => {
                         userState.pending += 1.00;
                         renderLevelsList();
@@ -763,10 +762,11 @@
             }, 1500);
         }
 
+        // استخدام معرف الإعلان الجديد int-56211 للمهام
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
-                    const adController = window.Adsgram.init({ blockId: "int-56190" });
+                    const adController = window.Adsgram.init({ blockId: "int-56211" });
                     adController.show().then(() => {
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
