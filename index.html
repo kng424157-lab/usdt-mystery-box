@@ -53,16 +53,17 @@
         .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
         .btn-ad:active { transform: scale(0.97); }
 
-        /* شريط التنقل السفلي الفاخر والمتحرك */
-        .bottom-nav { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(15px); padding: 8px 5px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
-        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.75rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; padding: 5px 10px; border-radius: 12px; transition: all 0.2s; }
-        .nav-btn span { font-size: 1.3rem; transition: transform 0.2s; }
-        .nav-btn.active { color: var(--blue); background: rgba(59,130,246,0.1); }
+        /* شريط التنقل السفلي الجديد (Floating Dock الفاخر) */
+        .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
+        .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 10px; border-radius: 14px; transition: all 0.25s ease; flex: 1; }
+        .nav-btn span { font-size: 1.25rem; transition: transform 0.25s; }
+        .nav-btn.active { color: #fff; background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(59,130,246,0.4); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
         .nav-btn.active span { transform: scale(1.15); }
-        .notification-dot { position: absolute; top: 3px; right: 8px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; animation: pulseDot 1.5s infinite; }
+        .notification-dot { position: absolute; top: 4px; right: 12px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        /* النوافذ المنبثقة بتصميم سلس */
+        /* النوافذ المنبثقة */
         .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
@@ -86,7 +87,6 @@
         .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
         .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
 
-        /* بطاقات مستويات التعدين الفاخرة والجذابة */
         .levels-list-container { max-height: 230px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
         .level-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; transition: all 0.2s; }
         .level-card-item.unlocked { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
@@ -108,17 +108,19 @@
         .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.3); }
         .checkin-day strong { display: block; font-size: 0.8rem; color: #fff; margin-top: 2px; }
 
-        .task-item { background: #070b19; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; transition: border-color 0.2s; }
-        .task-item:hover { border-color: rgba(59,130,246,0.3); }
+        .task-item { background: #070b19; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
         .task-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
         .task-info p { font-size: 0.75rem; color: var(--gold); }
         .task-btn { background: var(--blue); color: #fff; border: none; padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; box-shadow: 0 3px 10px rgba(59,130,246,0.3); }
         .task-btn.claimed { background: var(--green); box-shadow: 0 3px 10px rgba(16,185,129,0.3); }
         .task-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; box-shadow: none; }
 
-        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 12px; text-align: center; font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 12px; text-align: center; font-size: 0.85rem; outline: none; }
         .input-wallet:focus { border-color: var(--blue); box-shadow: 0 0 8px rgba(59,130,246,0.3); }
         .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
+        
+        /* مساحة لتفادي تغطية المحتوى بواسطة الشريط السفلي */
+        .bottom-spacer { height: 75px; }
     </style>
 </head>
 <body>
@@ -147,15 +149,18 @@
 
         <button class="btn-claim" id="btnClaim" onclick="claimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
+        <div class="bottom-spacer"></div>
     </div>
 
-    <!-- شريط التنقل السفلي الفاخر -->
-    <div class="bottom-nav">
-        <button class="nav-btn" onclick="openWalletModal()"><span>💳</span> المحفظة</button>
-        <button class="nav-btn" onclick="openRefModal()"><span>👥</span> الأصدقاء</button>
-        <button class="nav-btn" onclick="openMinersModal()"><span>⚡</span> المعدنون</button>
-        <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
-        <button class="nav-btn active" onclick="openMiningTab()" id="navMiningBtn"><span>⛏️</span> التعدين</button>
+    <!-- شريط التنقل السفلي الفاخر العائم -->
+    <div class="bottom-nav-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="openWalletModal()"><span>💳</span> المحفظة</button>
+            <button class="nav-btn" onclick="openRefModal()"><span>👥</span> الأصدقاء</button>
+            <button class="nav-btn" onclick="openMinersModal()"><span>⚡</span> المعدنون</button>
+            <button class="nav-btn" onclick="openTasksModal()"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
+            <button class="nav-btn active" onclick="openMiningTab()" id="navMiningBtn"><span>⛏️</span> التعدين</button>
+        </div>
     </div>
 
     <!-- نافذة المحفظة -->
@@ -217,7 +222,7 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين الفاخرة (150 مستوى) -->
+    <!-- نافذة متجر المعدنين (150 مستوى) -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ رحلة ملوك التعدين (150 مستوى)</div>
@@ -229,7 +234,6 @@
                 <div><span>المستوى</span><strong id="modalLevel">1</strong></div>
             </div>
 
-            <!-- بطاقات المستويات المسرودة الجذابة -->
             <div class="levels-list-container" id="levelsListContainer">
                 <!-- تعبئة تلقائية عبر الجافاسكريبت -->
             </div>
@@ -282,7 +286,7 @@
             <div class="task-item">
                 <div class="task-info">
                     <h4>شاهد إعلان ترويجي 1</h4>
-                    <p>مكافأة سرعة · MOON 15+</p>
+                    <p>إعلان مكافأة · MOON 15+</p>
                 </div>
                 <button class="task-btn" id="taskBtnAd1" onclick="watchAdTaskLevel(15, 'ad1', this)">شاهد (15)</button>
             </div>
@@ -290,7 +294,7 @@
             <div class="task-item">
                 <div class="task-info">
                     <h4>شاهد إعلان ترويجي 2</h4>
-                    <p>مكافأة سرعة · MOON 20+</p>
+                    <p>إعلان مكافأة · MOON 20+</p>
                 </div>
                 <button class="task-btn" id="taskBtnAd2" onclick="watchAdTaskLevel(20, 'ad2', this)">شاهد (20)</button>
             </div>
@@ -316,14 +320,33 @@
             checkinDay: 1,
             lastCheckinTime: 0,
             completedTasks: [],
+            adCooldowns: {}, // لتتبع أوقات الـ 2 ساعة لإعلانات المهام
             startTime: Date.now()
         };
 
         const CYCLE_TIME = 24 * 60 * 60 * 1000;
+        const AD_COOLDOWN_TIME = 2 * 60 * 60 * 1000; // ساعتان بالميلي ثانية
 
-        // دالة توليد بطاقات الـ 150 مستوى بتصميم جذاب
+        // دالة تحديث عداد المهام النشطة على أيقونة الإشعار الحمراء
+        function updateTaskBadgeCount() {
+            let totalActiveTasks = 4; // إجمالي المهام المتاحة (2 تليجرام + 2 إعلانات)
+            let completedCount = userState.completedTasks.length;
+            let remainingTasks = Math.max(0, totalActiveTasks - completedCount);
+            
+            const dotEl = document.getElementById('taskDot');
+            if (dotEl) {
+                if (remainingTasks > 0) {
+                    dotEl.innerText = remainingTasks;
+                    dotEl.style.display = 'block';
+                } else {
+                    dotEl.style.display = 'none';
+                }
+            }
+        }
+
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
+            if(!container) return;
             let html = '';
             for (let i = 1; i <= 150; i++) {
                 let requiredCoins = i * 50; 
@@ -332,7 +355,7 @@
 
                 if (i < userState.level) {
                     cardClass = 'unlocked';
-                    statusText = '✅ مکتمل';
+                    statusText = '✅ مكتمل';
                 } else if (i === userState.level) {
                     cardClass = 'current';
                     statusText = '🔥 مستواك';
@@ -378,13 +401,48 @@
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
+
+            updateTaskBadgeCount();
         }
 
         renderLevelsList();
         updateUI();
 
+        // محرك التعدين والمؤقتات وتحديث فترات الانتظار (Cooldowns) للإعلانات كل ثانية
         setInterval(() => {
             userState.pending += 0.000010;
+            
+            // فحص انتهاء وقت الـ 2 ساعة لإعلانات المهام
+            let now = Date.now();
+            ['ad1', 'ad2'].forEach(adKey => {
+                if (userState.adCooldowns[adKey] && now >= userState.adCooldowns[adKey]) {
+                    delete userState.adCooldowns[adKey];
+                    // إزالة المهمة من المكتملة لتصبح متاحة مجدداً
+                    userState.completedTasks = userState.completedTasks.filter(t => t !== ('taskBtnAd' + (adKey === 'ad1' ? '1' : '2')));
+                    
+                    // إعادة تفعيل الزر في الواجهة
+                    let btnId = adKey === 'ad1' ? 'taskBtnAd1' : 'taskBtnAd2';
+                    let btnElem = document.getElementById(btnId);
+                    if (btnElem) {
+                        btnElem.disabled = false;
+                        btnElem.innerText = adKey === 'ad1' ? 'شاهد (15)' : 'شاهد (20)';
+                        btnElem.style.background = '#3b82f6';
+                    }
+                    updateTaskBadgeCount();
+                } else if (userState.adCooldowns[adKey]) {
+                    let timeLeft = userState.adCooldowns[adKey] - now;
+                    let mLeft = Math.floor(timeLeft / (1000 * 60));
+                    let sLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    let btnId = adKey === 'ad1' ? 'taskBtnAd1' : 'taskBtnAd2';
+                    let btnElem = document.getElementById(btnId);
+                    if (btnElem) {
+                        btnElem.disabled = true;
+                        btnElem.innerText = `⏳ ${mLeft}د ${sLeft}ث`;
+                        btnElem.style.background = '#374151';
+                    }
+                }
+            });
+
             updateUI();
 
             let elapsed = Date.now() - userState.startTime;
@@ -513,6 +571,7 @@
             }, 1500);
         }
 
+        // مشاهدة إعلان المهمة مع تفعيل وقت الانتظار (2 ساعة) ونقص عداد المهام
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -523,9 +582,13 @@
                             userState.completedTasks.push(btnKey);
                             userState.balance += rewardAmount;
                             userState.dailyEarned += rewardAmount;
+                            
+                            // تعيين وقت انتهاء الـ 2 ساعة للعودة
+                            userState.adCooldowns[adId] = Date.now() + AD_COOLDOWN_TIME;
+
                             renderLevelsList();
                             updateUI();
-                            if (tg) tg.showAlert(`🚀 مبروك! شاهدت الإعلان وحصلت على ${rewardAmount} MOON بنجاح.`);
+                            if (tg) tg.showAlert(`🚀 مبروك! شاهدت الإعلان وحصلت على ${rewardAmount} MOON بنجاح. يمكنك إعادة مشاهدة الإعلان بعد ساعتين.`);
                         }
                     }).catch(() => {
                         if (tg) tg.showAlert("يجب مشاهدة الإعلان كاملاً للحصول على العملات!");
