@@ -58,7 +58,7 @@
 
         /* النوافذ المنبثقة */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; }
-        .modal-box { background: var(--card-bg); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; border: 2px solid var(--blue); max-height: 85vh; overflow-y: auto; }
+        .modal-box { background: var(--card-bg); padding: 20px; border-radius: 20px; width: 100%; max-width: 360px; text-align: center; border: 2px solid var(--blue); max-height: 85vh; overflow-y: auto; }
         .modal-title { font-size: 1.1rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.4; }
 
@@ -78,13 +78,16 @@
         .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
         .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
 
+        /* تصميم قائمة مستويات التعدين 1 إلى 150 */
+        .levels-list-container { max-height: 220px; overflow-y: auto; background: #0b1120; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .level-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem; }
+        .level-item-row:last-child { border-bottom: none; }
+        .level-item-row.unlocked { color: var(--green); font-weight: bold; background: rgba(16,185,129,0.08); border-radius: 6px; }
+        .level-item-row.current { border: 1px solid var(--blue); background: rgba(59,130,246,0.15); border-radius: 6px; color: #fff; }
+
         .progress-container { background: #0b1120; padding: 10px; border-radius: 12px; margin-bottom: 15px; text-align: right; }
         .progress-bar-bg { width: 100%; background: #151e36; height: 8px; border-radius: 4px; margin-top: 6px; overflow: hidden; }
         .progress-bar-fill { width: 0%; background: var(--blue); height: 100%; transition: width 0.3s; }
-
-        .miner-row-card { background: #0b1120; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
-        .miner-row-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
-        .miner-row-info p { font-size: 0.75rem; color: var(--gold); }
 
         .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #0b1120; padding: 10px; border-radius: 12px; }
         .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 2px; text-align: center; font-size: 0.7rem; color: #94a3b8; }
@@ -199,11 +202,11 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين -->
+    <!-- نافذة متجر المعدنين (تحتوي على سرد الـ 150 مستوى) -->
     <div class="modal-overlay" id="minersModal">
-        <div class="modal-box" style="max-width: 370px;">
-            <div class="modal-title">⚡ متجر المعدنين</div>
-            <div class="modal-desc">كلما جمعت رصيداً أكبر من عملات MOON، يرتفع مستواك تلقائياً لتعدين أسرع!</div>
+        <div class="modal-box" style="max-width: 380px;">
+            <div class="modal-title">⚡ متجر المعدنين (150 مستوى)</div>
+            <div class="modal-desc">سرد تفصيلي لجميع المستويات والعملات المطلوبة لفتح كل مستوى:</div>
             
             <div class="miners-header-card">
                 <div><span>أرباح اليوم</span><strong style="color:var(--green)" id="dailyEarnings">0.0</strong></div>
@@ -211,19 +214,17 @@
                 <div><span>المستوى</span><strong id="modalLevel">1</strong></div>
             </div>
 
+            <!-- قائمة المستويات مسرودة من 1 إلى 150 -->
+            <div class="levels-list-container" id="levelsListContainer">
+                <!-- سيتم تعبئتها تلقائياً عبر جافاسكريبت -->
+            </div>
+
             <div class="progress-container">
                 <span style="font-size:0.75rem; color:#94a3b8;">المستوى التالي بعد جمع: <span id="mrgNeeded">50</span> عملة MOON</span>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" id="levelProgressBar"></div></div>
             </div>
 
-            <div class="miner-row-card" style="border-color:var(--blue);">
-                <div class="miner-row-info">
-                    <h4 style="color:var(--blue)">المستوى الحالي متصل برصيدك</h4>
-                    <p>يرتفع المستوى تلقائياً كل 50 عملة موּن يتم تجميعها.</p>
-                </div>
-            </div>
-
-            <button class="btn-ad" style="width:100%; margin-top:10px; background:#334155;" onclick="closeModal('minersModal')">إغلاق</button>
+            <button class="btn-ad" style="width:100%; margin-top:5px; background:#334155;" onclick="closeModal('minersModal')">إغلاق</button>
         </div>
     </div>
 
@@ -305,6 +306,31 @@
 
         const CYCLE_TIME = 24 * 60 * 60 * 1000;
 
+        // دالة توليد سرد المستويات الـ 150 تلقائياً في القائمة
+        function renderLevelsList() {
+            const container = document.getElementById('levelsListContainer');
+            let html = '';
+            for (let i = 1; i <= 150; i++) {
+                let requiredCoins = i * 50; // كل مستوى يحتاج مضاعفات الـ 50 عملة
+                let rowClass = '';
+                let statusText = `مطلوب: ${requiredCoins} MOON`;
+
+                if (i < userState.level) {
+                    rowClass = 'unlocked';
+                    statusText = 'مكتمل ✓';
+                } else if (i === userState.level) {
+                    rowClass = 'current';
+                    statusText = 'المستوى الحالي ⭐';
+                }
+
+                html += `<div class="level-item-row ${rowClass}">
+                    <span>المستوى ${i}</span>
+                    <span>${statusText}</span>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+
         function updateUI() {
             document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
             document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
@@ -326,14 +352,19 @@
             let progressPercent = Math.min(100, (userState.balance / nextLevelTarget) * 100);
             document.getElementById('levelProgressBar').style.width = progressPercent + '%';
 
-            if (userState.balance >= nextLevelTarget) {
+            // نظام الترقية التلقائي حتى المستوى 150 كحد أقصى
+            if (userState.balance >= nextLevelTarget && userState.level < 150) {
                 userState.level++;
+                renderLevelsList(); // تحديث السرد عند ارتقاء المستوى
             }
 
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             document.getElementById('myRefLink').innerText = refLink;
         }
+
+        // تشغيل عرض المستويات لأول مرة
+        renderLevelsList();
         updateUI();
 
         setInterval(() => {
@@ -381,6 +412,7 @@
             userState.dailyEarned += reward;
             userState.lastCheckinTime = now;
             userState.checkinDay++;
+            renderLevelsList();
             updateUI();
 
             if (tg) {
@@ -398,6 +430,7 @@
             userState.dailyEarned += claimedAmount;
             userState.pending = 0.0;
             userState.startTime = Date.now();
+            renderLevelsList();
             updateUI();
             
             if (tg) tg.showAlert("✅ تمت مطالبة المكافأة وإضافتها للرصيد بنجاح، وبدء دورة جديدة!");
@@ -411,17 +444,18 @@
             userState.balance += userState.teamCommission;
             userState.dailyEarned += userState.teamCommission;
             userState.teamCommission = 0.0;
+            renderLevelsList();
             updateUI();
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // تم ضبط المعرف إلى الصيغة الصحيحة int-56190 لتعمل بدون أخطاء
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
                     const adController = window.Adsgram.init({ blockId: "int-56190" });
                     adController.show().then(() => {
                         userState.pending += 1.00;
+                        renderLevelsList();
                         updateUI();
                         if (tg) tg.showAlert("🚀 تم إضافة أرباح فورية بنجاح عبر الإعلان!");
                     }).catch(() => {
@@ -451,13 +485,13 @@
                     btn.innerText = "تم ✓";
                     btn.classList.add('claimed');
                     btn.disabled = true;
+                    renderLevelsList();
                     updateUI();
                     if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON لإتمام المهمة.`);
                 }
             }, 1500);
         }
 
-        // استخدام المعرف int-56190 للمهام الإعلانية أيضاً
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -468,6 +502,7 @@
                             userState.completedTasks.push(btnKey);
                             userState.balance += rewardAmount;
                             userState.dailyEarned += rewardAmount;
+                            renderLevelsList();
                             updateUI();
                             if (tg) tg.showAlert(`🚀 مبروك! شاهدت الإعلان وحصلت على ${rewardAmount} MOON بنجاح.`);
                         }
@@ -491,7 +526,10 @@
         }
 
         function openRefModal() { document.getElementById('refModal').style.display = 'flex'; }
-        function openMinersModal() { document.getElementById('minersModal').style.display = 'flex'; }
+        function openMinersModal() { 
+            renderLevelsList(); // تحديث السرد عند الفتح
+            document.getElementById('minersModal').style.display = 'flex'; 
+        }
         function openTasksModal() { document.getElementById('tasksModal').style.display = 'flex'; }
         function openWalletModal() { document.getElementById('walletModal').style.display = 'flex'; }
         
@@ -532,6 +570,7 @@
             else alert("تم إرسال طلب السحب بنجاح!");
             
             userState.balance = 0;
+            renderLevelsList();
             updateUI();
             closeModal('walletModal');
         }
@@ -549,4 +588,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
