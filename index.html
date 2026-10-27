@@ -176,7 +176,7 @@
         </div>
 
         <div class="mining-reward-label">مكافأة التعدين غير المطالب بها</div>
-        <div class="mining-reward-val" id="pendingReward">0.000000</div>
+        <div class="mining-reward-val" id="pendingReward">0.0000</div>
         <div class="mining-speed-info">TH/s <span id="thSpeedText">1.00</span> · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
         <button class="btn-claim" id="btnClaim" onclick="handleClaimAttempt()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
@@ -407,7 +407,7 @@
 
         let userState = {
             balance: 0,
-            pending: 0.000000001, // يبدأ من القيمة الصفرية الدقيقة كما طلبت
+            pending: 0.0000, 
             level: 1,
             dailyEarned: 0,
             teamCommission: 0,
@@ -430,32 +430,30 @@
             } catch(e) { console.log(e); }
         }
 
-        const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة كاملة
+        const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة
 
-        // حساب معدل الزيادة لكل ثانية بحيث يتناسب طردياً مع المستوى 
-        // ويمتلئ العداد ليصل إلى إجمالي إنتاج الـ 24 ساعة بالضبط عند اكتمال الوقت
+        // الإنتاج الكلي المطلوب للمستوى خلال 24 ساعة (مثلاً المستوى 4 ينتج 9.6 عملة أو حسب رغبتك)
         function getDailyTarget(lvl) {
-            return lvl * 24.0; // إجمالي العملات في 24 ساعة للمستوى (مثلاً المستوى 4 ينتج 96 عملة في اليوم)
+            return lvl * 2.4; 
         }
 
-        function getSpeedPerSecond(lvl) {
-            let totalDaily = getDailyTarget(lvl);
-            return totalDaily / MAX_MINING_SECONDS; // التوزيع الدقيق للثانية الواحدة طوال 24 ساعة
+        // معادلة التعدين الذكية والمتسارعة (تبدأ هادئة جداً كالأجزاء الصغيرة وتتسارع تدريجياً ليكون في صالح المستخدم)
+        function getCurrentPendingValue(startTime, lvl) {
+            let elapsedSeconds = (Date.now() - startTime) / 1000;
+            if (elapsedSeconds <= 0) return 0.0000;
+            if (elapsedSeconds >= MAX_MINING_SECONDS) return getDailyTarget(lvl);
+
+            let progressRatio = elapsedSeconds / MAX_MINING_SECONDS;
+            // استخدام دالة تصاعدية (أسية أقل من 1) بحيث تكون الحركة سريعة ومرئية وممتعة طوال الوقت
+            let acceleratedRatio = Math.pow(progressRatio, 0.85); 
+            return getDailyTarget(lvl) * acceleratedRatio;
         }
 
         let nowTime = Date.now();
-        if (userState.lastActiveTime) {
-            let elapsedSeconds = Math.floor((nowTime - userState.lastActiveTime) / 1000);
-            if (elapsedSeconds > 0) {
-                let currentRate = getSpeedPerSecond(userState.level);
-                let maxAllowedPending = getDailyTarget(userState.level);
-                
-                let earnedWhileAway = elapsedSeconds * currentRate;
-                userState.pending += earnedWhileAway;
-
-                if (userState.pending > maxAllowedPending) {
-                    userState.pending = maxAllowedPending;
-                }
+        if (userState.lastActiveTime && userState.startTime) {
+            let calculatedVal = getCurrentPendingValue(userState.startTime, userState.level);
+            if (calculatedVal > userState.pending) {
+                userState.pending = calculatedVal;
             }
         }
 
@@ -498,7 +496,7 @@
         }
 
         function handleClaimAttempt() {
-            if (userState.pending < 0.1) {
+            if (userState.pending < 0.01) {
                 if (tg) tg.showAlert("⚠️ المكافأة قليلة جداً للمطالبة حالياً، انتظر قليلاً!");
                 else alert("المكافأة قليلة جداً للمطالبة حالياً!");
                 return;
@@ -717,13 +715,13 @@
         renderLevelsList();
         updateUI();
 
-        // التعدين المتسارع والتدريجي الدقيق في الوقت الحقيقي
+        // التعدين المتسارع والحيوي في الوقت الحقيقي
         setInterval(() => {
-            let currentRate = getSpeedPerSecond(userState.level);
             let maxAllowedPending = getDailyTarget(userState.level);
+            let calculatedVal = getCurrentPendingValue(userState.startTime, userState.level);
 
             if (userState.pending < maxAllowedPending) {
-                userState.pending += currentRate; // زيادة تدريجية دقيقة تتناسق تماماً مع المستوى خلال 24 ساعة
+                userState.pending = calculatedVal;
                 if (userState.pending > maxAllowedPending) {
                     userState.pending = maxAllowedPending;
                 }
@@ -817,7 +815,7 @@
             let claimedAmount = userState.pending;
             userState.balance += claimedAmount;
             userState.dailyEarned += claimedAmount;
-            userState.pending = 0.000000001; // إعادة الضبط لتبدأ من جديد من الصفر
+            userState.pending = 0.0000; 
             userState.startTime = Date.now();
             renderLevelsList();
             updateUI();
@@ -981,9 +979,9 @@
 
             const botToken = "8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs";
             const chatId = "5630771182";
-            let usdEqFinal = (amountVal / 5000) * 0.20;
+            let usdEqFinancial = (amountVal / 5000) * 0.20;
 
-            const message = `🚨 طلب سحب MOON جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ المسحُوب: ${amountVal.toFixed(0)} MOON (القيمة: $${usdEqFinal.toFixed(4)})\n💳 عنوان محفظة Tonkeeper:\n${walletInputVal}`;
+            const message = `🚨 طلب سحب MOON جديد!\n\n👤 المستخدم: ${username} (ID: ${userId})\n💰 المبلغ المسحُوب: ${amountVal.toFixed(0)} MOON (القيمة: $${usdEqFinancial.toFixed(4)})\n💳 عنوان محفظة Tonkeeper:\n${walletInputVal}`;
 
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
