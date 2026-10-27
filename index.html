@@ -71,6 +71,12 @@
         .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
 
+        /* نافذة صندوق الغموض المشترك الأسطورية */
+        .mystery-box-card { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.15)); border: 2px dashed var(--gold); border-radius: 20px; padding: 15px; margin-bottom: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .mystery-box-card:active { transform: scale(0.97); }
+        .mystery-icon { font-size: 45px; margin-bottom: 5px; animation: bounceBox 2s infinite; }
+        @keyframes bounceBox { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
         /* تصميم نافذة إنجاز المستوى الجديد (Level Up Modal الفاخرة) */
         .levelup-box { background: linear-gradient(135deg, #0f172a, #1e1b4b); border: 2px solid var(--blue); padding: 25px 20px; border-radius: 28px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 40px rgba(59,130,246,0.4); position: relative; overflow: hidden; animation: popUp 0.3s ease-out; }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -104,9 +110,9 @@
         .captcha-slider { position: absolute; left: 4px; width: 42px; height: 42px; background: linear-gradient(135deg, var(--blue), var(--purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.1s; z-index: 2; }
         .captcha-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: rgba(16,185,129,0.25); border-radius: 25px; z-index: 1; transition: width 0.05s; }
 
-        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
-        .friend-btn.copy { background: #2563eb; }
+        .friends-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+        .friend-btn { background: var(--blue); border: none; padding: 12px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .friend-btn.share-smart { background: linear-gradient(135deg, var(--gold), #d97706); }
 
         .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
         .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
@@ -273,15 +279,22 @@
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء والإحالة -->
+    <!-- نافذة الأصدقاء والإحالة مع إضافة صندوق الغموض المشترك وزر الشرح الذكي -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
-            <div class="modal-title">👥 دعوة الأصدقاء</div>
-            <div class="modal-desc">احصل على +50 MOON لكل صديق، بالإضافة إلى 10% من إنتاج تعدينهم مدى الحياة!</div>
+            <div class="modal-title">👥 دعوة الأصدقاء & الصندوق الملكي</div>
+            <div class="modal-desc">شارك البوت مع أصدقائك وافتحا معاً "صندوق الغموض المشترك" لمضاعفة أرباحكم!</div>
             
+            <!-- إضافة صندوق الغموض المشترك الحصري -->
+            <div class="mystery-box-card" onclick="openMysteryBox()">
+                <div class="mystery-icon">🎁📦</div>
+                <div style="font-weight: bold; color: var(--gold); font-size: 0.9rem;">صندوق الغموض المشترك</div>
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 3px;">اضغط لفتح صندوق المكافأة الفورية مع أصدقائك!</div>
+            </div>
+
             <div class="friends-actions">
-                <button class="friend-btn" onclick="shareReferral()">📤 مشاركة</button>
-                <button class="friend-btn copy" onclick="copyRefLink()">📋 نسخ الرابط</button>
+                <button class="friend-btn share-smart" onclick="shareSmartMessage()">💬 نسخ رسالة الشرح الذكية لأصدقائك</button>
+                <button class="friend-btn" onclick="copyRefLink()">📋 نسخ رابط الإحالة فقط</button>
             </div>
 
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
@@ -417,7 +430,8 @@
             adCooldowns: {},
             lastClaimTime: 0,
             claimAttemptsCount: 0,
-            boostEndTime: 0, // وقت انتهاء تعزيز الـ 30 ثانية
+            boostEndTime: 0, 
+            mysteryOpened: false, // حالة فتح صندوق الغموض
             lastActiveTime: Date.now(),
             startTime: Date.now()
         };
@@ -437,14 +451,14 @@
             return lvl * 2.4; 
         }
 
-        // معادلة التعدين المتسارع (تصاعدي حيوي لصالح المستخدم)
+        // معادلة التعدين المتسارع والحيوي لصالح المستخدم
         function getCurrentPendingValue(startTime, lvl) {
             let elapsedSeconds = (Date.now() - startTime) / 1000;
             if (elapsedSeconds <= 0) return 0.0000;
             if (elapsedSeconds >= MAX_MINING_SECONDS) return getDailyTarget(lvl);
 
             let progressRatio = elapsedSeconds / MAX_MINING_SECONDS;
-            let acceleratedRatio = Math.pow(progressRatio, 0.75); // تسارع تصاعدي ممتع ومحفز
+            let acceleratedRatio = Math.pow(progressRatio, 0.65); // تسارع تصاعدي أقوى وأسرع لصالح المستخدم
             return getDailyTarget(lvl) * acceleratedRatio;
         }
 
@@ -711,17 +725,47 @@
             else window.open(shareUrl, '_blank');
         }
 
+        // ميزة فتح صندوق الغموض المشترك الحصرية
+        function openMysteryBox() {
+            if (userState.mysteryOpened) {
+                if(tg) tg.showAlert("⚠️ لقد قمت بفتح صندوق الغموض المشترك مسبقاً! شارك الرابط مع أصدقائك للمزيد.");
+                else alert("⚠️ لقد قمت بفتح صندوق الغموض المشترك مسبقاً!");
+                return;
+            }
+            userState.mysteryOpened = true;
+            let reward = 25.00; // مكافأة فورية فخمة
+            userState.balance += reward;
+            updateUI();
+            if(tg) tg.showAlert(`🎁 مبروك! فتحت صندوق الغموض الملكي وحصلت على هدية فورية بقيمة ${reward} MOON! شارك البوت مع أصدقائك ليفتحوا صناديقهم أيضاً.`);
+            else alert(`🎁 مبروك! حصلت على ${reward} MOON هدية صندوق الغموض!`);
+        }
+
+        // زر نسخ رسالة الشرح الذكية والترند الجاهزة
+        function shareSmartMessage() {
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            const smartText = `🔥 **لقيت لك أقوى وأريح بوت تعدين سحابي هالموسم (MoonTap)!** 🌕⛏️\n\n✨ مميزات البوت باختصار:\n✔️ تعدين سحابي تلقائي بالكامل (ما يتطلب تفاعل طول اليوم، ادخل مرة وسحب أرباحك).\n✔️ ترقية لـ 150 مستوى وأجهزة تعدين صاروخية.\n✔️ سحب حقيقي على محفظة Tonkeeper.\n✔️ صندوق غموض مشترك يعطيك نقاط فورية أول ما تدخل!\n\n👇 **ادخل من رابطي وجرب بنفسك الآن:**\n${refLink}`;
+
+            navigator.clipboard.writeText(smartText);
+            
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(smartText)}`;
+            if (tg) {
+                tg.openTelegramLink(shareUrl);
+            } else {
+                window.open(shareUrl, '_blank');
+            }
+        }
+
         renderLevelsList();
         updateUI();
 
-        // التعدين المتسارع والحماسي في الوقت الحقيقي
+        // التعدين المتسارع والحيوي في الوقت الحقيقي
         setInterval(() => {
             let maxAllowedPending = getDailyTarget(userState.level);
             let calculatedVal = getCurrentPendingValue(userState.startTime, userState.level);
 
-            // إذا كان وضع التعزيز (Boost) نشطاً لمدة 30 ثانية، تتسارع الأرباح بصورة أكبر وأكبر
             if (userState.boostEndTime && Date.now() < userState.boostEndTime) {
-                calculatedVal += 0.50; // دفعة تسارع إضافية خلال الـ 30 ثانية
+                calculatedVal += 0.50; // تعزيز السرعة المؤقت عند مشاهدة الإعلان
             }
 
             if (userState.pending < maxAllowedPending) {
@@ -840,13 +884,12 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
-        // إعلان تعزيز التعدين (مع نظام التعويض الآمن عند نفاد الإعلانات في دول مثل السعودية)
+        // إعلان تعزيز التعدين مع نظام التعويض الآمن للمستخدمين في السعودية والدول الأخرى
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
                     const adController = window.Adsgram.init({ blockId: "int-56190" });
                     adController.show().then(() => {
-                        // نجاح مشاهدة الإعلان: منح عملتين + تفعيل التسارع لـ 30 ثانية
                         userState.balance += 2.00;
                         userState.boostEndTime = Date.now() + (30 * 1000);
                         renderLevelsList();
@@ -854,7 +897,6 @@
                         if (tg) tg.showAlert("🚀 رائع! حصلت على +2 عملة MOON، وتفعيل وضع التعدين فائق السرعة لـ 30 ثانية!");
                     }).catch((err) => {
                         console.log("Adsgram Error:", err);
-                        // تعويض آمن للمستخدم في حال عدم توفر إعلانات في منطقته (مرة كل ساعتين)
                         let lastFallback = userState.adCooldowns['boostFallback'] || 0;
                         let twoHours = 2 * 60 * 60 * 1000;
                         if (Date.now() - lastFallback > twoHours) {
@@ -872,7 +914,6 @@
                     console.log(e);
                 }
             } else {
-                // تعويض احتياطي لو المتصفح حظر السكربتات تماماً
                 userState.balance += 2.00;
                 userState.boostEndTime = Date.now() + (30 * 1000);
                 renderLevelsList();
@@ -923,13 +964,12 @@
                         }
                     }).catch((err) => {
                         console.log("Adsgram Error:", err);
-                        // تعويض آمن لمهمة الإعلان إذا كانت غير متوفرة في الدولة
                         let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
                         if (!userState.completedTasks.includes(btnKey)) {
                             userState.completedTasks.push(btnKey);
                             userState.balance += rewardAmount;
                             userState.dailyEarned += rewardAmount;
-                            userState.adCooldowns[adId] = Date.now() + (30 * 60 * 1000); // 30 دقيقة تعويض
+                            userState.adCooldowns[adId] = Date.now() + (30 * 60 * 1000);
                             renderLevelsList();
                             updateUI();
                             if (tg) tg.showAlert(`🚀 نظراً لعدم توفر إعلانات حالياً بمنطقتك، منحناك مكافأة المهمة (${rewardAmount} MOON) كتعويض!`);
@@ -1033,5 +1073,5 @@
             }
         }
     </script>
-</body>
+</body> 
 </html>
