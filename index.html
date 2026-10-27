@@ -86,7 +86,6 @@
         .levelup-stats-card { background: rgba(7, 11, 25, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
         .levelup-stats-card .stat-title { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 2px; }
         .levelup-stats-card .stat-val { font-size: 1rem; color: #fff; font-weight: bold; }
-        .levelup-stats-card .stat-sub { font-size: 0.7rem; color: var(--green); margin-top: 2px; }
 
         /* بطاقات المحفظة والتصميم الجديد */
         .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
@@ -418,6 +417,7 @@
             adCooldowns: {},
             lastClaimTime: 0,
             claimAttemptsCount: 0,
+            lastActiveTime: Date.now(),
             startTime: Date.now()
         };
 
@@ -430,7 +430,31 @@
             } catch(e) { console.log(e); }
         }
 
+        // أقصى سقف للتعدين هو 24 ساعة (بالثواني = 86400)
+        const MAX_MINING_SECONDS = 24 * 60 * 60;
+        const SPEED_PER_SECOND = 0.000010; 
+
+        // حساب الأرباح الفائتة مع تطبيق سقف الـ 24 ساعة عند الخروج من البوت
+        let nowTime = Date.now();
+        if (userState.lastActiveTime) {
+            let elapsedSeconds = Math.floor((nowTime - userState.lastActiveTime) / 1000);
+            if (elapsedSeconds > 0) {
+                let currentPendingRate = SPEED_PER_SECOND * userState.level;
+                let maxAllowedPending = MAX_MINING_SECONDS * currentPendingRate;
+                
+                // حساب كم ينتج خلال الوقت المنقضي
+                let earnedWhileAway = elapsedSeconds * currentPendingRate;
+                userState.pending += earnedWhileAway;
+
+                // التأكد من عدم تجاوز الحد الأقصى لأرباح 24 ساعة
+                if (userState.pending > maxAllowedPending) {
+                    userState.pending = maxAllowedPending;
+                }
+            }
+        }
+
         function saveUserState() {
+            userState.lastActiveTime = Date.now();
             localStorage.setItem(savedStateKey, JSON.stringify(userState));
         }
 
@@ -649,11 +673,10 @@
             let progressPercent = Math.min(100, (userState.balance / nextLevelTarget) * 100);
             document.getElementById('levelProgressBar').style.width = progressPercent + '%';
 
-            let oldLevel = userState.level;
             if (userState.balance >= nextLevelTarget && userState.level < 150) {
                 userState.level++;
                 renderLevelsList();
-                showLevelUpModal(userState.level); // إظهار واجهة إنجاز المستوى الفاخرة عند الترقية
+                showLevelUpModal(userState.level);
             }
 
             const botUsername = "UsdtMysteryBox77_bot";
@@ -688,7 +711,16 @@
         updateUI();
 
         setInterval(() => {
-            userState.pending += 0.000010;
+            let currentPendingRate = SPEED_PER_SECOND * userState.level;
+            let maxAllowedPending = MAX_MINING_SECONDS * currentPendingRate;
+
+            // زيادة الأرباح فقط إذا لم يصل السقف إلى 24 ساعة (maxAllowedPending)
+            if (userState.pending < maxAllowedPending) {
+                userState.pending += currentPendingRate;
+                if (userState.pending > maxAllowedPending) {
+                    userState.pending = maxAllowedPending;
+                }
+            }
             
             let now = Date.now();
             ['ad1', 'ad2'].forEach(adKey => {
@@ -723,8 +755,8 @@
             let elapsed = Date.now() - userState.startTime;
             let remaining = CYCLE_TIME - elapsed;
 
-            if (remaining <= 0) {
-                document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز)";
+            if (remaining <= 0 || userState.pending >= maxAllowedPending) {
+                document.getElementById('countdownTimer').innerText = "24:00:00 (اكتمل التعدين)";
             } else {
                 let hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -783,7 +815,7 @@
             renderLevelsList();
             updateUI();
             
-            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة وإضافتها للرصيد بنجاح، وبدء دورة جديدة!");
+            if (tg) tg.showAlert("✅ تمت مطالبة المكافأة وإضافتها للرصيد بنجاح، وبدء دورة تعدين جديدة لمدة 24 ساعة!");
         }
 
         function claimTeamCommission() {
@@ -917,6 +949,7 @@
             document.getElementById('tasksModal').style.display = 'none';
             document.getElementById('walletModal').style.display = 'none';
             document.getElementById('captchaModal').style.display = 'none';
+            document.getElementById('levelUpModal').style.display = 'none';
         }
         
         function closeModal(id) { 
