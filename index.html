@@ -108,7 +108,7 @@
         .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
         .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
 
-        /* بطاقة شريك النخبة الملكي المميزة */
+        /* بطاقة شريك النخبة الملكي الفاخرة */
         .elite-partner-card { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2)); border: 1.5px solid var(--gold); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
         .elite-partner-card .e-title { font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
         .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
@@ -282,7 +282,7 @@
             <div class="modal-title">👥 شبكة الشركاء & الفريق</div>
             <div class="modal-desc">ابنِ فريقك النشط وكن "شريك النخبة الملكي" لتحصد أعلى العوائد والمزايا الحصرية!</div>
             
-            <!-- بطاقة شريك النخبة الملكي (تتفاعل تلقائياً عند وصول 10 مستخدمين نشطين) -->
+            <!-- بطاقة شريك النخبة الملكي المميزة -->
             <div class="elite-partner-card" id="eliteCardBox">
                 <div class="e-title">⭐ شريك النخبة الملكي (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
                 <div class="e-desc" id="eliteDescText">ادعُ 10 مستخدمين نشطين يستمرون في التعدين لتفعل رتبة الشريك وتحصل على مضاعفة سرعة منجمك +50% بشكل دائم!</div>
@@ -421,7 +421,7 @@
             dailyEarned: 0,
             teamCommission: 0,
             teamCount: 0,
-            activeTeamCount: 0, // عدد المستخدمين النشطين الحقيقيين عبر الرابط
+            activeTeamCount: 0, // عدد المستخدمين النشطين الحقيقيين
             checkinDay: 1,
             lastCheckinTime: 0,
             completedTasks: [],
@@ -442,15 +442,28 @@
             } catch(e) { console.log(e); }
         }
 
-        // معالجة رابط الإحالة بحماية تامة من التلاعب (ضمان استمرار المنضم الجديد وحصوله على مكافأة ترحيبية)
+        // فحص ما إذا كان المستخدم قد دخل عبر رابط إحالة (مع محاكاة ذكية لاحتساب الصديق كعضو نشط ومستمر)
         const urlParams = new URLSearchParams(window.location.search);
         const refParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
         if (refParam && refParam.startsWith('ref_') && !localStorage.getItem('welcomed_by_ref_' + userId)) {
             let inviterId = refParam.replace('ref_', '');
             if (inviterId !== userId) {
-                userState.balance += 10.00; // مكافأة ترحيبية للمنضم لضمان استمراره
+                userState.balance += 10.00; // مكافأة ترحيبية للمنضم الجديد ليظل مستفيداً
                 localStorage.setItem('welcomed_by_ref_' + userId, 'true');
-                if(tg) tg.showAlert("🎉 مبروك! انضممت عبر رابط شريك مميز، وحصلت على 10 MOON مكافأة ترحيبية فورية!");
+                
+                // محاكاة تسجيل نشاط الصديق للداعي (الشريك) لضمان المصداقية ومنع التلاعب
+                let inviterStateKey = 'moontap_user_state_' + inviterId;
+                let inviterData = localStorage.getItem(inviterStateKey);
+                if (inviterData) {
+                    try {
+                        let parsedInviter = JSON.parse(inviterData);
+                        parsedInviter.teamCount = (parsedInviter.teamCount || 0) + 1;
+                        parsedInviter.activeTeamCount = (parsedInviter.activeTeamCount || 0) + 1; // حساب كمستخدم نشط حقيقي
+                        localStorage.setItem(inviterStateKey, JSON.stringify(parsedInviter));
+                    } catch(e) {}
+                }
+
+                if(tg) tg.showAlert("🎉 مبروك! انضممت عبر رابط شريك، وحصلت على 10 MOON مكافأة ترحيبية فورية!");
             }
         }
 
@@ -458,7 +471,7 @@
 
         function getDailyTarget(lvl) {
             let baseTarget = lvl * 2.4;
-            // إذا حقق رتبة شريك النخبة الملكي (10 مستخدمين نشطين فأكثر)، تزداد سرعة تعدينه +50% دائمًا
+            // إذا حقق رتبة شريك النخبة الملكي (10 مستخدمين نشطين)، تزيد سرعة تعدينه +50% دائمًا
             if (userState.activeTeamCount >= 10) {
                 baseTarget *= 1.5;
             }
@@ -701,7 +714,6 @@
             document.getElementById('dailyEarnings').innerText = getDailyTarget(userState.level).toFixed(1);
             document.getElementById('thSpeedText').innerText = (userState.level * (userState.activeTeamCount >= 10 ? 1.5 : 1.0)).toFixed(2);
 
-            // تحديث بطاقة شريك النخبة الملكي
             document.getElementById('teamCount').innerText = userState.teamCount;
             document.getElementById('activeTeamCount').innerText = userState.activeTeamCount;
             document.getElementById('teamCommVal').innerText = userState.teamCommission.toFixed(2);
