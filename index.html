@@ -407,7 +407,7 @@
 
         let userState = {
             balance: 0,
-            pending: 0.00, // يبدأ من الصفر تماماً كما طلبت
+            pending: 0.000000001, // يبدأ من القيمة الصفرية الدقيقة كما طلبت
             level: 1,
             dailyEarned: 0,
             teamCommission: 0,
@@ -430,12 +430,17 @@
             } catch(e) { console.log(e); }
         }
 
-        const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة كحد أقصى
-        
-        // سرعة التعدين تتسارع تناسبياً مع المستوى (كلما زاد المستوى زادت سرعة العد)
+        const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة كاملة
+
+        // حساب معدل الزيادة لكل ثانية بحيث يتناسب طردياً مع المستوى 
+        // ويمتلئ العداد ليصل إلى إجمالي إنتاج الـ 24 ساعة بالضبط عند اكتمال الوقت
+        function getDailyTarget(lvl) {
+            return lvl * 24.0; // إجمالي العملات في 24 ساعة للمستوى (مثلاً المستوى 4 ينتج 96 عملة في اليوم)
+        }
+
         function getSpeedPerSecond(lvl) {
-            // المستوى 1 ينتج أرباح واضحة، وكلما صعدت ترتفع السرعة بقوة
-            return 0.005000 * lvl; 
+            let totalDaily = getDailyTarget(lvl);
+            return totalDaily / MAX_MINING_SECONDS; // التوزيع الدقيق للثانية الواحدة طوال 24 ساعة
         }
 
         let nowTime = Date.now();
@@ -443,9 +448,9 @@
             let elapsedSeconds = Math.floor((nowTime - userState.lastActiveTime) / 1000);
             if (elapsedSeconds > 0) {
                 let currentRate = getSpeedPerSecond(userState.level);
-                let maxAllowedPending = MAX_MINING_SECONDS * (currentRate / 60); // تعديل المعامل ليكون منطقياً مع 24 ساعة
+                let maxAllowedPending = getDailyTarget(userState.level);
                 
-                let earnedWhileAway = elapsedSeconds * (currentRate / 10);
+                let earnedWhileAway = elapsedSeconds * currentRate;
                 userState.pending += earnedWhileAway;
 
                 if (userState.pending > maxAllowedPending) {
@@ -662,7 +667,7 @@
             document.getElementById('peakLevel').innerText = userState.level;
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(4);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
-            document.getElementById('dailyEarnings').innerText = (userState.level * 24).toFixed(1);
+            document.getElementById('dailyEarnings').innerText = getDailyTarget(userState.level).toFixed(1);
             document.getElementById('thSpeedText').innerText = (userState.level * 1.00).toFixed(2);
 
             let currentTotalForCalc = userState.balance + userState.pending;
@@ -692,7 +697,7 @@
         function showLevelUpModal(newLevel) {
             document.getElementById('popupLevelNum').innerText = newLevel;
             document.getElementById('popupThVal').innerText = `TH/s ${(newLevel * 1.00).toFixed(2)}`;
-            document.getElementById('popupDayVal').innerText = `MOON ${(newLevel * 24).toFixed(1)}`;
+            document.getElementById('popupDayVal').innerText = `MOON ${getDailyTarget(newLevel).toFixed(1)}`;
             document.getElementById('levelUpModal').style.display = 'flex';
         }
 
@@ -712,13 +717,13 @@
         renderLevelsList();
         updateUI();
 
-        // التعدين المتسارع في الوقت الحقيقي بناءً على المستوى
+        // التعدين المتسارع والتدريجي الدقيق في الوقت الحقيقي
         setInterval(() => {
             let currentRate = getSpeedPerSecond(userState.level);
-            let maxAllowedPending = MAX_MINING_SECONDS * (currentRate / 60);
+            let maxAllowedPending = getDailyTarget(userState.level);
 
             if (userState.pending < maxAllowedPending) {
-                userState.pending += currentRate; // التسارع الحقيقي المتوافق مع المستوى
+                userState.pending += currentRate; // زيادة تدريجية دقيقة تتناسق تماماً مع المستوى خلال 24 ساعة
                 if (userState.pending > maxAllowedPending) {
                     userState.pending = maxAllowedPending;
                 }
@@ -812,7 +817,7 @@
             let claimedAmount = userState.pending;
             userState.balance += claimedAmount;
             userState.dailyEarned += claimedAmount;
-            userState.pending = 0.0;
+            userState.pending = 0.000000001; // إعادة الضبط لتبدأ من جديد من الصفر
             userState.startTime = Date.now();
             renderLevelsList();
             updateUI();
@@ -1009,4 +1014,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
