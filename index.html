@@ -71,7 +71,7 @@
         .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
 
-        /* تصميم نافذة إنجاز المستوى الجديد */
+        /* نافذة إنجاز المستوى الجديد */
         .levelup-box { background: linear-gradient(135deg, #0f172a, #1e1b4b); border: 2px solid var(--blue); padding: 25px 20px; border-radius: 28px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 40px rgba(59,130,246,0.4); position: relative; overflow: hidden; animation: popUp 0.3s ease-out; }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
@@ -87,7 +87,7 @@
         .levelup-stats-card .stat-title { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 2px; }
         .levelup-stats-card .stat-val { font-size: 1rem; color: #fff; font-weight: bold; }
 
-        /* بطاقات المحفظة والتصميم الجديد */
+        /* المحفظة */
         .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
         .wallet-card-box .label { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px; }
         .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; }
@@ -97,7 +97,7 @@
         .btn-save-wallet { width: 100%; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: background 0.2s; }
         .btn-save-wallet:active { background: rgba(16, 185, 129, 0.3); }
 
-        /* تمرين السحب الخفيف (Swipe Captcha) */
+        /* تمرين السحب الخفيف */
         .captcha-container { background: #070b19; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .captcha-track { position: relative; width: 100%; height: 50px; background: #1f2937; border-radius: 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(59,130,246,0.3); }
         .captcha-text { font-size: 0.75rem; color: #94a3b8; pointer-events: none; }
@@ -108,10 +108,10 @@
         .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
         .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
 
-        /* بطاقة الشريك الاستراتيجي وفريق التعدين الموثوق */
-        .partner-status-box { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.15)); border: 1px solid var(--green); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
-        .partner-status-box .p-title { font-size: 0.8rem; color: var(--green); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
-        .partner-status-box .p-desc { font-size: 0.7rem; color: #94a3b8; line-height: 1.4; }
+        /* بطاقة شريك النخبة الملكي المميزة */
+        .elite-partner-card { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2)); border: 1.5px solid var(--gold); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
+        .elite-partner-card .e-title { font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+        .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
 
         .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
         .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
@@ -276,16 +276,16 @@
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء وفريق العمل والشريك الاستراتيجي -->
+    <!-- نافذة الأصدقاء وشريك النخبة الملكي والفريق -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
-            <div class="modal-title">👥 فريق التعدين الشريك</div>
-            <div class="modal-desc">أنت الشريك الرئيسي! ادعِ أصدقاءك، واضمن استمرارهم لتربح أعلى عوائد وتدعم نجاح المنظومة.</div>
+            <div class="modal-title">👥 شبكة الشركاء & الفريق</div>
+            <div class="modal-desc">ابنِ فريقك النشط وكن "شريك النخبة الملكي" لتحصد أعلى العوائد والمزايا الحصرية!</div>
             
-            <!-- بطاقة توضيحية لنظام الشريك الاستراتيجي -->
-            <div class="partner-status-box">
-                <div class="p-title">🛡️ نظام الشريك والمستفيد الأكبر</div>
-                <div class="p-desc">الصديق الذي يدخل عبر رابطك يحصل على مكافأة ترحيبية فورية، وأنت كشريك أساسي تحصد عوائد متسارعة ودائمة من نشاط فريقك النشط!</div>
+            <!-- بطاقة شريك النخبة الملكي (تتفاعل تلقائياً عند وصول 10 مستخدمين نشطين) -->
+            <div class="elite-partner-card" id="eliteCardBox">
+                <div class="e-title">⭐ شريك النخبة الملكي (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
+                <div class="e-desc" id="eliteDescText">ادعُ 10 مستخدمين نشطين يستمرون في التعدين لتفعل رتبة الشريك وتحصل على مضاعفة سرعة منجمك +50% بشكل دائم!</div>
             </div>
 
             <div class="friends-actions">
@@ -314,11 +314,11 @@
                     <strong>0</strong>
                 </div>
                 <div class="bonus-box">
-                    <span>أعضاء الفريق</span>
+                    <span>إجمالي الفريق</span>
                     <strong id="teamCount">0</strong>
                 </div>
                 <div class="bonus-box">
-                    <span>مؤهل نشط</span>
+                    <span>نشطون مستمرون</span>
                     <strong id="activeTeamCount">0</strong>
                 </div>
             </div>
@@ -327,7 +327,7 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين (إخفاء المستويات السابقة وتحديث القائمة) -->
+    <!-- نافذة متجر المعدنين -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ رحلة ملوك التعدين (150 مستوى)</div>
@@ -421,7 +421,7 @@
             dailyEarned: 0,
             teamCommission: 0,
             teamCount: 0,
-            activeTeamCount: 0,
+            activeTeamCount: 0, // عدد المستخدمين النشطين الحقيقيين عبر الرابط
             checkinDay: 1,
             lastCheckinTime: 0,
             completedTasks: [],
@@ -442,23 +442,27 @@
             } catch(e) { console.log(e); }
         }
 
-        // فحص ما إذا كان المستخدم قد دخل عبر رابط إحالة (مكافأة ترحيبية لمنع المغادرة وضمان الاستفادة)
+        // معالجة رابط الإحالة بحماية تامة من التلاعب (ضمان استمرار المنضم الجديد وحصوله على مكافأة ترحيبية)
         const urlParams = new URLSearchParams(window.location.search);
         const refParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
         if (refParam && refParam.startsWith('ref_') && !localStorage.getItem('welcomed_by_ref_' + userId)) {
             let inviterId = refParam.replace('ref_', '');
             if (inviterId !== userId) {
-                // منح مكافأة ترحيبية للمنضم الجديد ليظل مستفيداً ومستمراً
-                userState.balance += 10.00; 
+                userState.balance += 10.00; // مكافأة ترحيبية للمنضم لضمان استمراره
                 localStorage.setItem('welcomed_by_ref_' + userId, 'true');
-                if(tg) tg.showAlert("🎉 مبروك! انضممت عبر دعوة شريك، وحصلت على مكافأة ترحيبية فورية بقيمة 10 MOON لبدء التعدين بقوة!");
+                if(tg) tg.showAlert("🎉 مبروك! انضممت عبر رابط شريك مميز، وحصلت على 10 MOON مكافأة ترحيبية فورية!");
             }
         }
 
         const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة
 
         function getDailyTarget(lvl) {
-            return lvl * 2.4; 
+            let baseTarget = lvl * 2.4;
+            // إذا حقق رتبة شريك النخبة الملكي (10 مستخدمين نشطين فأكثر)، تزداد سرعة تعدينه +50% دائمًا
+            if (userState.activeTeamCount >= 10) {
+                baseTarget *= 1.5;
+            }
+            return baseTarget;
         }
 
         function getCurrentPendingValue(startTime, lvl) {
@@ -655,7 +659,6 @@
             }
         }
 
-        // عرض المستويات بحيث يختفي المستوى السابق تلقائياً عند الترقية
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
@@ -696,12 +699,21 @@
             document.getElementById('pendingReward').innerText = userState.pending.toFixed(4);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
             document.getElementById('dailyEarnings').innerText = getDailyTarget(userState.level).toFixed(1);
-            document.getElementById('thSpeedText').innerText = (userState.level * 1.00).toFixed(2);
+            document.getElementById('thSpeedText').innerText = (userState.level * (userState.activeTeamCount >= 10 ? 1.5 : 1.0)).toFixed(2);
 
-            // تحديث بيانات إحصائيات الفريق والشريك
+            // تحديث بطاقة شريك النخبة الملكي
             document.getElementById('teamCount').innerText = userState.teamCount;
             document.getElementById('activeTeamCount').innerText = userState.activeTeamCount;
             document.getElementById('teamCommVal').innerText = userState.teamCommission.toFixed(2);
+
+            if (userState.activeTeamCount >= 10) {
+                document.getElementById('eliteStatusText').innerText = "مفعل (شريك النخبة 👑)";
+                document.getElementById('eliteDescText').innerText = "تهانينا! لقد حققت شرط 10 مستخدمين نشطين. منجمك يعمل الآن بسرعة مضاعفة +50% وتحصد أعلى العوائد!";
+                document.getElementById('eliteCardBox').style.borderColor = "var(--green)";
+            } else {
+                document.getElementById('eliteStatusText').innerText = `قيد التقدم (${userState.activeTeamCount}/10)`;
+                document.getElementById('eliteDescText').innerText = `ادعُ 10 مستخدمين نشطين يستمرون في التعدين لتفعل رتبة الشريك الملكي وتحصل على مضاعفة سرعة منجمك +50% دائمًا!`;
+            }
 
             let currentTotalForCalc = userState.balance + userState.pending;
             let calculatedUsdValue = (currentTotalForCalc / 5000) * 0.20;
@@ -747,7 +759,6 @@
             else window.open(shareUrl, '_blank');
         }
 
-        // نسخ رابط الإحالة المباشر
         function copyRefLink() {
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
@@ -756,7 +767,6 @@
             else alert("تم نسخ الرابط!");
         }
 
-        // مشاركة رابط الإحالة المباشر عبر تليجرام
         function shareReferral() {
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
@@ -886,7 +896,7 @@
 
         function claimTeamCommission() {
             if (userState.teamCommission <= 0) {
-                if (tg) tg.showAlert("⚠️ لا توجد أرباح عوائد فريق مطبقة للمطالبة حالياً!");
+                if (tg) tg.showAlert("⚠️ لا توجد أرباح عوائد شريك مطبقة للمطالبة حالياً!");
                 return;
             }
             userState.balance += userState.teamCommission;
@@ -934,7 +944,6 @@
             }
         }
 
-        // المهمة: انضمام لقناة البوت وتحويل الزر لـ "تم ✓" فوراً
         function startTaskLink(url, rewardAmount, taskId, btn) {
             if (tg && tg.openTelegramLink) {
                 tg.openTelegramLink(url);
@@ -1065,4 +1074,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
