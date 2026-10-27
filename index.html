@@ -104,8 +104,9 @@
         .captcha-slider { position: absolute; left: 4px; width: 42px; height: 42px; background: linear-gradient(135deg, var(--blue), var(--purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.1s; z-index: 2; }
         .captcha-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: rgba(16,185,129,0.25); border-radius: 25px; z-index: 1; transition: width 0.05s; }
 
-        .friends-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
-        .friend-btn { background: var(--blue); border: none; padding: 12px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
 
         .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
         .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
@@ -121,12 +122,10 @@
 
         .levels-list-container { max-height: 230px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
         .level-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; transition: all 0.2s; }
-        .level-card-item.unlocked { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
         .level-card-item.current { border: 2px solid var(--gold); background: rgba(245,158,11,0.15); box-shadow: 0 0 12px rgba(245,158,11,0.3); transform: scale(1.01); }
         .level-info h5 { font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
         .level-info p { font-size: 0.7rem; color: #94a3b8; }
         .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; }
-        .unlocked .level-badge-status { color: var(--green); background: rgba(16,185,129,0.2); }
         .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); animation: pulseGold 1.5s infinite; }
         .locked .level-badge-status { color: #64748b; background: rgba(100,116,139,0.15); }
         @keyframes pulseGold { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
@@ -179,7 +178,7 @@
         <div class="mining-speed-info">TH/s <span id="thSpeedText">1.00</span> · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
         <button class="btn-claim" id="btnClaim" onclick="handleClaimAttempt()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
-        <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين (+2 MOON وزيادة 30 ثانية)</button>
+        <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
         <div class="bottom-spacer"></div>
     </div>
 
@@ -272,14 +271,15 @@
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء والإحالة برابط مباشر ونظيف -->
+    <!-- نافذة الأصدقاء والإحالة مع زر نسخ ورابط المشاركة -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
             <div class="modal-title">👥 دعوة الأصدقاء</div>
             <div class="modal-desc">شارك رابط الإحالة الخاص بك واحصل على مكافآت فورية وعوائد تعدين متسارعة!</div>
             
             <div class="friends-actions">
-                <button class="friend-btn" onclick="copyRefLink()">📋 نسخ رابط الإحالة المباشر</button>
+                <button class="friend-btn" onclick="copyRefLink()">📋 نسخ الرابط</button>
+                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة الرابط</button>
             </div>
 
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
@@ -316,7 +316,7 @@
         </div>
     </div>
 
-    <!-- نافذة متجر المعدنين (150 مستوى) -->
+    <!-- نافذة متجر المعدنين (150 مستوى - إخفاء المستويات السابقة عند الترقية) -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ رحلة ملوك التعدين (150 مستوى)</div>
@@ -435,7 +435,6 @@
             return lvl * 2.4; 
         }
 
-        // معادلة التعدين المتسارع والحيوي لصالح المستخدم
         function getCurrentPendingValue(startTime, lvl) {
             let elapsedSeconds = (Date.now() - startTime) / 1000;
             if (elapsedSeconds <= 0) return 0.0000;
@@ -468,6 +467,17 @@
                 const walletInput = document.getElementById('walletInput');
                 if (walletInput) walletInput.value = savedWallet;
             }
+            // استرجاع حالة المهام المكتملة لتظهر كلمة "تم ✓" بدلاً من زر الاشتراك
+            userState.completedTasks.forEach(taskKey => {
+                if (taskKey === 'taskBtn1') {
+                    let btn = document.getElementById('taskBtn1');
+                    if(btn) { btn.innerText = "تم ✓"; btn.classList.add('claimed'); btn.disabled = true; }
+                }
+                if (taskKey === 'taskBtn2') {
+                    let btn = document.getElementById('taskBtn2');
+                    if(btn) { btn.innerText = "تم ✓"; btn.classList.add('claimed'); btn.disabled = true; }
+                }
+            });
         });
 
         function manualSaveWallet() {
@@ -620,19 +630,17 @@
             }
         }
 
+        // عرض المستويات بحيث يختفي المستوى السابق عند الترقية (يبدأ العرض من المستوى الحالي صعوداً)
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
-            for (let i = 1; i <= 150; i++) {
+            for (let i = userState.level; i <= 150; i++) {
                 let requiredCoins = i * 50; 
                 let cardClass = 'locked';
                 let statusText = `🔒 يحتاج ${requiredCoins}`;
 
-                if (i < userState.level) {
-                    cardClass = 'unlocked';
-                    statusText = '✅ مكتمل';
-                } else if (i === userState.level) {
+                if (i === userState.level) {
                     cardClass = 'current';
                     statusText = '🔥 مستواك';
                 }
@@ -640,7 +648,7 @@
                 html += `<div class="level-card-item ${cardClass}">
                     <div class="level-info">
                         <h5>🚀 محطة تنقيب رقم (${i})</h5>
-                        <p>الهدف المطلوبة: ${requiredCoins} MOON</p>
+                        <p>الهدف المطلوب: ${requiredCoins} MOON</p>
                     </div>
                     <div class="level-badge-status">${statusText}</div>
                 </div>`;
@@ -709,13 +717,26 @@
             else window.open(shareUrl, '_blank');
         }
 
-        // نسخ رابط الإحالة المباشر والنظيف
+        // نسخ رابط الإحالة المباشر
         function copyRefLink() {
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             navigator.clipboard.writeText(refLink);
-            if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة المباشر بنجاح!");
+            if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة بنجاح!");
             else alert("تم نسخ الرابط!");
+        }
+
+        // مشاركة رابط الإحالة مباشرة
+        function shareReferral() {
+            const botUsername = "UsdtMysteryBox77_bot";
+            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
+            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح عملات رقمية يومياً! 🌕⛏️ استخدم رابطي:\n\n${refLink}`);
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
+            if (tg) {
+                tg.openTelegramLink(shareUrl);
+            } else {
+                window.open(shareUrl, '_blank');
+            }
         }
 
         renderLevelsList();
@@ -846,6 +867,7 @@
             if (tg) tg.showAlert("✅ تمت مطالبة عمولة الفريق بنجاح!");
         }
 
+        // إعلان تعزيز التعدين (نص نظيف وخالٍ من تفاصيل المكافأة أو الثواني)
         function watchAdForMiningBoost() {
             if (window.Adsgram && typeof window.Adsgram.init === 'function') {
                 try {
@@ -855,7 +877,7 @@
                         userState.boostEndTime = Date.now() + (30 * 1000);
                         renderLevelsList();
                         updateUI();
-                        if (tg) tg.showAlert("🚀 رائع! حصلت على +2 عملة MOON، وتفعيل وضع التعدين فائق السرعة لـ 30 ثانية!");
+                        if (tg) tg.showAlert("🚀 رائع! حصلت على +2 عملة MOON، وتفعيل وضع التعدين فائق السرعة!");
                     }).catch((err) => {
                         console.log("Adsgram Error:", err);
                         let lastFallback = userState.adCooldowns['boostFallback'] || 0;
@@ -866,7 +888,7 @@
                             userState.boostEndTime = Date.now() + (30 * 1000);
                             renderLevelsList();
                             updateUI();
-                            if (tg) tg.showAlert("🚀 نظراً لعدم توفر إعلانات حالياً بمنطقتك، منحناك مكافأة التعويض (+2 MOON وتفعيل التسارع لـ 30 ثانية) كهدية!");
+                            if (tg) tg.showAlert("🚀 نظراً لعدم توفر إعلانات حالياً بمنطقتك، منحناك مكافأة التعويض (+2 MOON) كهدية!");
                         } else {
                             if (tg) tg.showAlert("⚠️ الإعلانات غير متاحة حالياً. يمكنك المحاولة لاحقاً أو بعد انتهاء مهلة التعويض!");
                         }
@@ -879,10 +901,11 @@
                 userState.boostEndTime = Date.now() + (30 * 1000);
                 renderLevelsList();
                 updateUI();
-                if (tg) tg.showAlert("🚀 تم منحك مكافأة التعويض (+2 MOON وتسارع السرعة لـ 30 ثانية)!");
+                if (tg) tg.showAlert("🚀 تم منحك مكافأة التعويض (+2 MOON)!");
             }
         }
 
+        // مهمة الانضمام للقناة مع تحويل الزر إلى "تم ✓" فوراً
         function startTaskLink(url, rewardAmount, taskId, btn) {
             if (tg && tg.openTelegramLink) {
                 tg.openTelegramLink(url);
@@ -890,20 +913,18 @@
                 window.open(url, '_blank');
             }
 
-            setTimeout(() => {
-                let btnKey = 'taskBtn' + (taskId === 'task1' ? '1' : '2');
-                if (!userState.completedTasks.includes(btnKey)) {
-                    userState.completedTasks.push(btnKey);
-                    userState.balance += rewardAmount;
-                    userState.dailyEarned += rewardAmount;
-                    btn.innerText = "تم ✓";
-                    btn.classList.add('claimed');
-                    btn.disabled = true;
-                    renderLevelsList();
-                    updateUI();
-                    if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON لإتمام المهمة.`);
-                }
-            }, 1500);
+            let btnKey = 'taskBtn' + (taskId === 'task1' ? '1' : '2');
+            if (!userState.completedTasks.includes(btnKey)) {
+                userState.completedTasks.push(btnKey);
+                userState.balance += rewardAmount;
+                userState.dailyEarned += rewardAmount;
+                btn.innerText = "تم ✓";
+                btn.classList.add('claimed');
+                btn.disabled = true;
+                renderLevelsList();
+                updateUI();
+                if (tg) tg.showAlert(`🎉 مبروك! حصلت على ${rewardAmount} MOON لإتمام المهمة.`);
+            }
         }
 
         function watchAdTaskLevel(rewardAmount, adId, btn) {
@@ -1013,18 +1034,6 @@
             updateUI();
             closeModal('walletModal');
         }
-
-        function shareReferral() {
-            const botUsername = "UsdtMysteryBox77_bot";
-            const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
-            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح عملات رقمية يومياً! 🌕⛏️ استخدم رابطي:\n\n${refLink}`);
-            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`;
-            if (tg) {
-                tg.openTelegramLink(shareUrl);
-            } else {
-                window.open(shareUrl, '_blank');
-            }
-        }
     </script>
-</body> 
+</body>
 </html>
