@@ -177,7 +177,7 @@
 
         <div class="mining-reward-label">مكافأة التعدين غير المطالب بها</div>
         <div class="mining-reward-val" id="pendingReward">0.000000</div>
-        <div class="mining-speed-info">TH/s 1.00 · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
+        <div class="mining-speed-info">TH/s <span id="thSpeedText">1.00</span> · القيمة التقديرية: $<span id="dynamicPriceVal">0.00</span></div>
 
         <button class="btn-claim" id="btnClaim" onclick="handleClaimAttempt()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
@@ -407,7 +407,7 @@
 
         let userState = {
             balance: 0,
-            pending: 0.05,
+            pending: 0.00, // يبدأ من الصفر تماماً كما طلبت
             level: 1,
             dailyEarned: 0,
             teamCommission: 0,
@@ -430,23 +430,24 @@
             } catch(e) { console.log(e); }
         }
 
-        // أقصى سقف للتعدين هو 24 ساعة (بالثواني = 86400)
-        const MAX_MINING_SECONDS = 24 * 60 * 60;
-        const SPEED_PER_SECOND = 0.000010; 
+        const MAX_MINING_SECONDS = 24 * 60 * 60; // 24 ساعة كحد أقصى
+        
+        // سرعة التعدين تتسارع تناسبياً مع المستوى (كلما زاد المستوى زادت سرعة العد)
+        function getSpeedPerSecond(lvl) {
+            // المستوى 1 ينتج أرباح واضحة، وكلما صعدت ترتفع السرعة بقوة
+            return 0.005000 * lvl; 
+        }
 
-        // حساب الأرباح الفائتة مع تطبيق سقف الـ 24 ساعة عند الخروج من البوت
         let nowTime = Date.now();
         if (userState.lastActiveTime) {
             let elapsedSeconds = Math.floor((nowTime - userState.lastActiveTime) / 1000);
             if (elapsedSeconds > 0) {
-                let currentPendingRate = SPEED_PER_SECOND * userState.level;
-                let maxAllowedPending = MAX_MINING_SECONDS * currentPendingRate;
+                let currentRate = getSpeedPerSecond(userState.level);
+                let maxAllowedPending = MAX_MINING_SECONDS * (currentRate / 60); // تعديل المعامل ليكون منطقياً مع 24 ساعة
                 
-                // حساب كم ينتج خلال الوقت المنقضي
-                let earnedWhileAway = elapsedSeconds * currentPendingRate;
+                let earnedWhileAway = elapsedSeconds * (currentRate / 10);
                 userState.pending += earnedWhileAway;
 
-                // التأكد من عدم تجاوز الحد الأقصى لأرباح 24 ساعة
                 if (userState.pending > maxAllowedPending) {
                     userState.pending = maxAllowedPending;
                 }
@@ -492,7 +493,7 @@
         }
 
         function handleClaimAttempt() {
-            if (userState.pending < 0.01) {
+            if (userState.pending < 0.1) {
                 if (tg) tg.showAlert("⚠️ المكافأة قليلة جداً للمطالبة حالياً، انتظر قليلاً!");
                 else alert("المكافأة قليلة جداً للمطالبة حالياً!");
                 return;
@@ -659,9 +660,10 @@
             document.getElementById('mainLevelBadge').innerText = userState.level;
             document.getElementById('modalLevel').innerText = userState.level;
             document.getElementById('peakLevel').innerText = userState.level;
-            document.getElementById('pendingReward').innerText = userState.pending.toFixed(6);
+            document.getElementById('pendingReward').innerText = userState.pending.toFixed(4);
             document.getElementById('btnClaimVal').innerText = userState.pending.toFixed(2);
-            document.getElementById('dailyEarnings').innerText = userState.dailyEarned.toFixed(1);
+            document.getElementById('dailyEarnings').innerText = (userState.level * 24).toFixed(1);
+            document.getElementById('thSpeedText').innerText = (userState.level * 1.00).toFixed(2);
 
             let currentTotalForCalc = userState.balance + userState.pending;
             let calculatedUsdValue = (currentTotalForCalc / 5000) * 0.20;
@@ -689,7 +691,7 @@
 
         function showLevelUpModal(newLevel) {
             document.getElementById('popupLevelNum').innerText = newLevel;
-            document.getElementById('popupThVal').innerText = `TH/${(newLevel * 1.10).toFixed(2)}`;
+            document.getElementById('popupThVal').innerText = `TH/s ${(newLevel * 1.00).toFixed(2)}`;
             document.getElementById('popupDayVal').innerText = `MOON ${(newLevel * 24).toFixed(1)}`;
             document.getElementById('levelUpModal').style.display = 'flex';
         }
@@ -710,13 +712,13 @@
         renderLevelsList();
         updateUI();
 
+        // التعدين المتسارع في الوقت الحقيقي بناءً على المستوى
         setInterval(() => {
-            let currentPendingRate = SPEED_PER_SECOND * userState.level;
-            let maxAllowedPending = MAX_MINING_SECONDS * currentPendingRate;
+            let currentRate = getSpeedPerSecond(userState.level);
+            let maxAllowedPending = MAX_MINING_SECONDS * (currentRate / 60);
 
-            // زيادة الأرباح فقط إذا لم يصل السقف إلى 24 ساعة (maxAllowedPending)
             if (userState.pending < maxAllowedPending) {
-                userState.pending += currentPendingRate;
+                userState.pending += currentRate; // التسارع الحقيقي المتوافق مع المستوى
                 if (userState.pending > maxAllowedPending) {
                     userState.pending = maxAllowedPending;
                 }
@@ -1007,4 +1009,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
