@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MoonTap Cloud Mining</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <!-- استدعاء مكتبة Supabase للربط السحابي الحقيقي والقوي -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -104,21 +102,10 @@
         .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; }
         .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); }
 
-        .progress-container { background: #070b19; padding: 10px 12px; border-radius: 14px; margin-bottom: 15px; text-align: right; border: 1px solid rgba(255,255,255,0.05); }
-        .progress-bar-bg { width: 100%; background: #1f2937; height: 9px; border-radius: 5px; margin-top: 6px; overflow: hidden; }
-        .progress-bar-fill { width: 0%; background: linear-gradient(90deg, var(--blue), var(--purple)); height: 100%; transition: width 0.4s ease; border-radius: 5px; }
-
         .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #070b19; padding: 10px; border-radius: 14px; }
         .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 2px; text-align: center; font-size: 0.7rem; color: #94a3b8; }
         .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); }
         .checkin-day strong { display: block; font-size: 0.8rem; color: #fff; margin-top: 2px; }
-
-        .task-item { background: #070b19; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; text-align: right; }
-        .task-info h4 { font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
-        .task-info p { font-size: 0.75rem; color: var(--gold); }
-        .task-btn { background: var(--blue); color: #fff; border: none; padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        .task-btn.claimed { background: var(--green); }
-        .task-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; }
 
         .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 6px; text-align: center; font-size: 0.85rem; outline: none; }
         .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; }
@@ -252,7 +239,6 @@
     </div>
 
     <script>
-        // إعدادات قاعدة البيانات السحابية (Supabase) المدمجة بالمعلومات الخاصة بك
         const SUPABASE_URL = 'https://udkgvdwoteksgixuvbrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pm7dvD7MbK0GuI8WUbb5IA_MPdYzN1P';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -261,7 +247,6 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let userId = (tg?.initDataUnsafe?.user?.id)?.toString() || ('user_' + Math.floor(Math.random() * 1000000));
-        let username = tg?.initDataUnsafe?.user?.username ? ('@' + tg?.initDataUnsafe?.user?.username) : ('مستخدم_' + userId);
 
         let userState = {
             balance: 0,
@@ -269,11 +254,9 @@
             level: 1,
             teamCount: 0,
             activeTeamCount: 0,
-            teamCommission: 0,
-            startTime: Date.now()
+            teamCommission: 0
         };
 
-        // مزامنة واحتساب بيانات المستخدم مع قاعدة البيانات السحابية فوراً وضمان احتساب الإحالات
         async function syncUserDataWithServer() {
             let { data, error } = await supabaseClient
                 .from('users')
@@ -285,13 +268,12 @@
             const refParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
 
             if (!data) {
-                // مستخدم جديد تماماً
                 let inviterId = null;
                 if (refParam && refParam.startsWith('ref_')) {
                     inviterId = refParam.replace('ref_', '');
                 }
 
-                let initialBalance = inviterId ? 10.00 : 0; // مكافأة ترحيبية عبر رابط الإحالة
+                let initialBalance = inviterId ? 10.00 : 0;
 
                 await supabaseClient.from('users').insert([{
                     telegram_id: userId,
@@ -302,7 +284,6 @@
                     inviter_id: inviterId
                 }]);
 
-                // تحديث بيانات وسجل المُحيل في السرفر تلقائياً بشكل حقيقي ودقيق
                 if (inviterId && inviterId !== userId) {
                     let { data: inviterData } = await supabaseClient
                         .from('users')
@@ -320,7 +301,6 @@
 
                 userState.balance = initialBalance;
             } else {
-                // جلب بيانات المستخدم الحقيقية من السرفر
                 userState.balance = data.balance || 0;
                 userState.level = data.level || 1;
                 userState.activeTeamCount = data.active_team_count || 0;
@@ -341,12 +321,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             syncUserDataWithServer();
         });
-
-        function getDailyTarget(lvl) {
-            let baseTarget = lvl * 2.4;
-            if (userState.activeTeamCount >= 10) baseTarget *= 1.5;
-            return baseTarget;
-        }
 
         function updateUI() {
             document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
@@ -394,7 +368,7 @@
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             navigator.clipboard.writeText(refLink);
-            if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة بنجخاب!");
+            if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة بنجاح!");
         }
 
         function shareReferral() {
@@ -454,4 +428,4 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
-</html>
+</html> 
