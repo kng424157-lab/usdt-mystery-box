@@ -404,9 +404,6 @@
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // ==========================================
-        // إعدادات AdsGram مع نظام التعويض التلقائي عند عدم توفر إعلانات
-        // ==========================================
         const ADS_DEBUG_MODE = false; 
         const BOOST_BLOCK_ID = "56211";  
         const TASK_BLOCK_ID  = "int-56202"; 
@@ -432,9 +429,6 @@
         }
         window.addEventListener('load', initAdsgramControllers);
 
-        // ==========================================
-        // إدارة بيانات المستخدم
-        // ==========================================
         let userId = (tg?.initDataUnsafe?.user?.id) || localStorage.getItem('moontapUserId') || ('user_' + Math.floor(Math.random() * 1000000));
         let username = tg?.initDataUnsafe?.user?.username ? ('@' + tg?.initDataUnsafe?.user?.username) : ('مستخدم_' + userId);
         localStorage.setItem('moontapUserId', userId);
@@ -951,35 +945,34 @@
         }
 
         // ==========================================
-        // دالة تشغيل إعلان التعدين مع (نظام التعويض التلقائي Fallback)
+        // تعديل فوري ومضمون لتجاوز رسالة عدم توفر الإعلانات
         // ==========================================
         function watchAdForMiningBoost() {
             if (!boostAdController) initAdsgramControllers();
 
             if (boostAdController) {
                 boostAdController.show().then((result) => {
+                    // إذا شاهد الإعلان الحقيقي بنجاح
                     userState.balance += 2.00;
                     userState.boostEndTime = Date.now() + (30 * 1000);
                     renderLevelsList();
                     updateUI();
                     if (tg) tg.showAlert("🚀 رائع! حصلت على +2 عملة MOON، وتفعيل وضع التعدين فائق السرعة!");
                 }).catch((err) => {
-                    // نظام التعويض الذكي: إذا لم تتوفر إعلانات، يتم منح المستخدم المكافأة تلقائياً لضمان تجربته
-                    console.log("Adsgram No Fill Fallback Triggered:", err);
-                    userState.balance += 2.00;
-                    userState.boostEndTime = Date.now() + (30 * 1000);
-                    renderLevelsList();
-                    updateUI();
-                    if (tg) tg.showAlert("🎁 نظراً لعدم توفر إعلانات في منطقتك حالياً، منحناك مكافأة التعويض التلقائية (+2 MOON) وهدية السرعة الفورية!");
+                    // تعويض فوري ومباشر في حال عدم توفر إعلانات
+                    grantBoostCompensation();
                 });
             } else {
-                // تعويض فوري في حال لم تتحمل المكتبة بعد
-                userState.balance += 2.00;
-                userState.boostEndTime = Date.now() + (30 * 1000);
-                renderLevelsList();
-                updateUI();
-                if (tg) tg.showAlert("🚀 تم منحك مكافأة التعدين الفورية (+2 MOON)!");
+                grantBoostCompensation();
             }
+        }
+
+        function grantBoostCompensation() {
+            userState.balance += 2.00;
+            userState.boostEndTime = Date.now() + (30 * 1000);
+            renderLevelsList();
+            updateUI();
+            if (tg) tg.showAlert("🎁 تم منحك مكافأة التعدين الفورية (+2 MOON) وتفعيل السرعة بنجاح!");
         }
 
         function startTaskLink(url, rewardAmount, taskId, btn) {
@@ -1003,48 +996,31 @@
             }
         }
 
-        // ==========================================
-        // دالة إعلانات المهام مع نظام التعويض الذكي أيضاً
-        // ==========================================
         function watchAdTaskLevel(rewardAmount, adId, btn) {
             if (!taskAdController) initAdsgramControllers();
 
             if (taskAdController) {
                 taskAdController.show().then((result) => {
-                    let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
-                    if (!userState.completedTasks.includes(btnKey)) {
-                        userState.completedTasks.push(btnKey);
-                        userState.balance += rewardAmount;
-                        userState.dailyEarned += rewardAmount;
-                        userState.adCooldowns[adId] = Date.now() + AD_COOLDOWN_TIME;
-
-                        renderLevelsList();
-                        updateUI();
-                        if (tg) tg.showAlert(`🚀 مبروك! حصلت على ${rewardAmount} MOON.`);
-                    }
+                    completeTaskReward(rewardAmount, adId);
                 }).catch((err) => {
-                    console.log("Adsgram Task Fallback Triggered:", err);
-                    let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
-                    if (!userState.completedTasks.includes(btnKey)) {
-                        userState.completedTasks.push(btnKey);
-                        userState.balance += rewardAmount;
-                        userState.dailyEarned += rewardAmount;
-                        userState.adCooldowns[adId] = Date.now() + (30 * 60 * 1000); // مهلة نصف ساعة بدلاً من ساعتين للتعويض
-                        renderLevelsList();
-                        updateUI();
-                        if (tg) tg.showAlert(`🎁 نظراً لعدم توفر إعلانات حالياً، منحناك مكافأة المهمة (${rewardAmount} MOON) كهدية تعويضية!`);
-                    }
+                    completeTaskReward(rewardAmount, adId);
                 });
             } else {
-                let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
-                if (!userState.completedTasks.includes(btnKey)) {
-                    userState.completedTasks.push(btnKey);
-                    userState.balance += rewardAmount;
-                    userState.dailyEarned += rewardAmount;
-                    renderLevelsList();
-                    updateUI();
-                    if (tg) tg.showAlert(`🎁 تم منحك مكافأة المهمة (${rewardAmount} MOON)!`);
-                }
+                completeTaskReward(rewardAmount, adId);
+            }
+        }
+
+        function completeTaskReward(rewardAmount, adId) {
+            let btnKey = 'taskBtnAd' + (adId === 'ad1' ? '1' : '2');
+            if (!userState.completedTasks.includes(btnKey)) {
+                userState.completedTasks.push(btnKey);
+                userState.balance += rewardAmount;
+                userState.dailyEarned += rewardAmount;
+                userState.adCooldowns[adId] = Date.now() + (30 * 60 * 1000); 
+
+                renderLevelsList();
+                updateUI();
+                if (tg) tg.showAlert(`🎁 مبروك! حصلت على ${rewardAmount} MOON بنجاح.`);
             }
         }
 
@@ -1119,4 +1095,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
