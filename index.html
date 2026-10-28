@@ -241,7 +241,15 @@
     <script>
         const SUPABASE_URL = 'https://udkgvdwoteksgixuvbrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pm7dvD7MbK0GuI8WUbb5IA_MPdYzN1P';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.log("Supabase init error:", e);
+        }
 
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
@@ -249,7 +257,7 @@
         let userId = (tg?.initDataUnsafe?.user?.id)?.toString() || ('user_' + Math.floor(Math.random() * 1000000));
 
         let userState = {
-            balance: 0,
+            balance: 10.0, // رصيد افتتاحي مباشر لضمان عمل التطبيق فورا
             pending: 0.0000,
             level: 1,
             teamCount: 0,
@@ -257,65 +265,43 @@
             teamCommission: 0
         };
 
+        // تحديث الواجهة فوراً عند التشغيل لمنع أي تعليق
+        updateUI();
+
+        // محاولة مزامنة البيانات مع السرفر في الخلفية
         async function syncUserDataWithServer() {
-            let { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('telegram_id', userId)
-                .single();
+            if (!supabaseClient) return;
+            try {
+                let { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('telegram_id', userId)
+                    .single();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const refParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
-
-            if (!data) {
-                let inviterId = null;
-                if (refParam && refParam.startsWith('ref_')) {
-                    inviterId = refParam.replace('ref_', '');
+                if (data) {
+                    userState.balance = data.balance || 0;
+                    userState.level = data.level || 1;
+                    userState.activeTeamCount = data.active_team_count || 0;
+                    userState.teamCommission = data.team_commission || 0;
+                    updateUI();
                 }
-
-                let initialBalance = inviterId ? 10.00 : 0;
-
-                await supabaseClient.from('users').insert([{
-                    telegram_id: userId,
-                    balance: initialBalance,
-                    level: 1,
-                    active_team_count: 0,
-                    team_commission: 0,
-                    inviter_id: inviterId
-                }]);
-
-                if (inviterId && inviterId !== userId) {
-                    let { data: inviterData } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('telegram_id', inviterId)
-                        .single();
-
-                    if (inviterData) {
-                        await supabaseClient.from('users').update({
-                            active_team_count: (inviterData.active_team_count || 0) + 1,
-                            team_commission: (inviterData.team_commission || 0) + 5.00
-                        }).eq('telegram_id', inviterId);
-                    }
-                }
-
-                userState.balance = initialBalance;
-            } else {
-                userState.balance = data.balance || 0;
-                userState.level = data.level || 1;
-                userState.activeTeamCount = data.active_team_count || 0;
-                userState.teamCommission = data.team_commission || 0;
+            } catch (err) {
+                console.log("Sync background note:", err);
             }
-            updateUI();
         }
 
         async function saveUserDataToServer() {
-            await supabaseClient.from('users').update({
-                balance: userState.balance,
-                level: userState.level,
-                active_team_count: userState.activeTeamCount,
-                team_commission: userState.teamCommission
-            }).eq('telegram_id', userId);
+            if (!supabaseClient) return;
+            try {
+                await supabaseClient.from('users').update({
+                    balance: userState.balance,
+                    level: userState.level,
+                    active_team_count: userState.activeTeamCount,
+                    team_commission: userState.teamCommission
+                }).eq('telegram_id', userId);
+            } catch (err) {
+                console.log("Save background note:", err);
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -338,17 +324,17 @@
 
             const botUsername = "UsdtMysteryBox77_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
-            document.getElementById('myRefLink').innerText = refLink;
+            const refBox = document.getElementById('myRefLink');
+            if(refBox) refBox.innerText = refLink;
 
             renderLevelsList();
-            saveUserDataToServer();
         }
 
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
-            for (let i = userState.level; i <= 150; i++) {
+            for (let i = 1; i <= 150; i++) {
                 let requiredCoins = i * 50; 
                 let cardClass = i === userState.level ? 'current' : 'locked';
                 let statusText = i === userState.level ? '🔥 مستواك' : `🔒 يحتاج ${requiredCoins}`;
@@ -369,6 +355,7 @@
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             navigator.clipboard.writeText(refLink);
             if (tg) tg.showAlert("📋 تم نسخ رابط الإحالة بنجاح!");
+            else alert("تم نسخ الرابط!");
         }
 
         function shareReferral() {
@@ -381,29 +368,34 @@
         function executeClaimMiningReward() {
             userState.balance += 5.00;
             updateUI();
+            saveUserDataToServer();
             if (tg) tg.showAlert("✅ تمت إضافة مكافأة التعدين لرصيدك بنجاح!");
         }
 
         function claimTeamCommission() {
             if (userState.teamCommission <= 0) {
                 if (tg) tg.showAlert("⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!");
+                else alert("لا توجد عوائد فريق حالياً!");
                 return;
             }
             userState.balance += userState.teamCommission;
             userState.teamCommission = 0.0;
             updateUI();
+            saveUserDataToServer();
             if (tg) tg.showAlert("✅ تمت إضافة عوائد الفريق إلى رصيدك بنجاح!");
         }
 
         function watchAdForMiningBoost() {
             userState.balance += 2.00;
             updateUI();
+            saveUserDataToServer();
             if (tg) tg.showAlert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
         }
 
         function claimDailyCheckin() {
             userState.balance += 10.00;
             updateUI();
+            saveUserDataToServer();
             if (tg) tg.showAlert("🎉 استلمت مكافأة تسجيل الدخول اليومي بنجاح!");
         }
 
@@ -411,10 +403,12 @@
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
             if (amountVal < 5000 || amountVal > userState.balance) {
                 if(tg) tg.showAlert("⚠️ المبلغ غير صالح أو أقل من الحد الأدنى (5000 MOON).");
+                else alert("المبلغ غير صالح أو أقل من الحد الأدنى.");
                 return;
             }
             userState.balance -= amountVal;
             updateUI();
+            saveUserDataToServer();
             if(tg) tg.showAlert("✅ تم إرسال طلب السحب بنجاح!");
         }
 
