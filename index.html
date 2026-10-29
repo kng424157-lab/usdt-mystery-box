@@ -286,9 +286,9 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_clean_dev_user';
+        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_stable_user_v14';
 
-        const storageKey = 'moontap_clean_dev_v13_' + userId;
+        const storageKey = 'moontap_stable_production_v14_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -324,6 +324,7 @@
             }
         }
 
+        // محرك التعدين التلقائي المستمر في الخلفية
         setInterval(() => {
             let miningSpeedPerSec = (userState.level * 0.005); 
             userState.pending += miningSpeedPerSec;
@@ -367,6 +368,9 @@
 
             let pendingEl = document.getElementById('pendingReward');
             if(pendingEl) pendingEl.innerText = userState.pending.toFixed(4);
+            
+            let btnClaimValEl = document.getElementById('btnClaimVal');
+            if(btnClaimValEl) btnClaimValEl.innerText = userState.pending.toFixed(2);
         }
 
         function updateUI() {
@@ -493,14 +497,13 @@
             }
         }
 
-        // زر التجربة (بدون إعلانات خارجية حالياً لحماية الحساب)
         function watchAdForMiningBoost() {
             userState.balance += 2.00;
             updateUI();
             if (tg && typeof tg.showAlert === 'function') {
-                tg.showAlert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين (تجريبي بدون إعلانات)!");
+                tg.showAlert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
             } else {
-                alert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين (تجريبي بدون إعلانات)!");
+                alert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
             }
         }
 
