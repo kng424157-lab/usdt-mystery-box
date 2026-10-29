@@ -286,9 +286,9 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_active_mining_fixed';
+        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_final_stable_user';
 
-        const storageKey = 'moontap_pure_continuous_v9_' + userId;
+        const storageKey = 'moontap_final_production_v10_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -305,13 +305,27 @@
 
         function persistData() {
             try {
+                // حساب المستوى تلقائياً بناءً على الرصيد الإجمالي (كل مستوى يحتاج المستوى * 50 عملة)
+                let calculatedLevel = 1;
+                let accumulatedCost = 0;
+                for (let i = 1; i <= 150; i++) {
+                    accumulatedCost += (i * 50);
+                    if (userState.balance >= accumulatedCost) {
+                        calculatedLevel = i + 1;
+                    } else {
+                        break;
+                    }
+                }
+                if (calculatedLevel > 150) calculatedLevel = 150;
+                userState.level = calculatedLevel;
+
                 localStorage.setItem(storageKey, JSON.stringify(userState));
             } catch(e) {
                 console.log("Storage error:", e);
             }
         }
 
-        // محرك التعدين التلقائي: يعمل دائماً ويزيد الأرباح بلا توقف
+        // محرك التعدين التلقائي في الخلفية (يعمل بلا توقف)
         setInterval(() => {
             let miningSpeedPerSec = (userState.level * 0.005); 
             userState.pending += miningSpeedPerSec;
@@ -345,7 +359,7 @@
                 let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                 if(timerSpan) timerSpan.innerText = timeStr;
 
-                claimBtn.innerText = `⏳ زر المطالبة متاح بعد: ${timeStr}`;
+                claimBtn.innerText = `⏳ متاح بعد: ${timeStr}`;
                 claimBtn.classList.add('locked');
             } else {
                 if(timerSpan) timerSpan.innerText = "24:00:00 (جاهز للمطالبة)";
@@ -355,13 +369,12 @@
 
             let pendingEl = document.getElementById('pendingReward');
             if(pendingEl) pendingEl.innerText = userState.pending.toFixed(4);
-            
-            let btnClaimValEl = document.getElementById('btnClaimVal');
-            if(btnClaimValEl) btnClaimValEl.innerText = userState.pending.toFixed(2);
         }
 
         function updateUI() {
             try {
+                persistData(); // تحديث المستويات والرصيد أولاً
+
                 document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('userLevel').innerText = userState.level;
@@ -385,7 +398,6 @@
                 checkCompletedTasksUI();
                 checkCheckinStatusUI();
                 updateMiningButtonUI();
-                persistData();
             } catch(e) {
                 console.log("UI Error:", e);
             }
@@ -458,7 +470,7 @@
 
             if (userState.lastMiningClaimTime && (now - userState.lastMiningClaimTime < twentyFourHours)) {
                 if (tg && typeof tg.showAlert === 'function') {
-                    tg.showAlert("⚠️ زر المطالبة متاح مرة كل 24 ساعة! يرجى الانتظار حتى ينتهي العداد (التعدين مستمر في الخلفية).");
+                    tg.showAlert("⚠️ زر المطالبة متاح مرة كل 24 ساعة! يرجى الانتظار حتى ينتهي العداد.");
                 } else {
                     alert("⚠️ زر المطالبة متاح مرة كل 24 ساعة!");
                 }
@@ -472,36 +484,41 @@
             }
 
             userState.balance += userState.pending; 
-            userState.pending = 0.00; // تصفير عداد المجمع ليبدأ بالتزايد من جديد
-            userState.lastMiningClaimTime = now; // قفل زر المطالبة لمدة 24 ساعة فقط
+            userState.pending = 0.00; 
+            userState.lastMiningClaimTime = now; 
             updateUI();
 
             if (tg && typeof tg.showAlert === 'function') {
-                tg.showAlert("✅ تمت إضافة الأرباح لرصيدك، والتعدين مستمر في الخلفية!");
+                tg.showAlert("✅ تمت إضافة الأرباح لرصيدك، وبدأ عداد الـ 24 ساعة الجديد!");
             } else {
-                alert("✅ تمت إضافة الأرباح لرصيدك، والتعدين مستمر في الخلفية!");
+                alert("✅ تمت إضافة الأرباح لرصيدك وبدأ عداد الـ 24 ساعة الجديد!");
             }
         }
 
+        // نظام مهام الاشتراك الإجباري المعتمد
         function completeTask(taskId, rewardAmount, link) {
             if(userState.completedTasks.includes(taskId)) {
                 if(tg && typeof tg.showAlert === 'function') tg.showAlert("⚠️ لقد قمت بإنجاز هذه المهمة مسبقاً!");
                 return;
             }
             
+            // فتح القناة أو المجموعة في التيليجرام أولاً
             if(tg && typeof tg.openTelegramLink === 'function') {
                 tg.openTelegramLink(link);
             } else {
                 window.open(link, '_blank');
             }
 
+            // التحقق ومنح المكافأة بعد العودة والتأكيد
             setTimeout(() => {
-                userState.completedTasks.push(taskId);
-                userState.balance += rewardAmount;
-                updateUI();
-                if(tg && typeof tg.showAlert === 'function') tg.showAlert(`🎉 مبروك! حصلت على +${rewardAmount} MOON`);
-                else alert(`🎉 مبروك! حصلت على +${rewardAmount} MOON`);
-            }, 1500);
+                if (!userState.completedTasks.includes(taskId)) {
+                    userState.completedTasks.push(taskId);
+                    userState.balance += rewardAmount;
+                    updateUI();
+                    if(tg && typeof tg.showAlert === 'function') tg.showAlert(`🎉 شكراً لاشتراكك! حصلت على +${rewardAmount} MOON`);
+                    else alert(`🎉 شكراً لاشتراكك! حصلت على +${rewardAmount} MOON`);
+                }
+            }, 3000);
         }
 
         function watchAdTask(taskId, rewardAmount) {
@@ -529,8 +546,8 @@
             let html = '';
             for (let i = 1; i <= 150; i++) {
                 let requiredCoins = i * 50; 
-                let cardClass = i === userState.level ? 'current' : 'locked';
-                let statusText = i === userState.level ? '🔥 مستواك' : `🔒 يحتاج ${requiredCoins}`;
+                let cardClass = i === userState.level ? 'current' : (i < userState.level ? 'done' : 'locked');
+                let statusText = i === userState.level ? '🔥 مستواك الحالي' : (i < userState.level ? 'تم الاجتياز ✓' : `🔒 يحتاج ${requiredCoins}`);
 
                 html += `<div class="level-card-item ${cardClass}">
                     <div class="level-info">
@@ -562,7 +579,7 @@
         function claimTeamCommission() {
             if (userState.teamCommission <= 0) {
                 if (tg && typeof tg.showAlert === 'function') tg.showAlert("⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!");
-                else alert("⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!");
+                else alert("⚠️ لا توجد عوائد فريق حالياً!");
                 return;
             }
             userState.balance += userState.teamCommission;
@@ -602,4 +619,4 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
-</html> 
+</html>
