@@ -286,9 +286,9 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_final_stable_user';
+        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_clean_dev_user';
 
-        const storageKey = 'moontap_final_production_v10_' + userId;
+        const storageKey = 'moontap_clean_dev_v13_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -305,7 +305,6 @@
 
         function persistData() {
             try {
-                // حساب المستوى تلقائياً بناءً على الرصيد الإجمالي (كل مستوى يحتاج المستوى * 50 عملة)
                 let calculatedLevel = 1;
                 let accumulatedCost = 0;
                 for (let i = 1; i <= 150; i++) {
@@ -325,7 +324,6 @@
             }
         }
 
-        // محرك التعدين التلقائي في الخلفية (يعمل بلا توقف)
         setInterval(() => {
             let miningSpeedPerSec = (userState.level * 0.005); 
             userState.pending += miningSpeedPerSec;
@@ -373,7 +371,7 @@
 
         function updateUI() {
             try {
-                persistData(); // تحديث المستويات والرصيد أولاً
+                persistData();
 
                 document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
@@ -495,21 +493,29 @@
             }
         }
 
-        // نظام مهام الاشتراك الإجباري المعتمد
+        // زر التجربة (بدون إعلانات خارجية حالياً لحماية الحساب)
+        function watchAdForMiningBoost() {
+            userState.balance += 2.00;
+            updateUI();
+            if (tg && typeof tg.showAlert === 'function') {
+                tg.showAlert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين (تجريبي بدون إعلانات)!");
+            } else {
+                alert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين (تجريبي بدون إعلانات)!");
+            }
+        }
+
         function completeTask(taskId, rewardAmount, link) {
             if(userState.completedTasks.includes(taskId)) {
                 if(tg && typeof tg.showAlert === 'function') tg.showAlert("⚠️ لقد قمت بإنجاز هذه المهمة مسبقاً!");
                 return;
             }
             
-            // فتح القناة أو المجموعة في التيليجرام أولاً
             if(tg && typeof tg.openTelegramLink === 'function') {
                 tg.openTelegramLink(link);
             } else {
                 window.open(link, '_blank');
             }
 
-            // التحقق ومنح المكافأة بعد العودة والتأكيد
             setTimeout(() => {
                 if (!userState.completedTasks.includes(taskId)) {
                     userState.completedTasks.push(taskId);
@@ -528,15 +534,15 @@
             }
 
             if(tg && typeof tg.showAlert === 'function') {
-                tg.showAlert("📺 جاري عرض الإعلان الترويجي...");
+                tg.showAlert("📺 جاري محاكاة مشاهدة الإعلان...");
             }
 
             setTimeout(() => {
                 userState.completedTasks.push(taskId);
                 userState.balance += rewardAmount;
                 updateUI();
-                if(tg && typeof tg.showAlert === 'function') tg.showAlert(`🚀 رائع! انتهى الإعلان وحصلت على +${rewardAmount} MOON`);
-                else alert(`🚀 رائع! انتهى الإعلان وحصلت على +${rewardAmount} MOON`);
+                if(tg && typeof tg.showAlert === 'function') tg.showAlert(`🚀 رائع! حصلت على +${rewardAmount} MOON`);
+                else alert(`🚀 رائع! حصلت على +${rewardAmount} MOON`);
             }, 2000);
         }
 
@@ -589,13 +595,6 @@
             else alert("✅ تمت إضافة عوائد الفريق إلى رصيدك بنجاح!");
         }
 
-        function watchAdForMiningBoost() {
-            userState.balance += 2.00;
-            updateUI();
-            if (tg && typeof tg.showAlert === 'function') tg.showAlert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
-            else alert("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
-        }
-
         function submitWithdraw() {
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
             if (amountVal < 5000 || amountVal > userState.balance) {
@@ -619,4 +618,4 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
-</html>
+</html> 
