@@ -103,7 +103,12 @@
         .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; }
         .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); }
 
-        .tasks-list-container { max-height: 240px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #070b19; padding: 8px; border-radius: 14px; width: 100%; }
+        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 1px; text-align: center; font-size: 0.65rem; color: #94a3b8; }
+        .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); }
+        .checkin-day strong { display: block; font-size: 0.75rem; color: #fff; margin-top: 2px; }
+
+        .tasks-list-container { max-height: 220px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
         .task-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
         .task-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
         .task-info p { font-size: 0.7rem; color: var(--green); font-weight: bold; }
@@ -125,7 +130,7 @@
     <div class="main-stage">
         <div class="timer-box">
             <div class="timer-dot"></div>
-            <span id="countdownTimer">24:00:00</span>
+            <span id="countdownTimer">24:00:00 (جاهز للمطالبة)</span>
         </div>
 
         <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">1</span></div>
@@ -228,8 +233,8 @@
         <div class="modal-box" style="max-width: 400px;">
             <div class="modal-title">📋 مهام ومكافآت MoonTap</div>
             
-            <div style="text-align: right; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; font-weight: bold;">📅 تسجيل الدخول اليومي (كل 24 ساعة)</div>
-            <div class="checkin-grid" style="margin-bottom: 12px;">
+            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">📅 تسجيل الدخول اليومي (كل 24 ساعة)</div>
+            <div class="checkin-grid">
                 <div class="checkin-day active" id="day1Box">D1<br><strong>5+</strong></div>
                 <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
                 <div class="checkin-day" id="day3Box">D3<br><strong>15+</strong></div>
@@ -238,9 +243,9 @@
                 <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
                 <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
             </div>
-            <button class="btn-claim" id="checkinBtn" style="margin-bottom:15px; padding:10px; font-size:0.9rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول</button>
+            <button class="btn-claim" id="checkinBtn" style="margin-bottom:12px; padding:9px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول</button>
 
-            <div style="text-align: right; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; font-weight: bold;">⭐ المهام الخاصة وإعلانات المكافآت</div>
+            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">⭐ المهام الخاصة وإعلانات المكافآت</div>
             <div class="tasks-list-container">
                 <div class="task-card-item">
                     <div class="task-info">
@@ -272,7 +277,7 @@
                 </div>
             </div>
 
-            <button class="btn-ad" style="width:100%; background:#374151; padding:10px;" onclick="closeModal('tasksModal')">إغلاق</button>
+            <button class="btn-ad" style="width:100%; background:#374151; padding:9px;" onclick="closeModal('tasksModal')">إغلاق</button>
         </div>
     </div>
 
@@ -281,9 +286,9 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_mining_timer_user';
+        let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_active_mining_fixed';
 
-        const storageKey = 'moontap_mining_24h_v6_' + userId;
+        const storageKey = 'moontap_pure_continuous_v9_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -306,17 +311,10 @@
             }
         }
 
-        // محرك التعدين وتحديث مؤقت الـ 24 ساعة للمطالبة
+        // محرك التعدين التلقائي: يعمل دائماً ويزيد الأرباح بلا توقف
         setInterval(() => {
-            let now = Date.now();
-            let twentyFourHours = 24 * 60 * 60 * 1000;
-            let timeSinceClaim = now - (userState.lastMiningClaimTime || 0);
-
-            // إذا مر أقل من 24 ساعة على آخر مطالبة، يستمر التعدين في التجميع
-            if (timeSinceClaim < twentyFourHours) {
-                let miningSpeedPerSec = (userState.level * 0.005); // سرعة تجميع الأرباح
-                userState.pending += miningSpeedPerSec;
-            }
+            let miningSpeedPerSec = (userState.level * 0.005); 
+            userState.pending += miningSpeedPerSec;
 
             updateMiningButtonUI();
             persistData();
@@ -347,7 +345,7 @@
                 let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                 if(timerSpan) timerSpan.innerText = timeStr;
 
-                claimBtn.innerText = `⏳ متاح بعد: ${timeStr}`;
+                claimBtn.innerText = `⏳ زر المطالبة متاح بعد: ${timeStr}`;
                 claimBtn.classList.add('locked');
             } else {
                 if(timerSpan) timerSpan.innerText = "24:00:00 (جاهز للمطالبة)";
@@ -357,6 +355,9 @@
 
             let pendingEl = document.getElementById('pendingReward');
             if(pendingEl) pendingEl.innerText = userState.pending.toFixed(4);
+            
+            let btnClaimValEl = document.getElementById('btnClaimVal');
+            if(btnClaimValEl) btnClaimValEl.innerText = userState.pending.toFixed(2);
         }
 
         function updateUI() {
@@ -451,16 +452,15 @@
             }
         }
 
-        // زر المطالبة بالتعدين وتفعيل مؤقت الـ 24 ساعة بعدها
         function executeClaimMiningReward() {
             let now = Date.now();
             let twentyFourHours = 24 * 60 * 60 * 1000;
 
             if (userState.lastMiningClaimTime && (now - userState.lastMiningClaimTime < twentyFourHours)) {
                 if (tg && typeof tg.showAlert === 'function') {
-                    tg.showAlert("⚠️ التعدين قيد التقدم! يجدر بك الانتظار حتى انتهاء العداد لطلب المكافأة التالية.");
+                    tg.showAlert("⚠️ زر المطالبة متاح مرة كل 24 ساعة! يرجى الانتظار حتى ينتهي العداد (التعدين مستمر في الخلفية).");
                 } else {
-                    alert("⚠️ التعدين قيد التقدم! انتظر انتهاء العداد.");
+                    alert("⚠️ زر المطالبة متاح مرة كل 24 ساعة!");
                 }
                 return;
             }
@@ -472,14 +472,14 @@
             }
 
             userState.balance += userState.pending; 
-            userState.pending = 0.00; 
-            userState.lastMiningClaimTime = now; // تفعيل مؤقت 24 ساعة جديد
+            userState.pending = 0.00; // تصفير عداد المجمع ليبدأ بالتزايد من جديد
+            userState.lastMiningClaimTime = now; // قفل زر المطالبة لمدة 24 ساعة فقط
             updateUI();
 
             if (tg && typeof tg.showAlert === 'function') {
-                tg.showAlert("✅ تمت إضافة أرباح التعدين إلى رصيدك بنجاح، و بدأ عداد ال24 ساعة الجديد!");
+                tg.showAlert("✅ تمت إضافة الأرباح لرصيدك، والتعدين مستمر في الخلفية!");
             } else {
-                alert("✅ تمت إضافة أرباح التعدين وبدأ عداد الـ 24 ساعة الجديد!");
+                alert("✅ تمت إضافة الأرباح لرصيدك، والتعدين مستمر في الخلفية!");
             }
         }
 
