@@ -71,15 +71,14 @@
         .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
 
-        /* نافذة الترقية الاحتفالية المميزة */
         .levelup-box { background: radial-gradient(circle at top, #1e1b4b, #0f172a); border: 2px solid var(--gold); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); padding: 28px 20px; }
         .levelup-icon { font-size: 4.5rem; margin-bottom: 10px; display: inline-block; animation: bounce 1.2s infinite; filter: drop-shadow(0 0 15px rgba(245,158,11,0.6)); }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
         .wallet-card-box .label { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px; }
-        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; }
-        .wallet-card-box .value-usd { font-size: 0.9rem; color: var(--gold); margin-top: 2px; }
+        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; direction: ltr; }
+        .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--gold); margin-top: 4px; font-weight: bold; direction: ltr; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
@@ -118,8 +117,9 @@
         .task-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
         .task-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
         .task-info p { font-size: 0.7rem; color: var(--green); font-weight: bold; }
-        .task-action-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
-        .task-action-btn.done { background: #374151; color: #94a3b8; cursor: default; }
+        .task-action-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .task-action-btn.verify { background: var(--gold); color: #000; animation: pulseDot 1.2s infinite; }
+        .task-action-btn.done { background: #374151; color: #94a3b8; cursor: default; animation: none; }
 
         .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 8px; text-align: center; font-size: 0.85rem; outline: none; }
         .input-wallet:focus { border-color: var(--blue); }
@@ -149,7 +149,7 @@
 
         <div class="mining-reward-label">مكافأة التعدين المتجمعة (سعة 24 ساعة: <span id="maxCapText">40</span> MOON)</div>
         <div class="mining-reward-val" id="pendingReward">0.0000</div>
-        <div class="mining-speed-info">الإنتاج اليومي: <strong style="color:var(--gold)" id="dailyRateInfo">40.00</strong> MOON · القيمة: $<span id="dynamicPriceVal">0.0000</span></div>
+        <div class="mining-speed-info">الإنتاج اليومي: <strong style="color:var(--gold)" id="dailyRateInfo">40.00</strong> MOON · القيمة: <span id="dynamicPriceVal">0.0000</span> USDT</div>
 
         <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
@@ -188,8 +188,8 @@
             
             <div class="wallet-card-box">
                 <span class="label">إجمالي رصيدك المتاح للسحب</span>
-                <div class="value-moon"><span id="modalBal">0.00</span> MOON</div>
-                <div class="value-usd">≈ يعادل: $<span id="modalUsdVal">0.0000</span> دولار</div>
+                <div class="value-moon">MOON <span id="modalBal">0.00</span></div>
+                <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
             </div>
 
             <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل رابط / عنوان محفظة السحب الخاصة بك...">
@@ -273,14 +273,14 @@
                         <h5>📢 الاشتراك في قناة البوت الرسمية</h5>
                         <p>+50.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn1" onclick="completeChannelTask(1, 50)">اشتراك</button>
+                    <button class="task-action-btn" id="taskBtn1" onclick="handleChannelTask(1, 50)">اشتراك</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
                         <h5>📤 مشاركة القناة / البوت مع صديق</h5>
                         <p>+30.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn2" onclick="completeShareTask(2, 30)">مشاركة</button>
+                    <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 30)">مشاركة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
@@ -308,13 +308,14 @@
 
         // ====== إعدادات روابط البوت والقناة الرسمية ======
         const BOT_USERNAME = "UsdtMysteryBox77_bot";
-        // ضع رابط قناتك الرسمية هنا ليتم تحويل المستخدمين إليها مباشرة:
-        const OFFICIAL_CHANNEL_LINK = "https://t.me/UsdtMysteryBox77_bot"; 
+        
+        // ⚠️ ضع رابط قناتك الرسمية هنا
+        const OFFICIAL_CHANNEL_LINK = "https://t.me/MoonTap_Official_Channel"; 
 
         let telegramUser = tg?.initDataUnsafe?.user;
         let userId = telegramUser?.id ? telegramUser.id.toString() : 'guest_moontap_user';
 
-        const storageKey = 'moontap_original_system_v15_' + userId;
+        const storageKey = 'moontap_original_system_v16_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -324,24 +325,30 @@
             activeTeamCount: 0,
             teamCommission: 0,
             completedTasks: [],
+            pendingVerifyTasks: [],
             lastCheckinTime: 0,
-            miningStartTime: Date.now(), // وقت بدء دورة الـ 24 ساعة الحالية
+            miningStartTime: Date.now(),
             savedWallet: ''
         };
 
-        // التأكد من وجود وقت بدء التعدين
-        if (!userState.miningStartTime) {
-            userState.miningStartTime = Date.now();
+        if (!userState.miningStartTime) userState.miningStartTime = Date.now();
+        if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+
+        function openTelegramUrlSafely(url) {
+            if (tg && typeof tg.openTelegramLink === 'function' && url.includes('t.me/')) {
+                tg.openTelegramLink(url);
+            } else if (tg && typeof tg.openLink === 'function') {
+                tg.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
         }
 
-        // ====== معادلة حساب سرعة التعدين اليومية (المستوى 1 = 40 عملة باليوم) ======
         function getDailyMiningLimit(lvl) {
-            return lvl * 40; // المستوى 1 = 40 عملة، المستوى 2 = 80 عملة، المستوى 3 = 120 عملة...
+            return lvl * 40;
         }
 
-        // ====== معادلة حساب تكلفة الانتقال لكل مستوى ======
         function getRequiredBalanceForLevel(targetLvl) {
-            // للانتقال إلى المستوى 2 يحتاج 50 عملة، المستوى 3 يحتاج 150 عملة، وهكذا
             let total = 0;
             for (let i = 1; i < targetLvl; i++) {
                 total += (i * 50);
@@ -349,7 +356,6 @@
             return total;
         }
 
-        // ====== فحص الترقية التلقائية وإظهار الإشعار المميز ======
         function checkLevelProgression() {
             let newCalculatedLevel = 1;
             for (let i = 2; i <= 150; i++) {
@@ -364,7 +370,6 @@
                 userState.level = newCalculatedLevel;
                 persistData();
                 
-                // إظهار نافذة الترقية الاحتفالية المميزة
                 document.getElementById('newLevelReached').innerText = userState.level;
                 document.getElementById('newDailyCap').innerText = getDailyMiningLimit(userState.level);
                 document.getElementById('levelUpModal').style.display = 'flex';
@@ -379,7 +384,6 @@
             }
         }
 
-        // ====== محرك التعدين (خزان الـ 24 ساعة الذي يتوقف إذا لم يدخل المستخدم) ======
         const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
         function getCurrentMinedData() {
@@ -387,7 +391,6 @@
             let elapsedMs = now - userState.miningStartTime;
             let isStopped = false;
 
-            // إذا مر أكثر من 24 ساعة دون أن يدخل ويطالب، يتوقف التعدين عند حد الـ 24 ساعة
             if (elapsedMs >= TWENTY_FOUR_HOURS_MS) {
                 elapsedMs = TWENTY_FOUR_HOURS_MS;
                 isStopped = true;
@@ -441,7 +444,6 @@
             updateUI();
         });
 
-        // ====== زر المطالبة بالمكافأة (يستلم في أي وقت ويعيد التوقيت إلى 24 ساعة فوراً) ======
         function executeClaimMiningReward() {
             let data = getCurrentMinedData();
 
@@ -452,7 +454,6 @@
 
             let claimedAmount = data.mined;
             userState.balance += claimedAmount;
-            // إعادة التوقيت فوراً إلى 24 ساعة كاملة وتصفير الخزان ليبدأ من جديد
             userState.miningStartTime = Date.now(); 
             
             persistData();
@@ -491,13 +492,11 @@
             }
         }
 
-        // ====== عرض المستويات (إخفاء المستويات السابقة تماماً بعد تخطيها) ======
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
             
-            // نبدأ العرض من مستوى المستخدم الحالي فصاعداً (تختفي المستويات السابقة تلقائياً)
             for (let i = userState.level; i <= 150; i++) {
                 let requiredCoins = getRequiredBalanceForLevel(i);
                 let levelDailyRate = getDailyMiningLimit(i);
@@ -516,46 +515,44 @@
             container.innerHTML = html;
         }
 
-        // ====== المهام: الاشتراك في القناة والمشاركة ======
-        function completeChannelTask(taskId, rewardAmount) {
-            if(userState.completedTasks.includes(taskId)) {
+        function handleChannelTask(taskId, rewardAmount) {
+            if (userState.completedTasks.includes(taskId)) {
                 showMessage("⚠️ لقد قمت بالاشتراك واستلام مكافأة هذه المهمة مسبقاً!");
                 return;
             }
-            
-            // فتح رابط القناة الرسمية
-            if(tg && typeof tg.openTelegramLink === 'function') {
-                tg.openTelegramLink(OFFICIAL_CHANNEL_LINK);
-            } else {
-                window.open(OFFICIAL_CHANNEL_LINK, '_blank');
+
+            if (!userState.pendingVerifyTasks.includes(taskId)) {
+                openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
+                userState.pendingVerifyTasks.push(taskId);
+                persistData();
+                checkCompletedTasksUI();
+                return;
             }
 
-            setTimeout(() => {
-                if (!userState.completedTasks.includes(taskId)) {
-                    userState.completedTasks.push(taskId);
-                    userState.balance += rewardAmount;
-                    updateUI();
-                    showMessage(`🎉 شكراً لاشتراكك في القناة! تم إضافة +${rewardAmount} MOON إلى رصيدك.`);
-                }
-            }, 3000);
+            userState.completedTasks.push(taskId);
+            userState.balance += rewardAmount;
+            updateUI();
+            showMessage(`🎉 تم التحقق من اشتراكك في القناة بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
 
-        function completeShareTask(taskId, rewardAmount) {
-            if(userState.completedTasks.includes(taskId)) {
+        function handleShareTask(taskId, rewardAmount) {
+            if (userState.completedTasks.includes(taskId)) {
                 showMessage("⚠️ لقد أنجزت مهمة المشاركة مسبقاً!");
                 return;
             }
 
-            shareReferral();
+            if (!userState.pendingVerifyTasks.includes(taskId)) {
+                shareReferral();
+                userState.pendingVerifyTasks.push(taskId);
+                persistData();
+                checkCompletedTasksUI();
+                return;
+            }
 
-            setTimeout(() => {
-                if (!userState.completedTasks.includes(taskId)) {
-                    userState.completedTasks.push(taskId);
-                    userState.balance += rewardAmount;
-                    updateUI();
-                    showMessage(`🎉 شكراً لمشاركتك! حصلت على +${rewardAmount} MOON.`);
-                }
-            }, 2500);
+            userState.completedTasks.push(taskId);
+            userState.balance += rewardAmount;
+            updateUI();
+            showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
         }
 
         function watchAdTask(taskId, rewardAmount) {
@@ -574,13 +571,22 @@
 
         function checkCompletedTasksUI() {
             if(!userState.completedTasks) userState.completedTasks = [];
-            userState.completedTasks.forEach(taskId => {
+            if(!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+
+            for (let taskId = 1; taskId <= 4; taskId++) {
                 let btn = document.getElementById('taskBtn' + taskId);
-                if(btn) {
+                if (!btn) continue;
+
+                if (userState.completedTasks.includes(taskId)) {
                     btn.innerText = "مكتمل ✓";
+                    btn.classList.remove('verify');
                     btn.classList.add('done');
+                } else if (userState.pendingVerifyTasks.includes(taskId)) {
+                    btn.innerText = "تحقق واستلم 🔍";
+                    btn.classList.add('verify');
                 }
-            });
+            }
+
             let remainingTasks = 4 - userState.completedTasks.length;
             let dot = document.getElementById('taskDot');
             if (dot) {
@@ -593,7 +599,6 @@
             }
         }
 
-        // ====== تسجيل الدخول اليومي ======
         function checkCheckinStatusUI() {
             let checkinBtn = document.getElementById('checkinBtn');
             if(!checkinBtn) return;
@@ -631,7 +636,6 @@
             showMessage("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
         }
 
-        // ====== المحفظة والسحب الآمن والسلس ======
         function submitWithdraw() {
             const walletAddr = document.getElementById('walletInput').value.trim();
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
@@ -669,11 +673,7 @@
         function shareReferral() {
             const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
             const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية فوراً عبر رابطي:\n\n${refLink}`);
-            if (tg && typeof tg.openTelegramLink === 'function') {
-                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
-            } else {
-                window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`, '_blank');
-            }
+            openTelegramUrlSafely(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
         }
 
         function claimTeamCommission() {
