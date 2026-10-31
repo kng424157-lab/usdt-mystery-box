@@ -327,7 +327,16 @@
         let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('mt_guest_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
         localStorage.setItem('mt_guest_id', userId);
 
-        const startParam = tg?.initDataUnsafe?.start_param || null;
+        // قراءة كود الإحالة من جميع مسارات تيليجرام الممكنة (startapp أو start_param أو الرابط)
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const startParam = tg?.initDataUnsafe?.start_param 
+                        || urlParams.get('tgWebAppStartParam') 
+                        || urlParams.get('startapp') 
+                        || urlParams.get('start') 
+                        || hashParams.get('tgWebAppStartParam') 
+                        || null;
+
         const storageKey = 'moontap_original_system_v16_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
@@ -350,17 +359,19 @@
         // مزامنة المستخدم والإحالات مع سحابة Supabase
         async function syncWithSupabase() {
             try {
+                // 1. تسجيل المستخدم الحالي في قاعدة البيانات
                 await supabaseClient.from('users').upsert([{ id: userId }]);
 
-                if (startParam && startParam.startsWith('ref_')) {
-                    const inviterId = startParam.replace('ref_', '');
-                    if (inviterId && inviterId !== userId && !localStorage.getItem('mt_ref_registered')) {
-                        localStorage.setItem('mt_ref_registered', 'true');
+                // 2. تسجيل الإحالة في السحابة إذا دخل المستخدم عبر رابط صديق
+                if (startParam) {
+                    const inviterId = startParam.replace('ref_', '').trim();
+                    if (inviterId && inviterId !== userId) {
                         const refLogId = `ref_${inviterId}_${userId}`;
                         await supabaseClient.from('users').upsert([{ id: refLogId }]);
                     }
                 }
 
+                // 3. جلب عدد الإحالات المسجلة باسم هذا المستخدم من السحابة
                 let { data: refs } = await supabaseClient
                     .from('users')
                     .select('id')
@@ -542,7 +553,8 @@
                 document.getElementById('dynamicPriceVal').innerText = usdValue.toFixed(4);
                 document.getElementById('modalUsdVal').innerText = usdValue.toFixed(4);
 
-                const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+                // استخدام ?startapp= لتمرير كود الإحالة مباشرة داخل تطبيق الميني آب
+                const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
                 document.getElementById('myRefLink').innerText = refLink;
 
                 renderLevelsList();
@@ -735,13 +747,13 @@
         }
 
         function copyRefLink() {
-            const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
             navigator.clipboard.writeText(refLink);
             showMessage("📋 تم نسخ رابط الإحالة بنجاح!");
         }
 
         function shareReferral() {
-            const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
             const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية فوراً عبر رابطي:\n\n${refLink}`);
             openTelegramUrlSafely(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
         }
@@ -792,4 +804,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
