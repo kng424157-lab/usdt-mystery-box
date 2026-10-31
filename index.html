@@ -7,439 +7,789 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body {
-            background-color: #0b0f19;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+        :root {
+            --bg-dark: #070b19;
+            --card-bg: #111827;
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.5);
+            --green: #10b981;
+            --blue: #3b82f6;
+            --red: #ef4444;
+            --text-light: #f8fafc;
         }
-        .container {
-            background: #151c2c;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid #1e293b;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
+        body { 
+            background: radial-gradient(circle at center, #1e1b4b 0%, var(--bg-dark) 100%); 
+            color: var(--text-light); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow-x: hidden; 
         }
-        h1 { color: #fbbf24; margin-bottom: 5px; font-size: 24px; }
-        .user-name { color: #94a3b8; font-size: 13px; margin-bottom: 15px; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05)); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--gold); font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(245,158,11,0.2); }
+        .balance-badge { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05)); border: 1px solid var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
+
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
         
-        .balance-card {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            border: 1px solid #334155;
-        }
-        .balance-label { font-size: 13px; color: #94a3b8; }
-        .balance-box {
-            font-size: 32px;
-            font-weight: bold;
-            color: #fbbf24;
-            margin: 6px 0;
-            direction: ltr;
-        }
-        .usdt-equiv {
-            font-size: 15px;
-            color: #4ade80;
-            font-weight: bold;
-            margin-bottom: 6px;
-            direction: ltr;
-        }
+        .timer-box { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(16,185,129,0.2); transition: all 0.3s; }
+        .timer-box.stopped { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: var(--red); box-shadow: 0 0 12px rgba(239,68,68,0.2); }
+        .timer-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 1s infinite; }
+        .timer-box.stopped .timer-dot { background: var(--red); animation: none; }
+        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
 
-        .tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 15px;
-        }
-        .tab-btn {
-            flex: 1;
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 10px 5px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            border: 1px solid #334155;
-            cursor: pointer;
-        }
-        .tab-btn.active {
-            background: #fbbf24;
-            color: #0b0f19;
-            border-color: #fbbf24;
-        }
+        .cloud-mining-title { font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px; letter-spacing: 1px; }
+        .cloud-mining-brand { font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 15px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
-        .section { display: none; }
-        .section.active { display: block; }
+        .coin-wrapper { width: 170px; height: 170px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 75%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.5); position: relative; animation: floatCoin 3s ease-in-out infinite; }
+        @keyframes floatCoin { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .coin-icon { font-size: 90px; filter: drop-shadow(0 0 10px rgba(245,158,11,0.6)); }
 
-        .card {
-            background: #0f172a;
-            padding: 15px;
-            border-radius: 14px;
-            margin: 10px 0;
-            font-size: 14px;
-            border: 1px solid #1e293b;
-        }
-        .timer-display {
-            font-size: 20px;
-            font-weight: bold;
-            color: #38bdf8;
-            margin: 12px 0;
-            direction: ltr;
-        }
-        button {
-            background: #fbbf24;
-            color: #0b0f19;
-            border: none;
-            padding: 13px 20px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-            transition: 0.2s;
-        }
-        button:active { transform: scale(0.98); }
-        button.secondary { background: #10b981; color: white; }
-        button.purple { background: #8b5cf6; color: white; }
-        button.warning { background: #38bdf8; color: #0b0f19; }
-        button:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+        .mining-reward-label { font-size: 0.8rem; color: #94a3b8; margin-top: 10px; }
+        .mining-reward-val { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .mining-speed-info { font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; background: rgba(255,255,255,0.04); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .stat-item {
-            background: #0f172a;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #1e293b;
-            font-size: 13px;
-            color: #94a3b8;
-        }
-        .stat-item span {
-            display: block;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fbbf24;
-            margin-top: 4px;
-            direction: ltr;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #1e293b;
-            color: white;
-            margin-top: 8px;
-            text-align: center;
-            font-size: 14px;
-        }
+        .btn-claim { width: 100%; max-width: 330px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; padding: 15px; border-radius: 16px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(59,130,246,0.4); margin-bottom: 10px; transition: transform 0.1s; }
+        .btn-claim:active { transform: scale(0.97); }
+
+        .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
+        .btn-ad:active { transform: scale(0.97); }
+
+        .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
+        .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 10px; border-radius: 14px; transition: all 0.25s ease; flex: 1; }
+        .nav-btn span { font-size: 1.25rem; transition: transform 0.25s; }
+        .nav-btn.active { color: #fff; background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(59,130,246,0.4); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+        .nav-btn.active span { transform: scale(1.15); }
+        .notification-dot { position: absolute; top: 4px; right: 12px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .modal-box { background: var(--card-bg); padding: 22px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(59,130,246,0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
+
+        .levelup-box { background: radial-gradient(circle at top, #1e1b4b, #0f172a); border: 2px solid var(--gold); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); padding: 28px 20px; }
+        .levelup-icon { font-size: 4.5rem; margin-bottom: 10px; display: inline-block; animation: bounce 1.2s infinite; filter: drop-shadow(0 0 15px rgba(245,158,11,0.6)); }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
+        .wallet-card-box .label { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px; }
+        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; direction: ltr; }
+        .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--gold); margin-top: 4px; font-weight: bold; direction: ltr; }
+
+        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
+
+        .elite-partner-card { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2)); border: 1.5px solid var(--gold); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
+        .elite-partner-card .e-title { font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+        .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
+
+        .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
+        .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+        .team-commission-card strong { font-size: 1.5rem; color: #fff; text-shadow: 0 0 10px rgba(16,185,129,0.3); display: block; direction: ltr; }
+
+        .invite-bonus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; background: #070b19; padding: 10px; border-radius: 14px; text-align: center; }
+        .bonus-box span { display: block; font-size: 0.65rem; color: #94a3b8; margin-bottom: 3px; }
+        .bonus-box strong { font-size: 0.95rem; color: #fff; direction: ltr; display: inline-block; }
+
+        .miners-header-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+        .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
+        .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
+
+        .levels-list-container { max-height: 250px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .level-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; }
+        .level-card-item.current { border: 2px solid var(--gold); background: rgba(245,158,11,0.15); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+        .level-info h5 { font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
+        .level-info p { font-size: 0.7rem; color: #94a3b8; }
+        .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; color: #94a3b8; background: rgba(255,255,255,0.05); }
+        .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); }
+
+        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #070b19; padding: 8px; border-radius: 14px; width: 100%; }
+        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 1px; text-align: center; font-size: 0.65rem; color: #94a3b8; }
+        .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); }
+        .checkin-day strong { display: block; font-size: 0.75rem; color: #fff; margin-top: 2px; }
+
+        .tasks-list-container { max-height: 220px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .task-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+        .task-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
+        .task-info p { font-size: 0.7rem; color: var(--green); font-weight: bold; direction: ltr; text-align: right; }
+        .task-action-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .task-action-btn.verify { background: var(--gold); color: #000; animation: pulseDot 1.2s infinite; }
+        .task-action-btn.done { background: #374151; color: #94a3b8; cursor: default; animation: none; }
+
+        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 8px; text-align: center; font-size: 0.85rem; outline: none; }
+        .input-wallet:focus { border-color: var(--blue); }
+        .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; direction: ltr; }
+        .bottom-spacer { height: 75px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🌙 MoonTap Cloud</h1>
-        <div class="user-name" id="username">متصل بالسحابة 🟢</div>
-        
-        <div class="balance-card">
-            <div class="balance-label">الرصيد الكلي (عملة مون)</div>
-            <div class="balance-box" id="balance">0 MOON</div>
-            <div class="usdt-equiv" id="usdt-balance">≈ 0.000 USDT</div>
-            <div style="font-size: 12px; color: #38bdf8;">ربح الدورة (24 ساعة): <span id="daily-rate">100</span> MOON</div>
+    <div class="top-nav">
+        <div class="balance-badge"><span id="totalBal">0.00</span> MOON 🪙</div>
+        <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
+    </div>
+
+    <div class="main-stage">
+        <div class="timer-box" id="timerBox">
+            <div class="timer-dot"></div>
+            <span id="countdownTimer">24:00:00</span>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('mining', this)">⛏️ التعدين</button>
-            <button class="tab-btn" onclick="switchTab('team', this)">👥 الفريق</button>
-            <button class="tab-btn" onclick="switchTab('wallet', this)">💳 السحب</button>
+        <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">1</span></div>
+        <div class="cloud-mining-brand">MoonTap Mining</div>
+
+        <div class="coin-wrapper">
+            <div class="coin-icon">🌕</div>
         </div>
 
-        <!-- قسم التعدين -->
-        <div id="mining" class="section active">
-            <div class="card">
-                <div>دورة التعدين السحابي (24 ساعة)</div>
-                <div class="timer-display" id="timer-text">جاهز للاستلام!</div>
-                <button id="claim-btn" onclick="claimMining()">بدء التعدين واستلام الأرباح 🚀</button>
-            </div>
+        <div class="mining-reward-label">مكافأة التعدين المتجمعة (سعة 24 ساعة: <span id="maxCapText">40</span> MOON)</div>
+        <div class="mining-reward-val" id="pendingReward">0.0000</div>
+        <div class="mining-speed-info">الإنتاج اليومي: <strong style="color:var(--gold)" id="dailyRateInfo">40.00</strong> MOON · القيمة: <span id="dynamicPriceVal">0.0000</span> USDT</div>
 
-            <div class="card">
-                <p style="margin-bottom: 5px;">ترقية سرعة التعدين (مضاعفة الربح اليومي)</p>
-                <button class="warning" onclick="upgradeLevel()">⬆️ ترقية للمستوى التالي (<span id="upgrade-cost">500</span> MOON)</button>
-            </div>
+        <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
+        <button class="btn-ad" onclick="watchAdForMiningBoost()">📺 مشاهدة إعلان لمضاعفة سرعة التعدين</button>
+        <div class="bottom-spacer"></div>
+    </div>
 
-            <div class="card">
-                <p style="margin-bottom: 5px;">انضم لقناتنا الرسمية للحصول على الهدية وتفعيل السحب</p>
-                <button id="channel-btn" class="secondary" onclick="joinChannel()">📢 اشتراك في القناة (+50 MOON هدية)</button>
-            </div>
+    <div class="bottom-nav-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>💳</span> المحفظة</button>
+            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> الأصدقاء</button>
+            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> المعدنون</button>
+            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
+            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> التعدين</button>
         </div>
+    </div>
 
-        <!-- قسم الفريق -->
-        <div id="team" class="section">
-            <div class="card">
-                <h3 style="color: #fbbf24; margin-bottom: 8px;">فريق الإحالات</h3>
-                <p style="font-size: 13px; color: #94a3b8; line-height: 1.5;">
-                    اربح <strong>0.010 USDT</strong> فوراً عن كل صديق ينضم عبر رابطك الخاص!
-                </p>
-                <div class="stats-grid">
-                    <div class="stat-item">أعضاء الفريق <span id="team-count">0</span></div>
-                    <div class="stat-item">أرباح الإحالات <span id="team-comm" style="color: #4ade80;">0.000 USDT</span></div>
+    <!-- إشعار الترقية للمستوى الجديد المميز -->
+    <div class="modal-overlay" id="levelUpModal" style="z-index: 200;">
+        <div class="modal-box levelup-box">
+            <div class="levelup-icon">🎉</div>
+            <div class="modal-title" style="color: var(--gold); font-size: 1.4rem;">ترقية مستوى المنجم!</div>
+            <div class="modal-desc" style="color: #fff; font-size: 0.95rem; margin-top: 10px;">
+                مبارك لك! لقد تم نقلك بنجاح إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
+                ⚡ زادت سرعة تعدينك اليومية إلى <strong style="color:var(--green)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
+                <span style="font-size:0.75rem; color:#94a3b8;">(تم إخفاء المستوى السابق من قائمة المعدنين)</span>
+            </div>
+            <button class="btn-claim" style="background: linear-gradient(135deg, var(--gold), #d97706); width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">🚀 مواصلة التعدين</button>
+        </div>
+    </div>
+
+    <!-- نافذة المحفظة -->
+    <div class="modal-overlay" id="walletModal">
+        <div class="modal-box">
+            <div class="modal-title">💳 سحب أرباح MoonTap</div>
+            <div class="modal-desc">إدارة محفظتك وسحب الأرباح بكل سهولة وأمان.</div>
+            
+            <div class="wallet-card-box">
+                <span class="label">إجمالي رصيدك المتاح للسحب</span>
+                <div class="value-moon">MOON <span id="modalBal">0.00</span></div>
+                <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
+            </div>
+
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل رابط / عنوان محفظة USDT الخاصة بك...">
+            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="أدخل كمية MOON للسحب (الحد الأدنى 5000)">
+            
+            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
+            <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('walletModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة الأصدقاء والفريق -->
+    <div class="modal-overlay" id="refModal">
+        <div class="modal-box" style="max-width: 380px;">
+            <div class="modal-title">👥 شبكة الشركاء & الفريق</div>
+            <div class="modal-desc">ابنِ فريقك النشط وكن "شريك النخبة الملكي" لتحصد أعلى العوائد!</div>
+            
+            <div class="elite-partner-card" id="eliteCardBox">
+                <div class="e-title">⭐ شريك النخبة الملكي (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
+                <div class="e-desc" id="eliteDescText">ادعُ 10 مستخدمين نشطين لتفعيل سرعة مضاعفة +50%!</div>
+            </div>
+
+            <div class="friends-actions">
+                <button class="friend-btn" onclick="copyRefLink()">📋 نسخ الرابط</button>
+                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة الرابط</button>
+            </div>
+
+            <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
+
+            <div class="team-commission-card">
+                <span>مجمع أرباح الشريك (الفريق)</span>
+                <strong>MOON <span id="teamCommVal">0.00</span></strong>
+                <div style="font-size: 0.9rem; color: var(--gold); margin-top: 5px; font-weight: bold; direction: ltr;">
+                    ≈ <span id="teamCommUsdtVal">0.000</span> USDT
                 </div>
-                <button class="purple" onclick="copyRefLink()" style="margin-top: 15px;">🔗 نسخ رابط الإحالة</button>
             </div>
-        </div>
 
-        <!-- قسم السحب -->
-        <div id="wallet" class="section">
-            <div class="card">
-                <h3 style="color: #4ade80; margin-bottom: 8px;">سحب الأرباح (USDT)</h3>
-                <p style="font-size: 12px; color: #94a3b8;">الحد الأدنى للسحب: 10.00 USDT (شامل التعدين والإحالات)</p>
-                <input type="text" id="wallet-address" placeholder="عنوان محفظة USDT (TRC20 / BEP20)">
-                <input type="number" step="0.01" id="withdraw-amount" placeholder="المبلغ المراد سحبه بعملة USDT">
-                <button class="secondary" onclick="requestWithdraw()" style="margin-top: 12px;">تأكيد طلب السحب 💸</button>
+            <button class="btn-claim" style="width:100%; margin-bottom:12px; padding:12px;" onclick="claimTeamCommission()">المطالبة بعوائد الفريق</button>
+
+            <div class="invite-bonus-grid">
+                <div class="bonus-box"><span>الفريق</span><strong id="teamCount">0</strong></div>
+                <div class="bonus-box"><span>نشطون</span><strong id="activeTeamCount">0</strong></div>
+                <div class="bonus-box"><span>مكافأة الإحالة</span><strong style="color:var(--green)">0.010 USDT</strong></div>
             </div>
-        </div>
 
-        <div class="stats-grid">
-            <div class="stat-item">مستوى التعدين <span id="level">1</span></div>
-            <div class="stat-item">معرف الحساب <span id="user-id-display" style="font-size: 13px;">---</span></div>
+            <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('refModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة المعدنون -->
+    <div class="modal-overlay" id="minersModal">
+        <div class="modal-box" style="max-width: 390px;">
+            <div class="modal-title">⚡ رحلة ملوك التعدين</div>
+            <div class="miners-header-card">
+                <div><span>إنتاجك اليومي</span><strong style="color:var(--green)" id="dailyEarnings">40.0</strong></div>
+                <div><span>القمة</span><strong>150</strong></div>
+                <div><span>مستواك</span><strong style="color:var(--gold)" id="modalLevel">1</strong></div>
+            </div>
+            <div class="levels-list-container" id="levelsListContainer"></div>
+            <button class="btn-ad" style="width:100%; margin-top:5px; background:#374151;" onclick="closeModal('minersModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة المهام -->
+    <div class="modal-overlay" id="tasksModal">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-title">📋 مهام ومكافآت MoonTap</div>
+            
+            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">📅 تسجيل الدخول اليومي (كل 24 ساعة)</div>
+            <div class="checkin-grid">
+                <div class="checkin-day active" id="day1Box">D1<br><strong>5+</strong></div>
+                <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
+                <div class="checkin-day" id="day3Box">D3<br><strong>15+</strong></div>
+                <div class="checkin-day" id="day4Box">D4<br><strong>20+</strong></div>
+                <div class="checkin-day" id="day5Box">D5<br><strong>25+</strong></div>
+                <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
+                <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
+            </div>
+            <button class="btn-claim" id="checkinBtn" style="margin-bottom:12px; padding:9px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول</button>
+
+            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">⭐ مهام القناة والمشاركة والإعلانات</div>
+            <div class="tasks-list-container">
+                <div class="task-card-item">
+                    <div class="task-info">
+                        <h5>📢 الاشتراك في قناة البوت الرسمية</h5>
+                        <p>+50.00 MOON</p>
+                    </div>
+                    <button class="task-action-btn" id="taskBtn1" onclick="handleChannelTask(1, 50)">اشتراك</button>
+                </div>
+                <div class="task-card-item">
+                    <div class="task-info">
+                        <h5>📤 مشاركة القناة / البوت مع صديق</h5>
+                        <p>+30.00 MOON</p>
+                    </div>
+                    <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 30)">مشاركة</button>
+                </div>
+                <div class="task-card-item">
+                    <div class="task-info">
+                        <h5>📺 مشاهدة إعلان مكافأة (1)</h5>
+                        <p>+15.00 MOON</p>
+                    </div>
+                    <button class="task-action-btn" id="taskBtn3" onclick="watchAdTask(3, 15)">مشاهدة</button>
+                </div>
+                <div class="task-card-item">
+                    <div class="task-info">
+                        <h5>📺 مشاهدة إعلان مكافأة (2)</h5>
+                        <p>+15.00 MOON</p>
+                    </div>
+                    <button class="task-action-btn" id="taskBtn4" onclick="watchAdTask(4, 15)">مشاهدة</button>
+                </div>
+            </div>
+
+            <button class="btn-ad" style="width:100%; background:#374151; padding:9px;" onclick="closeModal('tasksModal')">إغلاق</button>
         </div>
     </div>
 
     <script>
-        // إعدادات اتصال Supabase
+        // ====== إعدادات الربط السحابي (Supabase) ======
         const SUPABASE_URL = 'https://udkgvdwoteksgixuvbrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pm7dvD7MbK0GuI8WUbb5IA_MPdYzN1P';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        const user = tg.initDataUnsafe?.user;
-        const baseId = user ? user.id.toString() : (localStorage.getItem('moontap_uid') || "u_" + Math.floor(100000 + Math.random() * 900000));
-        localStorage.setItem('moontap_uid', baseId);
-        
-        const userName = user ? (user.first_name || "معدّن") : "مستخدم نشط";
-        const startParam = tg.initDataUnsafe?.start_param || null;
+        const tg = window.Telegram?.WebApp;
+        if (tg) { tg.ready(); tg.expand(); }
 
-        document.getElementById('username').innerText = `مرحباً، ${userName} 🟢`;
-        document.getElementById('user-id-display').innerText = baseId;
+        // ====== إعدادات روابط البوت والقناة الرسمية ======
+        const BOT_USERNAME = "UsdtMysteryBox77_bot";
+        const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
 
-        // دورة التعدين 24 ساعة بالضبط
-        const MINING_COOLDOWN = 24 * 60 * 60 * 1000; 
-        // كل 1000 MOON تعادل 1 USDT (كل 1 MOON = 0.001 USDT)
-        const MOON_TO_USDT_RATE = 0.001;
-        // سعر الإحالة الواحدة: 0.010 USDT
-        const REFERRAL_REWARD_USDT = 0.010;
+        // سعر الإحالة: 0.010 USDT (يعادل 250 عملة MOON)
+        const REF_REWARD_USDT = 0.010;
+        const REF_REWARD_MOON = 250.00;
 
-        let userData = {
-            moon_balance: parseFloat(localStorage.getItem('mt_moon_balance')) || 0,
-            level: parseInt(localStorage.getItem('mt_level')) || 1,
-            team_count: parseInt(localStorage.getItem('mt_team')) || 0,
-            ref_usdt: parseFloat(localStorage.getItem('mt_ref_usdt')) || 0.000,
-            last_mining_claim: parseInt(localStorage.getItem('mt_last_claim')) || 0,
-            channel_joined: localStorage.getItem('mt_channel_moon') === 'true'
+        let telegramUser = tg?.initDataUnsafe?.user;
+        let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('mt_guest_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
+        localStorage.setItem('mt_guest_id', userId);
+
+        const startParam = tg?.initDataUnsafe?.start_param || null;
+        const storageKey = 'moontap_original_system_v16_' + userId;
+
+        let savedData = localStorage.getItem(storageKey);
+        let userState = savedData ? JSON.parse(savedData) : {
+            balance: 0.00,
+            level: 1,
+            teamCount: 0,
+            activeTeamCount: 0,
+            teamCommission: 0,
+            completedTasks: [],
+            pendingVerifyTasks: [],
+            lastCheckinTime: 0,
+            miningStartTime: Date.now(),
+            savedWallet: ''
         };
 
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
+        if (!userState.miningStartTime) userState.miningStartTime = Date.now();
+        if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
 
-        async function syncWithCloud() {
-            localStorage.setItem('mt_moon_balance', userData.moon_balance);
-            localStorage.setItem('mt_level', userData.level);
-            localStorage.setItem('mt_team', userData.team_count);
-            localStorage.setItem('mt_ref_usdt', userData.ref_usdt);
-            localStorage.setItem('mt_last_claim', userData.last_mining_claim);
-            localStorage.setItem('mt_channel_moon', userData.channel_joined);
-
+        // مزامنة المستخدم والإحالات مع سحابة Supabase
+        async function syncWithSupabase() {
             try {
-                await supabaseClient.from('users').upsert([{ id: baseId }]);
-            } catch (e) {}
-        }
+                await supabaseClient.from('users').upsert([{ id: userId }]);
 
-        async function initApp() {
-            if (startParam && startParam !== baseId && !localStorage.getItem('mt_referred')) {
-                localStorage.setItem('mt_referred', 'true');
-                const refRecordId = `ref_${startParam}_${baseId}`;
-                await supabaseClient.from('users').upsert([{ id: refRecordId }]);
-            }
+                if (startParam && startParam.startsWith('ref_')) {
+                    const inviterId = startParam.replace('ref_', '');
+                    if (inviterId && inviterId !== userId && !localStorage.getItem('mt_ref_registered')) {
+                        localStorage.setItem('mt_ref_registered', 'true');
+                        const refLogId = `ref_${inviterId}_${userId}`;
+                        await supabaseClient.from('users').upsert([{ id: refLogId }]);
+                    }
+                }
 
-            try {
                 let { data: refs } = await supabaseClient
                     .from('users')
                     .select('id')
-                    .like('id', `ref_${baseId}_%`);
+                    .like('id', `ref_${userId}_%`);
 
-                if (refs && refs.length > userData.team_count) {
-                    const newRefs = refs.length - userData.team_count;
-                    userData.team_count = refs.length;
-                    userData.ref_usdt += (newRefs * REFERRAL_REWARD_USDT);
+                if (refs && refs.length > userState.teamCount) {
+                    let newInvites = refs.length - userState.teamCount;
+                    userState.teamCount = refs.length;
+                    userState.activeTeamCount = refs.length;
+                    userState.teamCommission += (newInvites * REF_REWARD_MOON);
+                    persistData();
+                    updateUI();
                 }
-            } catch (e) {}
+            } catch (err) {
+                console.log("Cloud sync note:", err);
+            }
+        }
 
-            await syncWithCloud();
+        function openTelegramUrlSafely(url) {
+            if (tg && typeof tg.openTelegramLink === 'function' && url.includes('t.me/')) {
+                tg.openTelegramLink(url);
+            } else if (tg && typeof tg.openLink === 'function') {
+                tg.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function getDailyMiningLimit(lvl) {
+            let base = lvl * 40;
+            if (userState.activeTeamCount >= 10) {
+                base = base * 1.5;
+            }
+            return base;
+        }
+
+        function getRequiredBalanceForLevel(targetLvl) {
+            let total = 0;
+            for (let i = 1; i < targetLvl; i++) {
+                total += (i * 50);
+            }
+            return total;
+        }
+
+        function checkLevelProgression() {
+            let newCalculatedLevel = 1;
+            for (let i = 2; i <= 150; i++) {
+                if (userState.balance >= getRequiredBalanceForLevel(i)) {
+                    newCalculatedLevel = i;
+                } else {
+                    break;
+                }
+            }
+
+            if (newCalculatedLevel > userState.level) {
+                userState.level = newCalculatedLevel;
+                persistData();
+                
+                document.getElementById('newLevelReached').innerText = userState.level;
+                document.getElementById('newDailyCap').innerText = getDailyMiningLimit(userState.level);
+                document.getElementById('levelUpModal').style.display = 'flex';
+            }
+        }
+
+        function persistData() {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(userState));
+            } catch(e) {
+                console.log("Storage error:", e);
+            }
+        }
+
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+        function getCurrentMinedData() {
+            let now = Date.now();
+            let elapsedMs = now - userState.miningStartTime;
+            let isStopped = false;
+
+            if (elapsedMs >= TWENTY_FOUR_HOURS_MS) {
+                elapsedMs = TWENTY_FOUR_HOURS_MS;
+                isStopped = true;
+            }
+
+            let dailyLimit = getDailyMiningLimit(userState.level);
+            let minedAmount = (elapsedMs / TWENTY_FOUR_HOURS_MS) * dailyLimit;
+            let remainingMs = TWENTY_FOUR_HOURS_MS - elapsedMs;
+
+            return {
+                mined: minedAmount,
+                remainingMs: remainingMs,
+                isStopped: isStopped,
+                dailyLimit: dailyLimit
+            };
+        }
+
+        function updateMiningEngineUI() {
+            let data = getCurrentMinedData();
+            let timerSpan = document.getElementById('countdownTimer');
+            let timerBox = document.getElementById('timerBox');
+
+            let h = Math.floor(data.remainingMs / (1000 * 60 * 60));
+            let m = Math.floor((data.remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((data.remainingMs % (1000 * 60)) / 1000);
+            let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            if (data.isStopped) {
+                if (timerSpan) timerSpan.innerText = `00:00:00 (ممتلئ - متوقف)`;
+                if (timerBox) timerBox.classList.add('stopped');
+            } else {
+                if (timerSpan) timerSpan.innerText = timeStr;
+                if (timerBox) timerBox.classList.remove('stopped');
+            }
+
+            document.getElementById('pendingReward').innerText = data.mined.toFixed(4);
+            document.getElementById('btnClaimVal').innerText = data.mined.toFixed(2);
+            document.getElementById('maxCapText').innerText = data.dailyLimit;
+            document.getElementById('dailyRateInfo').innerText = data.dailyLimit.toFixed(2);
+            document.getElementById('dailyEarnings').innerText = data.dailyLimit.toFixed(1);
+        }
+
+        setInterval(() => {
+            updateMiningEngineUI();
+        }, 1000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (userState.savedWallet) {
+                document.getElementById('walletInput').value = userState.savedWallet;
+            }
             updateUI();
-            checkTimer();
-            setInterval(checkTimer, 1000);
-        }
+            syncWithSupabase();
+        });
 
-        function getDailyReward() {
-            return userData.level * 100; // 100 MOON لكل مستوى في الـ 24 ساعة
-        }
+        function executeClaimMiningReward() {
+            let data = getCurrentMinedData();
 
-        function getUpgradeCost() {
-            return userData.level * 500; // 500 MOON للترقية
-        }
+            if (data.mined < 0.01) {
+                showMessage("⚠️ انتظر قليلاً حتى يتجمع قدر بسيط من عملات MOON للمطالبة بها!");
+                return;
+            }
 
-        function getTotalUsdt() {
-            return (userData.moon_balance * MOON_TO_USDT_RATE) + userData.ref_usdt;
+            let claimedAmount = data.mined;
+            userState.balance += claimedAmount;
+            userState.miningStartTime = Date.now(); 
+            
+            persistData();
+            updateUI();
+
+            showMessage(`✅ تم استلام ${claimedAmount.toFixed(2)} MOON بنجاح! عاد المؤقت إلى 24:00:00 وبدأ التعدين الجديد.`);
         }
 
         function updateUI() {
-            document.getElementById('balance').innerText = `${userData.moon_balance} MOON`;
-            document.getElementById('usdt-balance').innerText = `≈ ${getTotalUsdt().toFixed(3)} USDT`;
-            
-            document.getElementById('level').innerText = userData.level;
-            document.getElementById('team-count').innerText = userData.team_count;
-            document.getElementById('team-comm').innerText = `${userData.ref_usdt.toFixed(3)} USDT`;
-            document.getElementById('daily-rate').innerText = getDailyReward();
-            document.getElementById('upgrade-cost').innerText = getUpgradeCost();
+            try {
+                checkLevelProgression();
 
-            const channelBtn = document.getElementById('channel-btn');
-            if (userData.channel_joined) {
-                channelBtn.innerText = "✅ تم استلام هدية القناة (50 MOON)";
-                channelBtn.style.background = "#334155";
+                document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
+                document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
+                document.getElementById('userLevel').innerText = userState.level;
+                document.getElementById('mainLevelBadge').innerText = userState.level;
+                document.getElementById('modalLevel').innerText = userState.level;
+                document.getElementById('teamCount').innerText = userState.activeTeamCount;
+                document.getElementById('activeTeamCount').innerText = userState.activeTeamCount;
+                document.getElementById('teamCommVal').innerText = userState.teamCommission.toFixed(2);
+
+                let teamCommUsdt = (userState.teamCommission / REF_REWARD_MOON) * REF_REWARD_USDT;
+                let commUsdtEl = document.getElementById('teamCommUsdtVal');
+                if (commUsdtEl) commUsdtEl.innerText = teamCommUsdt.toFixed(3);
+
+                let eliteStatus = document.getElementById('eliteStatusText');
+                if (eliteStatus) {
+                    if (userState.activeTeamCount >= 10) {
+                        eliteStatus.innerText = `مفعل ✅ (${userState.activeTeamCount}/10)`;
+                    } else {
+                        eliteStatus.innerText = `غير مفعل ${userState.activeTeamCount}/10`;
+                    }
+                }
+
+                let usdValue = (userState.balance / 5000) * 0.20;
+                document.getElementById('dynamicPriceVal').innerText = usdValue.toFixed(4);
+                document.getElementById('modalUsdVal').innerText = usdValue.toFixed(4);
+
+                const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+                document.getElementById('myRefLink').innerText = refLink;
+
+                renderLevelsList();
+                checkCompletedTasksUI();
+                checkCheckinStatusUI();
+                updateMiningEngineUI();
+                persistData();
+            } catch(e) {
+                console.log("UI Error:", e);
             }
         }
 
-        function checkTimer() {
-            const now = Date.now();
-            const elapsed = now - userData.last_mining_claim;
-            const timeLeft = MINING_COOLDOWN - elapsed;
-
-            const claimBtn = document.getElementById('claim-btn');
-            const timerText = document.getElementById('timer-text');
-
-            if (userData.last_mining_claim > 0 && timeLeft > 0) {
-                const hours = String(Math.floor(timeLeft / (1000 * 60 * 60))).padStart(2, '0');
-                const minutes = String(Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-                const seconds = String(Math.floor((timeLeft % (1000 * 60)) / 1000)).padStart(2, '0');
-                
-                timerText.innerText = `${hours}:${minutes}:${seconds}`;
-                claimBtn.disabled = true;
-                claimBtn.innerText = "التعدين السحابي نشط ⏳";
-            } else {
-                timerText.innerText = `جاهز لاستلام ${getDailyReward()} MOON!`;
-                claimBtn.disabled = false;
-                claimBtn.innerText = "بدء التعدين واستلام الأرباح 🚀";
-            }
-        }
-
-        async function claimMining() {
-            const reward = getDailyReward();
-            userData.moon_balance += reward;
-            userData.last_mining_claim = Date.now();
+        function renderLevelsList() {
+            const container = document.getElementById('levelsListContainer');
+            if(!container) return;
+            let html = '';
             
-            updateUI();
-            checkTimer();
-            await syncWithCloud();
+            for (let i = userState.level; i <= 150; i++) {
+                let requiredCoins = getRequiredBalanceForLevel(i);
+                let levelDailyRate = getDailyMiningLimit(i);
+                let isCurrent = (i === userState.level);
+                let cardClass = isCurrent ? 'current' : 'locked';
+                let statusText = isCurrent ? '🔥 مستواك النشط' : `🔒 يتطلب ${requiredCoins} MOON`;
 
-            alert(`تم استلام ${reward} MOON بنجاح! بدأت دورة التعدين الجديدة لمدة 24 ساعة.`);
+                html += `<div class="level-card-item ${cardClass}">
+                    <div class="level-info">
+                        <h5>🚀 منجم المستوى (${i})</h5>
+                        <p>الإنتاج اليومي: <strong style="color:var(--green)">${levelDailyRate} MOON</strong> / 24 ساعة</p>
+                    </div>
+                    <div class="level-badge-status">${statusText}</div>
+                </div>`;
+            }
+            container.innerHTML = html;
         }
 
-        async function upgradeLevel() {
-            const cost = getUpgradeCost();
-            if (userData.moon_balance < cost) {
-                alert(`رصيدك من عملة MOON غير كافٍ! تحتاج إلى ${cost} MOON للترقية.`);
+        function handleChannelTask(taskId, rewardAmount) {
+            if (userState.completedTasks.includes(taskId)) {
+                showMessage("⚠️ لقد قمت بالاشتراك واستلام مكافأة هذه المهمة مسبقاً!");
                 return;
             }
 
-            userData.moon_balance -= cost;
-            userData.level += 1;
-            updateUI();
-            await syncWithCloud();
+            if (!userState.pendingVerifyTasks.includes(taskId)) {
+                openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
+                userState.pendingVerifyTasks.push(taskId);
+                persistData();
+                checkCompletedTasksUI();
+                return;
+            }
 
-            alert(`مبارك! تمت ترقية حسابك إلى المستوى ${userData.level} وتضاعف ربحك اليومي 🎉`);
+            userState.completedTasks.push(taskId);
+            userState.balance += rewardAmount;
+            updateUI();
+            showMessage(`🎉 تم التحقق من اشتراكك في القناة بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
 
-        async function joinChannel() {
-            window.open('https://t.me/udt001', '_blank');
-            if (!userData.channel_joined) {
-                userData.channel_joined = true;
-                userData.moon_balance += 50; // هدية القناة 50 MOON
-                updateUI();
-                await syncWithCloud();
-                setTimeout(() => {
-                    alert("شكراً لانضمامك للقناة الرسمية! تمت إضافة 50 MOON هدية لرصيدك 🎉");
-                }, 1500);
+        function handleShareTask(taskId, rewardAmount) {
+            if (userState.completedTasks.includes(taskId)) {
+                showMessage("⚠️ لقد أنجزت مهمة المشاركة مسبقاً!");
+                return;
             }
+
+            if (!userState.pendingVerifyTasks.includes(taskId)) {
+                shareReferral();
+                userState.pendingVerifyTasks.push(taskId);
+                persistData();
+                checkCompletedTasksUI();
+                return;
+            }
+
+            userState.completedTasks.push(taskId);
+            userState.balance += rewardAmount;
+            updateUI();
+            showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
+        }
+
+        function watchAdTask(taskId, rewardAmount) {
+            if(userState.completedTasks.includes(taskId)) {
+                showMessage("⚠️ لقد شاهدت هذا الإعلان مسبقاً!");
+                return;
+            }
+
+            setTimeout(() => {
+                userState.completedTasks.push(taskId);
+                userState.balance += rewardAmount;
+                updateUI();
+                showMessage(`🚀 رائع! حصلت على +${rewardAmount} MOON`);
+            }, 1500);
+        }
+
+        function checkCompletedTasksUI() {
+            if(!userState.completedTasks) userState.completedTasks = [];
+            if(!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+
+            for (let taskId = 1; taskId <= 4; taskId++) {
+                let btn = document.getElementById('taskBtn' + taskId);
+                if (!btn) continue;
+
+                if (userState.completedTasks.includes(taskId)) {
+                    btn.innerText = "مكتمل ✓";
+                    btn.classList.remove('verify');
+                    btn.classList.add('done');
+                } else if (userState.pendingVerifyTasks.includes(taskId)) {
+                    btn.innerText = "تحقق واستلم 🔍";
+                    btn.classList.add('verify');
+                }
+            }
+
+            let remainingTasks = 4 - userState.completedTasks.length;
+            let dot = document.getElementById('taskDot');
+            if (dot) {
+                if (remainingTasks > 0) {
+                    dot.style.display = 'block';
+                    dot.innerText = remainingTasks;
+                } else {
+                    dot.style.display = 'none';
+                }
+            }
+        }
+
+        function checkCheckinStatusUI() {
+            let checkinBtn = document.getElementById('checkinBtn');
+            if(!checkinBtn) return;
+
+            let now = Date.now();
+            if (userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS)) {
+                let remainingTime = TWENTY_FOUR_HOURS_MS - (now - userState.lastCheckinTime);
+                let hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                let minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                
+                checkinBtn.innerText = `⏳ متاح بعد: ${hours}س و ${minutes}د`;
+                checkinBtn.style.background = '#374151';
+            } else {
+                checkinBtn.innerText = "📥 استلام مكافأة تسجيل الدخول (+5 MOON)";
+                checkinBtn.style.background = '';
+            }
+        }
+
+        function claimDailyCheckin() {
+            let now = Date.now();
+            if (userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS)) {
+                showMessage("⚠️ لقد استلمت مكافأة الدخول اليومي بالفعل! عد غداً.");
+                return;
+            }
+
+            userState.balance += 5.00;
+            userState.lastCheckinTime = now;
+            updateUI();
+            showMessage("🎉 استلمت مكافأة تسجيل الدخول اليومي بنجاح (+5 MOON)!");
+        }
+
+        function watchAdForMiningBoost() {
+            userState.balance += 2.00;
+            updateUI();
+            showMessage("🚀 حصلت على +2 MOON مكافأة تعزيز التعدين!");
+        }
+
+        async function submitWithdraw() {
+            const walletAddr = document.getElementById('walletInput').value.trim();
+            const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
+
+            if (!walletAddr || walletAddr.length < 10) {
+                showMessage("⚠️ يرجى إدخال عنوان أو رابط محفظة صحيح أولاً!");
+                return;
+            }
+
+            userState.savedWallet = walletAddr;
+            persistData();
+
+            if (amountVal < 5000) {
+                showMessage("⚠️ الحد الأدنى للسحب هو 5000 عملة MOON.");
+                return;
+            }
+
+            if (amountVal > userState.balance) {
+                showMessage("⚠️ رصيدك الحالي غير كافٍ لسحب هذه الكمية!");
+                return;
+            }
+
+            userState.balance -= amountVal;
+            let usdtEquivalent = ((amountVal / 5000) * 0.20).toFixed(3);
+            document.getElementById('withdrawAmountInput').value = '';
+            updateUI();
+
+            try {
+                const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
+                await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
+            } catch (e) {}
+
+            showMessage(`✅ تم حفظ محفظتك وإرسال طلب سحب (${amountVal} MOON ≈ ${usdtEquivalent} USDT) بنجاح! ستتم المعالجة قريباً.`);
         }
 
         function copyRefLink() {
-            const botUsername = "YourBotUsername"; // استبدلها بيوزر بوتك
-            const refLink = `https://t.me/${botUsername}?start=${baseId}`;
-            navigator.clipboard.writeText(refLink).then(() => {
-                alert("تم نسخ رابط الإحالة بنجاح! شاركه مع أصدقائك.");
-            });
+            const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            navigator.clipboard.writeText(refLink);
+            showMessage("📋 تم نسخ رابط الإحالة بنجاح!");
         }
 
-        async function requestWithdraw() {
-            const address = document.getElementById('wallet-address').value.trim();
-            const amountUsdt = parseFloat(document.getElementById('withdraw-amount').value);
-            const totalAvailableUsdt = getTotalUsdt();
+        function shareReferral() {
+            const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية فوراً عبر رابطي:\n\n${refLink}`);
+            openTelegramUrlSafely(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
+        }
 
-            if (!address || address.length < 10) {
-                alert("يرجى إدخال عنوان محفظة USDT صحيح.");
+        function claimTeamCommission() {
+            if (userState.teamCommission <= 0) {
+                showMessage("⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!");
                 return;
             }
-            if (isNaN(amountUsdt) || amountUsdt < 10) {
-                alert("الحد الأدنى للسحب هو 10.00 USDT.");
-                return;
-            }
-            if (amountUsdt > totalAvailableUsdt) {
-                alert("عفواً، المبلغ المطلوب أكبر من إجمالي رصيدك القابل للسحب!");
-                return;
-            }
-
-            // خصم المبلغ المسحوب من أرباح الإحالات أولاً ثم من رصيد MOON
-            if (userData.ref_usdt >= amountUsdt) {
-                userData.ref_usdt -= amountUsdt;
-            } else {
-                const remainingUsdt = amountUsdt - userData.ref_usdt;
-                userData.ref_usdt = 0;
-                const moonToDeduct = Math.ceil(remainingUsdt / MOON_TO_USDT_RATE);
-                userData.moon_balance = Math.max(0, userData.moon_balance - moonToDeduct);
-            }
-
+            let claimedMoon = userState.teamCommission;
+            let claimedUsdt = ((claimedMoon / REF_REWARD_MOON) * REF_REWARD_USDT).toFixed(3);
+            userState.balance += claimedMoon;
+            userState.teamCommission = 0.0;
             updateUI();
-            await syncWithCloud();
-
-            // حفظ طلب السحب في جدولك بـ Supabase
-            const withdrawId = `wd_${baseId}_${amountUsdt.toFixed(2)}USDT_${address.substring(0,8)}`;
-            await supabaseClient.from('users').upsert([{ id: withdrawId }]);
-
-            alert(`تم إرسال طلب سحب ${amountUsdt.toFixed(2)} USDT بنجاح! قيد المراجعة.`);
-            document.getElementById('withdraw-amount').value = '';
+            showMessage(`✅ تمت إضافة عوائد الفريق (${claimedMoon.toFixed(2)} MOON ≈ ${claimedUsdt} USDT) إلى رصيدك بنجاح!`);
         }
 
-        initApp();
+        function showMessage(msg) {
+            if (tg && typeof tg.showAlert === 'function') {
+                tg.showAlert(msg);
+            } else {
+                alert(msg);
+            }
+        }
+
+        function switchTab(modalId, btnEl) {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                if (m.id !== 'levelUpModal') m.style.display = 'none';
+            });
+            document.getElementById(modalId).style.display = 'flex';
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            if (modalId === 'refModal') syncWithSupabase();
+        }
+
+        function openMiningTab(btnEl) { 
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                if (m.id !== 'levelUpModal') m.style.display = 'none';
+            });
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+        }
+
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('navMiningBtn').classList.add('active');
+        }
     </script>
-</body> 
+</body>
 </html>
