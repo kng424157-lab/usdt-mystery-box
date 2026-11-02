@@ -8,8 +8,6 @@
     <!-- مكتبات النظام الأساسية -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- إضافة مكتبة TON Connect -->
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     
     <style>
         :root {
@@ -60,7 +58,7 @@
 
         .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
         .btn-ad:active:not(:disabled) { transform: scale(0.97); }
-        .btn-ad:disabled { background: #424242; color: #888; box-shadow: none; cursor: not-allowed; } /* ستايل زر الإعلان عند القفل */
+        .btn-ad:disabled { background: #424242; color: #888; box-shadow: none; cursor: not-allowed; }
 
         .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
         .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
@@ -140,9 +138,6 @@
         <div class="balance-badge"><span id="totalBal">0.00</span> MOON 🪙</div>
         <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
     </div>
-    
-    <!-- زر ربط المحفظة (تمت الإضافة هنا) -->
-    <div id="ton-connect" style="display: flex; justify-content: center; padding-top: 15px;"></div>
 
     <div class="main-stage">
         <div class="timer-box" id="timerBox">
@@ -163,7 +158,7 @@
 
         <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         
-        <!-- زر إعلان المكافأة ومؤشر الوقت (تم التحديث هنا) -->
+        <!-- زر إعلان المكافأة ومؤشر الوقت -->
         <button class="btn-ad" id="reward-ad-btn" onclick="triggerRewardAd()">📺 مشاهدة إعلان واكسب +2 MOON</button>
         <div id="cooldown-timer" style="color: #f59e0b; font-size: 0.85rem; margin-top: 8px; display: none; font-weight: bold;"></div>
         
@@ -320,12 +315,6 @@
     </div>
 
     <script>
-        // ====== تهيئة زر المحفظة TON Connect ======
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://kng424157-lab.github.io/usdt-mystery-box/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
-        });
-
         // ====== إعدادات الربط السحابي (Supabase) ======
         const SUPABASE_URL = 'https://udkgvdwoteksgixuvbrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pm7dvD7MbK0GuI8WUbb5IA_MPdYzN1P';
@@ -474,7 +463,6 @@
             document.getElementById('dailyEarnings').innerText = data.dailyLimit.toFixed(1);
         }
 
-        // تحديث وظيفة إعلان Adsterra مع مؤقت الساعتين
         function triggerRewardAd() {
             const lastClaim = localStorage.getItem("last_moon_ad_claim");
             const now = Date.now();
@@ -494,7 +482,6 @@
             showMessage("🚀 حصلت على +2 MOON مكافأة مشاهدة الإعلان!");
         }
 
-        // إدارة حالة زر الإعلان والوقت المتبقي
         function updateAdCooldownState() {
             const rewardBtn = document.getElementById("reward-ad-btn");
             const timerDisplay = document.getElementById("cooldown-timer");
