@@ -326,7 +326,9 @@
         // ====== إعدادات روابط البوت والقناة الرسمية وإعلانات Adsterra ======
         const BOT_USERNAME = "UsdtMysteryBox77_bot";
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
-        const ADSTERRA_DIRECT_LINK = "https://www.profitablecpmrate.com/31977587";
+        
+        // الرابط الجديد لمنصة Adsterra
+        const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
         const AD_COOLDOWN_MS = 2 * 60 * 60 * 1000; // ساعتان بالمللي ثانية
 
         // سعر الإحالة: 0.010 USDT (يعادل 250 عملة MOON)
@@ -619,14 +621,39 @@
             showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
         }
 
+        // دالة مشاهدة مهام الإعلانات بنظام العداد التنازلي المحدثة
         function watchAdTask(taskId, rewardAmount) {
-            if(userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد شاهدت هذا الإعلان مسبقاً!"); return; }
-            setTimeout(() => {
-                userState.completedTasks.push(taskId);
-                userState.balance += rewardAmount;
-                updateUI();
-                showMessage(`🚀 رائع! حصلت على +${rewardAmount} MOON`);
-            }, 1500);
+            if(userState.completedTasks.includes(taskId)) { 
+                showMessage("⚠️ لقد شاهدت هذا الإعلان مسبقاً!"); 
+                return; 
+            }
+            
+            // فتح الرابط الجديد في نافذة منفصلة
+            try { window.open(ADSTERRA_DIRECT_LINK, "_blank"); } catch(e) {}
+
+            // تحويل زر المهمة إلى عداد تنازلي
+            let btn = document.getElementById('taskBtn' + taskId);
+            if (!btn) return;
+            
+            btn.disabled = true;
+            btn.style.background = '#f59e0b'; // لون برتقالي للانتظار
+            
+            let timeLeft = 15; 
+            btn.innerText = `انتظر ${timeLeft}ث...`;
+
+            let adTimer = setInterval(() => {
+                timeLeft--;
+                if(timeLeft > 0) {
+                    btn.innerText = `انتظر ${timeLeft}ث...`;
+                } else {
+                    clearInterval(adTimer);
+                    userState.completedTasks.push(taskId);
+                    userState.balance += rewardAmount;
+                    persistData();
+                    updateUI(); // سيعيد الزر إلى حالة "مكتمل"
+                    showMessage(`🚀 رائع! اكتملت المشاهدة وحصلت على +${rewardAmount} MOON`);
+                }
+            }, 1000);
         }
 
         function checkCompletedTasksUI() {
@@ -639,6 +666,7 @@
                     btn.innerText = "مكتمل ✓";
                     btn.classList.remove('verify');
                     btn.classList.add('done');
+                    btn.style.background = '#374151'; // إعادة اللون الرمادي
                 } else if (userState.pendingVerifyTasks.includes(taskId)) {
                     btn.innerText = "تحقق واستلم 🔍";
                     btn.classList.add('verify');
