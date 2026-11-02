@@ -2,190 +2,187 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USDT & MOON Mystery Box</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MoonTap Mining</title>
 
-    <!-- مكتبة Telegram WebApp -->
+    <!-- مكتبات تيليجرام والمحفظة -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- مكتبة TON Connect للمحفظة -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 90vh;
+            user-select: none; /* منع تحديد النص أثناء النقر */
+        }
+        
+        #ton-connect { margin-bottom: 20px; }
+
+        .score-board {
+            background: #1e1e1e;
+            padding: 15px 40px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            text-align: center;
+            margin-bottom: 40px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .balance-text { color: #aaa; font-size: 14px; margin-bottom: 5px; }
+        .balance-value { font-size: 36px; font-weight: bold; color: #ffca28; }
+
+        /* دائرة التعدين */
+        .tap-coin {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffca28 0%, #f57f17 100%);
+            border: 8px solid #3e2723;
+            box-shadow: 0 0 40px rgba(255, 202, 40, 0.2), inset 0 0 20px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.05s;
+            margin-bottom: 50px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 90vh;
+            font-size: 60px;
         }
 
-        .card {
-            background-color: #1e1e1e;
-            border-radius: 16px;
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            box-sizing: border-box;
+        .tap-coin:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 20px rgba(255, 202, 40, 0.4), inset 0 0 30px rgba(0,0,0,0.7);
         }
 
-        .balance-box {
-            background: linear-gradient(135deg, #2c3e50, #000000);
+        /* قسم الإعلانات */
+        .ad-section {
+            background: #1e1e1e;
             padding: 15px;
             border-radius: 12px;
-            margin: 15px 0 25px 0;
-            border: 1px solid #333;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
         }
 
-        .balance-amount {
-            font-size: 28px;
-            font-weight: bold;
-            color: #ffca28;
-            margin-top: 5px;
-        }
-
-        .btn-action {
+        .btn-ad {
             background: linear-gradient(45deg, #ff9800, #ff5722);
-            color: #ffffff;
+            color: white;
             border: none;
-            padding: 14px 20px;
+            padding: 15px;
             font-size: 16px;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
-            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);
         }
 
-        .btn-action:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4);
-        }
-
-        .btn-action:disabled {
+        .btn-ad:disabled {
             background: #424242;
-            color: #888888;
-            cursor: not-allowed;
+            color: #888;
             box-shadow: none;
-            transform: none;
         }
 
-        .timer-text {
+        .timer {
             color: #ff9800;
             font-size: 13px;
-            margin: 8px 0;
+            margin-top: 10px;
             display: none;
-        }
-
-        .divider {
-            border: 0;
-            height: 1px;
-            background: #333;
-            margin: 20px 0;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- زر ربط محفظة Tonkeeper -->
-        <div id="ton-connect" style="display: flex; justify-content: center; margin-bottom: 15px;"></div>
+    <!-- زر المحفظة -->
+    <div id="ton-connect"></div>
 
-        <!-- صندوق عرض الرصيد -->
-        <div class="balance-box">
-            <span style="color: #aaa; font-size: 14px;">رصيدك الحالي</span>
-            <div id="moon-balance" class="balance-amount">0 MOON</div>
-        </div>
+    <!-- لوحة الرصيد -->
+    <div class="score-board">
+        <div class="balance-text">رصيد MOON</div>
+        <div id="balance" class="balance-value">0</div>
+    </div>
 
-        <hr class="divider">
+    <!-- زر التعدين المركزي -->
+    <div class="tap-coin" onclick="mineMoon()">🌕</div>
 
-        <!-- قسم الإعلان والمكافأة -->
-        <button id="reward-ad-btn" class="btn-action" onclick="triggerRewardAd()">
+    <!-- منطقة الإعلانات -->
+    <div class="ad-section">
+        <button id="reward-ad-btn" class="btn-ad" onclick="triggerRewardAd()">
             🎁 شاهد إعلان واكسب +2 MOON
         </button>
-        <div id="cooldown-timer" class="timer-text"></div>
+        <div id="cooldown-timer" class="timer"></div>
     </div>
 
     <script>
-        // --- 1. إعدادات Telegram WebApp ---
+        // تهيئة تيليجرام
         const tg = window.Telegram?.WebApp;
         if (tg) {
             tg.ready();
             tg.expand();
         }
 
-        // --- 2. إعدادات TON Connect ---
+        // تهيئة المحفظة
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://kng424157-lab.github.io/usdt-mystery-box/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
-        // --- 3. ثوابت وإعدادات الإعلان والمكافأة ---
-        const ADSTERRA_DIRECT_LINK = "https://www.profitablecpmrate.com/31977587";
-        const COOLDOWN_HOURS = 2;
-        const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
-        const REWARD_AMOUNT = 2;
-
+        // المتغيرات وعناصر الواجهة
+        const ADSTERRA_LINK = "https://www.profitablecpmrate.com/31977587";
+        const COOLDOWN_MS = 2 * 60 * 60 * 1000;
+        let currentBalance = parseFloat(localStorage.getItem("moon_balance") || "0");
+        
+        const balanceEl = document.getElementById("balance");
         const rewardBtn = document.getElementById("reward-ad-btn");
         const timerDisplay = document.getElementById("cooldown-timer");
-        const balanceDisplay = document.getElementById("moon-balance");
 
-        // استرجاع الرصيد المخزن وعرضه عند بدء التشغيل
-        function loadBalance() {
-            const savedBalance = parseFloat(localStorage.getItem("moon_balance") || "0");
-            balanceDisplay.innerText = `${savedBalance} MOON`;
+        // عرض الرصيد الأولي
+        balanceEl.innerText = currentBalance;
+
+        // دالة التعدين (النقر)
+        function mineMoon() {
+            currentBalance += 1; // زيادة 1 مون لكل نقرة
+            balanceEl.innerText = currentBalance;
+            localStorage.setItem("moon_balance", currentBalance.toString());
+            
+            // اهتزاز الهاتف عند النقر إذا كان مدعوماً
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
         }
 
-        // وظيفة الضغط على زر الإعلان
+        // دالة إعلان المكافأة
         function triggerRewardAd() {
             const lastClaim = localStorage.getItem("last_moon_ad_claim");
             const now = Date.now();
 
-            if (lastClaim && (now - parseInt(lastClaim)) < COOLDOWN_MS) {
-                alert("يرجى الانتظار حتى اكتمال مهلة الساعتين.");
-                return;
-            }
+            if (lastClaim && (now - parseInt(lastClaim)) < COOLDOWN_MS) return;
 
-            // فتح رابط الإعلان في نافذة جديدة
-            try {
-                window.open(ADSTERRA_DIRECT_LINK, "_blank");
-            } catch (e) {
-                console.log("تم حظر الإعلان، يتم منح المكافأة مباشرة.");
-            }
+            // فتح الإعلان
+            try { window.open(ADSTERRA_LINK, "_blank"); } catch(e) {}
 
-            // إضافة المكافأة وتحديث الرصيد
-            addMoonTokens(REWARD_AMOUNT);
-
-            // تفعيل المؤقت
+            // منح المكافأة
+            currentBalance += 2;
+            balanceEl.innerText = currentBalance;
+            localStorage.setItem("moon_balance", currentBalance.toString());
             localStorage.setItem("last_moon_ad_claim", now.toString());
+            
             updateCooldownState();
         }
 
-        // زيادة الرصيد
-        function addMoonTokens(amount) {
-            let currentBalance = parseFloat(localStorage.getItem("moon_balance") || "0");
-            currentBalance += amount;
-            localStorage.setItem("moon_balance", currentBalance.toString());
-            balanceDisplay.innerText = `${currentBalance} MOON`;
-            alert(`تهانينا! تمت إضافة +${amount} عملة MOON إلى حسابك 🚀`);
-        }
-
-        // فحص وتحديث حالة العد التنازلي للزر
+        // تحديث عداد الساعتين للإعلان
         function updateCooldownState() {
             const lastClaim = localStorage.getItem("last_moon_ad_claim");
             if (!lastClaim) return;
 
-            const now = Date.now();
-            const diff = now - parseInt(lastClaim);
+            const diff = Date.now() - parseInt(lastClaim);
 
             if (diff < COOLDOWN_MS) {
                 rewardBtn.disabled = true;
@@ -196,15 +193,13 @@
                 const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
 
-                timerDisplay.innerText = `⏳ متاح مجدداً بعد: ${hours}س ${minutes}د ${seconds}ث`;
+                timerDisplay.innerText = `⏳ متاح بعد: ${hours}س ${minutes}د ${seconds}ث`;
             } else {
                 rewardBtn.disabled = false;
                 timerDisplay.style.display = "none";
             }
         }
 
-        // تهيئة العداد وعرض الرصيد
-        loadBalance();
         setInterval(updateCooldownState, 1000);
         updateCooldownState();
     </script>
