@@ -7,6 +7,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- مكتبة الاحتفال عند اكتمال المهام -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
     
     <style>
         :root {
@@ -573,7 +575,7 @@
         </div>
     </div>
 
-    <!-- نافذة المعدنون -->
+    <!-- نافذة المعدنون (تم ضبطها بحيث تختفي المستويات السابقة وتظهر الحالية والقادمة فقط) -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ مستويات التعدين</div>
@@ -668,7 +670,6 @@
         const REF_REWARD_USDT = 0.010;
         const REF_REWARD_MOON = 250.00;
 
-        // الحصول على معرف المستخدم بدقة وثبات تام لعدم تصفير الحساب أبداً
         let telegramUser = tg?.initDataUnsafe?.user;
         let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('moontap_fixed_user_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
         localStorage.setItem('moontap_fixed_user_id', userId);
@@ -677,9 +678,8 @@
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        const localCacheKey = 'moontap_secure_storage_' + userId;
+        const localCacheKey = 'moontap_secure_storage_v35_' + userId;
 
-        // تحميل البيانات الفوري من الذاكرة المحلية (لتفادي أي تصفير لحظي عند إعادة التحميل)
         let cachedRaw = localStorage.getItem(localCacheKey);
         let userState = cachedRaw ? JSON.parse(cachedRaw) : {
             balance: 0.00,
@@ -691,13 +691,13 @@
             pendingVerifyTasks: [],
             lastCheckinTime: 0,
             miningStartTime: Date.now(),
-            savedWallet: ''
+            savedWallet: '',
+            hasCelebratedAllTasks: false
         };
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
 
-        // دالة الحفظ المزدوج (محلياً وفي سحابة Supabase لضمان أقصى حماية لحقوق المستخدمين)
         async function saveUserData() {
             try {
                 localStorage.setItem(localCacheKey, JSON.stringify(userState));
@@ -716,7 +716,6 @@
             }
         }
 
-        // جلب أحدث البيانات من السحابة عند الفتح مع الدمج الآمن
         async function loadUserDataFromCloud() {
             try {
                 let inviterId = null;
@@ -729,7 +728,6 @@
                     .single();
 
                 if (cloudUser) {
-                    // إذا وجدنا رصيداً في السحابة وكان أكبر أو محدثاً، نعتمد الأمان الأعلى
                     if (parseFloat(cloudUser.balance) >= userState.balance) {
                         userState.balance = parseFloat(cloudUser.balance) || 0.00;
                         userState.level = parseInt(cloudUser.level) || 1;
@@ -778,16 +776,6 @@
             saveUserData();
             updateUI();
             showMessage("⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.");
-        }
-
-        function openAdsterraTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت هذه المهمة مسبقاً!"); return; }
-            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.completedTasks.push(taskId);
-            userState.balance += rewardAmount;
-            saveUserData();
-            updateUI();
-            showMessage(`🎉 تم تفعيل البروتوكول بنجاح وحصلت على +${rewardAmount} MOON.`);
         }
 
         function getDailyMiningLimit(lvl) {
@@ -925,11 +913,13 @@
             } catch(e){}
         }
 
+        // --- إخفاء المستويات السابقة وعرض المستوى الحالي والمستويات القادمة فقط ---
         function renderLevelsList() {
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
-            for (let i = 1; i <= 150; i++) {
+            // يبدأ العرض من المستوى الحالي فقط صعوداً للمستويات القادمة
+            for (let i = userState.level; i <= 150; i++) {
                 let requiredCoins = getRequiredBalanceForLevel(i);
                 let levelDailyRate = getDailyMiningLimit(i);
                 let isCurrent = (i === userState.level);
@@ -946,6 +936,18 @@
             container.innerHTML = html;
         }
 
+        // --- تأثير الاحتفال عند إتمام جميع المهام ---
+        function triggerCelebration() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#f59e0b', '#10b981', '#3b82f6', '#fde68a']
+                });
+            }
+        }
+
         function handleChannelTask(taskId, rewardAmount) {
             if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد استلمت مكافأة هذه المهمة مسبقاً!"); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
@@ -958,6 +960,7 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             saveUserData();
+            checkCompletedTasksUI();
             updateUI();
             showMessage(`🎉 تم التحقق من الاشتراك بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
@@ -974,30 +977,61 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             saveUserData();
+            checkCompletedTasksUI();
             updateUI();
             showMessage(`🎉 شكراً للمشاركة! حصلت على +${rewardAmount} MOON.`);
+        }
+
+        function openAdsterraTask(taskId, rewardAmount) {
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت هذا البروتوكول مسبقاً!"); return; }
+            if (!userState.pendingVerifyTasks.includes(taskId)) {
+                openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
+                userState.pendingVerifyTasks.push(taskId);
+                saveUserData();
+                checkCompletedTasksUI();
+                return;
+            }
+            userState.completedTasks.push(taskId);
+            userState.balance += rewardAmount;
+            saveUserData();
+            checkCompletedTasksUI();
+            updateUI();
+            showMessage(`🎉 تم تفعيل البروتوكول بنجاح وحصلت على +${rewardAmount} MOON.`);
         }
 
         function checkCompletedTasksUI() {
             if(!userState.completedTasks) userState.completedTasks = [];
             if(!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
-            for (let taskId = 1; taskId <= 4; taskId++) {
+            
+            let completedCount = userState.completedTasks.length;
+            let totalTasks = 4;
+            let remainingTasks = totalTasks - completedCount;
+
+            for (let taskId = 1; taskId <= totalTasks; taskId++) {
                 let btn = document.getElementById('taskBtn' + taskId);
                 if (!btn) continue;
                 if (userState.completedTasks.includes(taskId)) {
                     btn.innerText = "منجز ✓";
-                    btn.classList.remove('verify');
-                    btn.classList.add('done');
+                    btn.className = "task-action-btn done";
                 } else if (userState.pendingVerifyTasks.includes(taskId)) {
                     btn.innerText = "تحقق واستلم 🔍";
-                    btn.classList.add('verify');
+                    btn.className = "task-action-btn verify";
                 }
             }
-            let remainingTasks = 4 - userState.completedTasks.length;
+
             let dot = document.getElementById('taskDot');
             if (dot) {
-                if (remainingTasks > 0) { dot.style.display = 'block'; dot.innerText = remainingTasks; } 
-                else { dot.style.display = 'none'; }
+                if (remainingTasks > 0) { 
+                    dot.style.display = 'block'; 
+                    dot.innerText = remainingTasks; 
+                } else { 
+                    dot.style.display = 'none';
+                    if (!userState.hasCelebratedAllTasks) {
+                        userState.hasCelebratedAllTasks = true;
+                        saveUserData();
+                        triggerCelebration();
+                    }
+                }
             }
         }
 
@@ -1066,6 +1100,7 @@
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'minersModal') renderLevelsList();
+            if (modalId === 'tasksModal') checkCompletedTasksUI();
         }
 
         function openMiningTab(btnEl) { 
@@ -1078,6 +1113,7 @@
             document.getElementById(id).style.display = 'none'; 
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('navMiningBtn').classList.add('active');
+            checkCompletedTasksUI();
         }
     </script>
 </body>
