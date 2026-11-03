@@ -8,6 +8,8 @@
     <!-- مكتبات النظام الأساسية -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- مكتبة إعلانات فيديو AdsGram الرسمية -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     
     <style>
         :root {
@@ -158,8 +160,8 @@
 
         <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
         
-        <!-- زر إعلان المكافأة ومؤشر الوقت -->
-        <button class="btn-ad" id="reward-ad-btn" onclick="triggerRewardAd()">📺 مشاهدة إعلان واكسب +2 MOON</button>
+        <!-- زر إعلان فيديو AdsGram مع مؤقت الساعتين -->
+        <button class="btn-ad" id="reward-ad-btn" onclick="triggerRewardAd()">📺 مشاهدة إعلان فيديو واكسب +2 MOON</button>
         <div id="cooldown-timer" style="color: #f59e0b; font-size: 0.85rem; margin-top: 8px; display: none; font-weight: bold;"></div>
         
         <div class="bottom-spacer"></div>
@@ -172,20 +174,6 @@
             <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> المعدنون</button>
             <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
             <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> التعدين</button>
-        </div>
-    </div>
-
-    <!-- إشعار الترقية للمستوى الجديد المميز -->
-    <div class="modal-overlay" id="levelUpModal" style="z-index: 200;">
-        <div class="modal-box levelup-box">
-            <div class="levelup-icon">🎉</div>
-            <div class="modal-title" style="color: var(--gold); font-size: 1.4rem;">ترقية مستوى المنجم!</div>
-            <div class="modal-desc" style="color: #fff; font-size: 0.95rem; margin-top: 10px;">
-                مبارك لك! لقد تم نقلك بنجاح إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
-                ⚡ زادت سرعة تعدينك اليومية إلى <strong style="color:var(--green)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
-                <span style="font-size:0.75rem; color:#94a3b8;">(تم إخفاء المستوى السابق من قائمة المعدنين)</span>
-            </div>
-            <button class="btn-claim" style="background: linear-gradient(135deg, var(--gold), #d97706); width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">🚀 مواصلة التعدين</button>
         </div>
     </div>
 
@@ -296,21 +284,34 @@
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>📺 مشاهدة إعلان مكافأة (1)</h5>
+                        <h5>📺 مشاهدة إعلان فيديو (1)</h5>
                         <p>+15.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn3" onclick="watchAdTask(3, 15)">مشاهدة</button>
+                    <button class="task-action-btn" id="taskBtn3" onclick="watchAdsGramTask(3, 15)">مشاهدة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>📺 مشاهدة إعلان مكافأة (2)</h5>
+                        <h5>📺 مشاهدة إعلان فيديو (2)</h5>
                         <p>+15.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn4" onclick="watchAdTask(4, 15)">مشاهدة</button>
+                    <button class="task-action-btn" id="taskBtn4" onclick="watchAdsGramTask(4, 15)">مشاهدة</button>
                 </div>
             </div>
 
             <button class="btn-ad" style="width:100%; background:#374151; padding:9px;" onclick="closeModal('tasksModal')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة الترقية للمستوى الجديد -->
+    <div class="modal-overlay" id="levelUpModal" style="z-index: 200;">
+        <div class="modal-box levelup-box">
+            <div class="levelup-icon">🎉</div>
+            <div class="modal-title" style="color: var(--gold); font-size: 1.4rem;">ترقية مستوى المنجم!</div>
+            <div class="modal-desc" style="color: #fff; font-size: 0.95rem; margin-top: 10px;">
+                مبارك لك! لقد تم نقلك بنجاح إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
+                ⚡ زادت سرعة تعدينك اليومية إلى <strong style="color:var(--green)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
+            </div>
+            <button class="btn-claim" style="background: linear-gradient(135deg, var(--gold), #d97706); width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">🚀 مواصلة التعدين</button>
         </div>
     </div>
 
@@ -323,15 +324,13 @@
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // ====== إعدادات روابط البوت والقناة الرسمية وإعلانات Adsterra ======
         const BOT_USERNAME = "UsdtMysteryBox77_bot";
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
-        
-        // الرابط الجديد لمنصة Adsterra
-        const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
-        const AD_COOLDOWN_MS = 2 * 60 * 60 * 1000; // ساعتان بالمللي ثانية
+        const AD_COOLDOWN_MS = 2 * 60 * 60 * 1000; // ساعتان للمؤقت
 
-        // سعر الإحالة: 0.010 USDT (يعادل 250 عملة MOON)
+        // معرّف إعلان AdsGram الخاص بك
+        const ADSGRAM_BLOCK_ID = "int-56190"; 
+
         const REF_REWARD_USDT = 0.010;
         const REF_REWARD_MOON = 250.00;
 
@@ -339,6 +338,7 @@
         let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('mt_guest_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
         localStorage.setItem('mt_guest_id', userId);
 
+        // التقاط كود الإحالة بدقة تامة من جميع مسارات تيليجرام
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param 
@@ -348,7 +348,7 @@
                         || hashParams.get('tgWebAppStartParam') 
                         || null;
 
-        const storageKey = 'moontap_original_system_v16_' + userId;
+        const storageKey = 'moontap_adsgram_system_v19_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -367,26 +367,44 @@
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
 
+        // ====== دالة مزامنة الإحالات لحظياً مع Supabase ======
         async function syncWithSupabase() {
             try {
+                // 1. تسجيل المستخدم الحالي في جدول users
                 await supabaseClient.from('users').upsert([{ id: userId }]);
+
+                // 2. إذا دخل عبر رابط إحالة، يتم حفظ السجل فوراً في السحابة بالصيغة الصحيحة
                 if (startParam) {
                     const inviterId = startParam.replace('ref_', '').trim();
                     if (inviterId && inviterId !== userId) {
                         const refLogId = `ref_${inviterId}_${userId}`;
+                        // تحقق لمنع التكرار وحفظ السجل مباشرة
                         await supabaseClient.from('users').upsert([{ id: refLogId }]);
                     }
                 }
-                let { data: refs } = await supabaseClient.from('users').select('id').like('id', `ref_${userId}_%`);
-                if (refs && refs.length > userState.teamCount) {
-                    let newInvites = refs.length - userState.teamCount;
-                    userState.teamCount = refs.length;
-                    userState.activeTeamCount = refs.length;
-                    userState.teamCommission += (newInvites * REF_REWARD_MOON);
-                    persistData();
-                    updateUI();
+
+                // 3. جلب جميع الإحالات المرتبطة بهذا المستخدم مباشرة من قاعدة البيانات
+                let { data: refs, error } = await supabaseClient
+                    .from('users')
+                    .select('id')
+                    .like('id', `ref_${userId}_%`);
+
+                if (refs) {
+                    let totalRefs = refs.length;
+                    if (totalRefs !== userState.teamCount) {
+                        let diff = totalRefs - userState.teamCount;
+                        if (diff > 0) {
+                            userState.teamCommission += (diff * REF_REWARD_MOON);
+                        }
+                        userState.teamCount = totalRefs;
+                        userState.activeTeamCount = totalRefs;
+                        persistData();
+                        updateUI();
+                    }
                 }
-            } catch (err) { console.log("Cloud sync note:", err); }
+            } catch (err) {
+                console.log("Cloud sync error:", err);
+            }
         }
 
         function openTelegramUrlSafely(url) {
@@ -474,14 +492,44 @@
                 return;
             }
 
-            try { window.open(ADSTERRA_DIRECT_LINK, "_blank"); } catch(e) {}
+            if (typeof window.Adsgram === 'undefined') {
+                showMessage("⚠️ نظام الإعلانات غير محمل، تأكد من فتح البوت داخل تيليجرام.");
+                return;
+            }
 
-            userState.balance += 2.00;
-            localStorage.setItem("last_moon_ad_claim", now.toString());
-            
-            updateUI();
-            updateAdCooldownState();
-            showMessage("🚀 حصلت على +2 MOON مكافأة مشاهدة الإعلان!");
+            const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+            AdController.show().then(() => {
+                userState.balance += 2.00;
+                localStorage.setItem("last_moon_ad_claim", now.toString());
+                updateUI();
+                updateAdCooldownState();
+                showMessage("🚀 حصلت على +2 MOON مكافأة مشاهدة الإعلان!");
+            }).catch(() => {
+                showMessage("⚠️ تم إلغاء الإعلان أو لا توجد إعلانات متاحة حالياً.");
+            });
+        }
+
+        function watchAdsGramTask(taskId, rewardAmount) {
+            if(userState.completedTasks.includes(taskId)) { 
+                showMessage("⚠️ لقد شاهدت هذا الإعلان مسبقاً!"); 
+                return; 
+            }
+
+            if (typeof window.Adsgram === 'undefined') {
+                showMessage("⚠️ نظام الإعلانات غير محمل، افتح البوت داخل تيليجرام.");
+                return;
+            }
+
+            const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+            AdController.show().then(() => {
+                userState.completedTasks.push(taskId);
+                userState.balance += rewardAmount;
+                persistData();
+                updateUI();
+                showMessage(`🚀 رائع! اكتمل الإعلان وحصلت على +${rewardAmount} MOON`);
+            }).catch(() => {
+                showMessage("⚠️ لم يتم اتمام مشاهدة الإعلان بالكامل.");
+            });
         }
 
         function updateAdCooldownState() {
@@ -519,7 +567,7 @@
             if (userState.savedWallet) document.getElementById('walletInput').value = userState.savedWallet;
             updateUI();
             updateAdCooldownState();
-            syncWithSupabase();
+            syncWithSupabase(); // مزامنة فورية للإحالات عند فتح التطبيق
         });
 
         function executeClaimMiningReward() {
@@ -621,41 +669,6 @@
             showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
         }
 
-        // دالة مشاهدة مهام الإعلانات بنظام العداد التنازلي المحدثة
-        function watchAdTask(taskId, rewardAmount) {
-            if(userState.completedTasks.includes(taskId)) { 
-                showMessage("⚠️ لقد شاهدت هذا الإعلان مسبقاً!"); 
-                return; 
-            }
-            
-            // فتح الرابط الجديد في نافذة منفصلة
-            try { window.open(ADSTERRA_DIRECT_LINK, "_blank"); } catch(e) {}
-
-            // تحويل زر المهمة إلى عداد تنازلي
-            let btn = document.getElementById('taskBtn' + taskId);
-            if (!btn) return;
-            
-            btn.disabled = true;
-            btn.style.background = '#f59e0b'; // لون برتقالي للانتظار
-            
-            let timeLeft = 15; 
-            btn.innerText = `انتظر ${timeLeft}ث...`;
-
-            let adTimer = setInterval(() => {
-                timeLeft--;
-                if(timeLeft > 0) {
-                    btn.innerText = `انتظر ${timeLeft}ث...`;
-                } else {
-                    clearInterval(adTimer);
-                    userState.completedTasks.push(taskId);
-                    userState.balance += rewardAmount;
-                    persistData();
-                    updateUI(); // سيعيد الزر إلى حالة "مكتمل"
-                    showMessage(`🚀 رائع! اكتملت المشاهدة وحصلت على +${rewardAmount} MOON`);
-                }
-            }, 1000);
-        }
-
         function checkCompletedTasksUI() {
             if(!userState.completedTasks) userState.completedTasks = [];
             if(!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
@@ -666,7 +679,7 @@
                     btn.innerText = "مكتمل ✓";
                     btn.classList.remove('verify');
                     btn.classList.add('done');
-                    btn.style.background = '#374151'; // إعادة اللون الرمادي
+                    btn.style.background = '#374151';
                 } else if (userState.pendingVerifyTasks.includes(taskId)) {
                     btn.innerText = "تحقق واستلم 🔍";
                     btn.classList.add('verify');
@@ -704,7 +717,7 @@
             userState.balance += 5.00;
             userState.lastCheckinTime = now;
             updateUI();
-            showMessage("🎉 استلمت مكافأة تسجيل الدخول اليومي بنجاح (+5 MOON)!");
+            showMessage("🎉 استلاست مكافأة تسجيل الدخول اليومي بنجاح (+5 MOON)!");
         }
 
         async function submitWithdraw() {
@@ -760,7 +773,7 @@
             document.getElementById(modalId).style.display = 'flex';
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
-            if (modalId === 'refModal') syncWithSupabase();
+            if (modalId === 'refModal') syncWithSupabase(); // مزامنة فورية عند فتح نافذة الأصدقاء
         }
 
         function openMiningTab(btnEl) { 
