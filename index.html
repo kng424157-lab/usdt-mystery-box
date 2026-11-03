@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MOON TAP: Cloud Mining Elite</title>
+    <title>MoonTap Cloud Mining</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -32,45 +32,45 @@
             overflow-x: hidden; 
         }
 
-        /* شريط علوي ملكي */
+        /* شريط علوي ملكي وخاص بـ MoonTap */
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(9, 13, 22, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.7); }
         .badge-lvl { background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.05)); border: 1px solid var(--gold-primary); padding: 5px 12px; border-radius: 14px; font-size: 0.8rem; color: var(--gold-light); font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px var(--gold-glow); }
         .wallet-pill { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(212, 175, 55, 0.4); padding: 5px 12px; border-radius: 16px; font-size: 0.78rem; color: var(--gold-light); font-weight: bold; direction: ltr; box-shadow: 0 0 12px rgba(0,0,0,0.5); }
 
         .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
         
-        /* مؤقت أنيق */
+        /* مؤقت التعدين */
         .timer-box { background: rgba(16, 185, 129, 0.12); border: 1px solid var(--emerald); color: var(--emerald); padding: 6px 16px; border-radius: 16px; font-size: 0.82rem; font-weight: bold; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(16,185,129,0.2); }
         .timer-box.stopped { background: rgba(239, 68, 68, 0.12); border-color: #ef4444; color: #ef4444; }
         .timer-dot { width: 7px; height: 7px; background: var(--emerald); border-radius: 50%; animation: pulseDot 1.2s infinite; }
         .timer-box.stopped .timer-dot { background: #ef4444; animation: none; }
 
-        /* إطار الأصول الذهبي الفاخر (Assets Box) */
-        .assets-card { width: 100%; max-width: 340px; background: linear-gradient(180deg, rgba(20, 24, 33, 0.95), rgba(8, 11, 18, 0.95)); border: 2px solid var(--gold-border); border-radius: 20px; padding: 14px; margin-bottom: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(212,175,55,0.15); position: relative; }
+        /* إطار الأصول الخاص بـ MoonTap */
+        .assets-card { width: 100%; max-width: 340px; background: linear-gradient(180deg, rgba(20, 24, 33, 0.95), rgba(8, 11, 18, 0.95)); border: 2px solid var(--gold-border); border-radius: 20px; padding: 14px; margin-bottom: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(212,175,55,0.15); }
         .assets-title { font-size: 0.75rem; color: var(--gold-primary); letter-spacing: 2px; margin-bottom: 4px; font-weight: bold; }
         .assets-amount { font-size: 1.7rem; font-weight: 900; color: #fff; direction: ltr; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
         /* شريط العائد اللحظي المتوهج */
         .live-yield-pill { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,95,70,0.4)); border: 1.5px solid var(--emerald); padding: 8px 18px; border-radius: 18px; font-size: 1.15rem; font-weight: bold; color: var(--emerald); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 20px rgba(16,185,129,0.3); direction: ltr; }
 
-        /* أيقونة العملة المركزية الذهبية المحاطة بهالة ضوئية */
+        /* الأيقونة المركزية */
         .coin-wrapper { width: 150px; height: 150px; background: radial-gradient(circle, rgba(212,175,55,0.3) 0%, rgba(3,7,18,0.8) 70%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 12px; border: 2px solid var(--gold-primary); position: relative; animation: floatCoin 3.5s ease-in-out infinite; box-shadow: 0 0 35px var(--gold-glow), inset 0 0 20px var(--gold-glow); }
         @keyframes floatCoin { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
         .coin-icon { font-size: 75px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.8)); font-weight: bold; color: var(--gold-light); }
 
-        /* شريط الطاقة والتقدم */
+        /* شريط الطاقة */
         .energy-bar-container { width: 100%; max-width: 280px; background: #0a0f1d; border: 1.5px solid var(--gold-primary); height: 16px; border-radius: 10px; margin-bottom: 15px; padding: 2px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
         .energy-bar-fill { width: 75%; height: 100%; background: linear-gradient(90deg, #b45309, var(--gold-primary)); border-radius: 7px; box-shadow: 0 0 10px var(--gold-glow); }
 
-        /* زر التحصيل الرئيسي الأسطوري (CLAIM) */
+        /* زر التحصيل الرئيسي */
         .btn-claim { width: 100%; max-width: 340px; background: linear-gradient(180deg, #fbbf24, #d97706, #b45309); border: 2px solid #fef08a; padding: 15px; border-radius: 20px; font-size: 1.3rem; font-weight: 900; color: #030712; cursor: pointer; box-shadow: 0 10px 30px rgba(217,119,6,0.6), inset 0 2px 4px rgba(255,255,255,0.6); margin-bottom: 10px; transition: all 0.15s ease; text-shadow: 0 1px 0 rgba(255,255,255,0.4); letter-spacing: 1px; }
-        .btn-claim:active { transform: scale(0.97); box-shadow: 0 5px 15px rgba(217,119,6,0.4); }
+        .btn-claim:active { transform: scale(0.97); }
 
-        /* زر الإعلان / تفعيل السرعة الإضافية */
+        /* زر الإعلان المباشر لـ Adsterra */
         .btn-ad { width: 100%; max-width: 340px; background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(16,185,129,0.15)); border: 1px solid var(--gold-primary); padding: 12px; border-radius: 16px; font-size: 0.88rem; font-weight: bold; color: var(--gold-light); cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5); transition: all 0.2s; }
         .btn-ad:active { transform: scale(0.97); }
 
-        /* شريط التنقل السفلي الاحترافي */
+        /* شريط التنقل السفلي */
         .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
         .bottom-nav { background: rgba(9, 13, 22, 0.95); backdrop-filter: blur(20px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; max-width: 420px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
         .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 0.68rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 8px; border-radius: 14px; transition: all 0.3s ease; flex: 1; }
@@ -79,7 +79,7 @@
         .nav-btn.active span { transform: scale(1.15); }
         .notification-dot { position: absolute; top: 3px; right: 8px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; }
 
-        /* النوافذ المنبثقة الملكية */
+        /* النوافذ المنبثقة */
         .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.25s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
@@ -90,7 +90,7 @@
         .levelup-box { background: radial-gradient(circle at top, #1c1808, #0c111d); border: 2px solid var(--gold-primary); box-shadow: 0 0 50px var(--gold-glow); padding: 30px 20px; }
         .levelup-icon { font-size: 4rem; margin-bottom: 10px; display: inline-block; }
 
-        .wallet-card-box { background: #030712; border: 1px solid rgba(212,175,55,0.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; text-align: center; box-shadow: inset 0 0 15px rgba(212,175,55,0.05); }
+        .wallet-card-box { background: #030712; border: 1px solid rgba(212,175,55,0.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; text-align: center; }
         .wallet-card-box .label { font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
         .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--emerald); font-weight: bold; direction: ltr; }
         .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--gold-light); margin-top: 4px; font-weight: bold; direction: ltr; }
@@ -99,7 +99,7 @@
         .friend-btn { background: #d97706; border: none; padding: 12px; border-radius: 14px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 20px rgba(217,119,6,0.4); }
         .friend-btn.share-btn { background: linear-gradient(135deg, #10b981, #065f46); }
 
-        .elite-partner-card { background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(16,185,129,0.1)); border: 1.5px solid var(--gold-primary); border-radius: 18px; padding: 14px; margin-bottom: 14px; text-align: right; box-shadow: 0 0 20px rgba(212,175,55,0.15); }
+        .elite-partner-card { background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(16,185,129,0.1)); border: 1.5px solid var(--gold-primary); border-radius: 18px; padding: 14px; margin-bottom: 14px; text-align: right; }
         .elite-partner-card .e-title { font-size: 0.88rem; color: var(--gold-light); font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
         .elite-partner-card .e-desc { font-size: 0.72rem; color: #cbd5e1; line-height: 1.4; }
 
@@ -144,10 +144,10 @@
 </head>
 <body>
 
-    <!-- شريط علوي -->
+    <!-- شريط علوي لـ MoonTap -->
     <div class="top-nav">
-        <div class="badge-lvl">👑 Lvl <span id="userLevel">1</span></div>
         <div class="wallet-pill" id="walletShortId">UQA..._b_GC</div>
+        <div class="badge-lvl">Lvl <span id="userLevel">1</span> 👑</div>
     </div>
 
     <!-- الصفحة الرئيسية -->
@@ -157,19 +157,19 @@
             <span id="countdownTimer">24:00:00</span>
         </div>
 
-        <!-- إطار الأصول الذهبي الفاخر -->
+        <!-- إطار الأصول الخاص بـ MoonTap -->
         <div class="assets-card">
             <div class="assets-title">ASSETS</div>
-            <div class="assets-amount" id="totalBal">2,245.1264</div>
+            <div class="assets-amount" id="totalBal">0.00</div>
             <div style="font-size: 0.8rem; color: var(--gold-light); margin-top: 2px;">MOON</div>
         </div>
 
         <!-- شريط العائد اللحظي المتوهج -->
         <div class="live-yield-pill">
-            📈 +<span id="pendingReward">4.4684</span> <span style="font-size:0.85rem">MOON</span>
+            📈 +<span id="pendingReward">0.0000</span> <span style="font-size:0.85rem">MOON</span>
         </div>
 
-        <!-- الأيقونة الذهبية المركزية -->
+        <!-- الأيقونة المركزية -->
         <div class="coin-wrapper">
             <div class="coin-icon">🌕</div>
         </div>
@@ -179,27 +179,27 @@
             <div class="energy-bar-fill"></div>
         </div>
 
-        <!-- زر المطالبة الأسطوري (CLAIM) -->
+        <!-- زر التحصيل (CLAIM) -->
         <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">CLAIM</button>
         
-        <!-- زر تفعيل السرعة الإضافية -->
+        <!-- زر تفعيل عقد السرعة الإضافي عبر Adsterra -->
         <button class="btn-ad" id="adsterra-btn" onclick="openAdsterraLink()">⚡ تفعيل عقد السرعة الإضافي (+2 MOON) 🚀</button>
         
         <div class="bottom-spacer"></div>
     </div>
 
-    <!-- شريط التنقل السفلي الفاخر -->
+    <!-- شريط التنقل السفلي الخاص بـ MoonTap -->
     <div class="bottom-nav-wrapper">
         <div class="bottom-nav">
-            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> Mine</button>
-            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> Tasks <div class="notification-dot" id="taskDot">3</div></button>
-            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> Miners</button>
-            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> Friends</button>
             <button class="nav-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>👤</span> Profile</button>
+            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> Friends</button>
+            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> Miners</button>
+            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> Tasks <div class="notification-dot" id="taskDot">3</div></button>
+            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> Mine</button>
         </div>
     </div>
 
-    <!-- نافذة المحفظة / البروفايل -->
+    <!-- نافذة الملف الشخصي والمحفظة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-title">💳 المحفظة الذكية وعمليات السحب</div>
@@ -251,7 +251,7 @@
         </div>
     </div>
 
-    <!-- نافذة المعدنون -->
+    <!-- نافذة المعدنون والمستويات -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ ترقية عقود التعدين الذكية</div>
@@ -359,7 +359,7 @@
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        const storageKey = 'moontap_adsterra_system_v25_' + userId;
+        const storageKey = 'moontap_adsterra_system_v27_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -550,13 +550,13 @@
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
-            for (let i = userState.level; i <= 150; i++) {
+            for (let i = 1; i <= 150; i++) {
                 let requiredCoins = getRequiredBalanceForLevel(i);
                 let levelDailyRate = getDailyMiningLimit(i);
                 let isCurrent = (i === userState.level);
-                let cardClass = isCurrent ? 'current' : 'locked';
-                let statusText = isCurrent ? '⚡ العقد الحالي النشط' : `🔒 يتطلب ${requiredCoins} MOON`;
-                html += `<div class="level-card-item ${cardClass}">
+                let cardClass = isCurrent ? 'level-card-item current' : 'level-card-item';
+                let statusText = isCurrent ? '⚡ عقدك الحالي' : `🔒 يتطلب ${requiredCoins} MOON`;
+                html += `<div class="${cardClass}">
                     <div class="level-info">
                         <h5>عقد التعدين مستوى (${i})</h5>
                         <p>الإنتاج اليومي: <strong style="color:var(--emerald)">${levelDailyRate} MOON</strong></p>
@@ -701,6 +701,7 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'refModal') syncWithSupabase();
+            if (modalId === 'minersModal') renderLevelsList();
         }
 
         function openMiningTab(btnEl) { 
