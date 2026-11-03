@@ -10,169 +10,575 @@
     
     <style>
         :root {
-            --bg-dark: #070b19;
-            --card-bg: #111827;
-            --gold: #f59e0b;
-            --gold-bright: #fbbf24;
-            --gold-glow: rgba(245, 158, 11, 0.4);
-            --green: #10b981;
-            --blue: #3b82f6;
-            --red: #ef4444;
-            --text-light: #f8fafc;
+            --bg-obsidian: #05070c;
+            --gold-gradient: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #7d5a00 100%);
+            --gold-border: linear-gradient(135deg, rgba(255, 215, 0, 0.7), rgba(184, 134, 11, 0.2), rgba(255, 215, 0, 0.5));
+            --gold-glow: rgba(212, 175, 55, 0.35);
+            --card-surface: rgba(14, 18, 28, 0.82);
+            --emerald-glow: #10b981;
+            --text-gold: #fde68a;
+            --text-dim: #94a3b8;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, 'Segoe UI', Arial, sans-serif; user-select: none; }
+        
         body { 
-            background: radial-gradient(circle at center, #1e1b4b 0%, var(--bg-dark) 100%); 
-            color: var(--text-light); 
+            background: radial-gradient(circle at 50% 18%, #1c1917 0%, #0c0a09 45%, var(--bg-obsidian) 100%); 
+            color: #f8fafc; 
             min-height: 100vh; 
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
             overflow-x: hidden; 
         }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(245,158,11,0.2); }
-        .badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05)); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--gold-bright); font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px var(--gold-glow); }
-        .balance-badge { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05)); border: 1px solid var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
 
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
-        
-        .timer-box { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(16,185,129,0.2); }
-        .timer-box.stopped { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: var(--red); }
-        .timer-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 1s infinite; }
-        .timer-box.stopped .timer-dot { background: var(--red); animation: none; }
-        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
+        /* شريط علوي ملكي مستوحى من اللمسات الذهبية الفخمة */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(12, 10, 9, 0.9);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+        .badge {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(0, 0, 0, 0.4));
+            border: 1px solid rgba(245, 158, 11, 0.6);
+            padding: 5px 14px;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            color: var(--text-gold);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+        .balance-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 0, 0, 0.5));
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            padding: 5px 14px;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            color: #6ee7b7;
+            font-weight: bold;
+            direction: ltr;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+        }
 
-        .cloud-mining-title { font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px; letter-spacing: 1px; }
-        .cloud-mining-brand { font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 15px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .main-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 14px;
+            text-align: center;
+        }
 
-        .coin-wrapper { width: 170px; height: 170px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 75%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.5); position: relative; animation: floatCoin 3s ease-in-out infinite; }
-        @keyframes floatCoin { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .coin-icon { font-size: 90px; filter: drop-shadow(0 0 10px rgba(245,158,11,0.6)); }
+        /* كبسولة المؤقت */
+        .timer-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: var(--emerald-glow);
+            padding: 6px 16px;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+        }
+        .timer-box.stopped {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .timer-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--emerald-glow);
+            border-radius: 50%;
+            animation: pulseGlow 1.2s infinite;
+        }
+        @keyframes pulseGlow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
 
-        .mining-reward-label { font-size: 0.8rem; color: #94a3b8; margin-top: 10px; }
-        .mining-reward-val { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .mining-speed-info { font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; background: rgba(255,255,255,0.04); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        /* حاوية الأصول - كرت فخم بحدود ذهبية مزدوجة */
+        .card-gold-frame {
+            width: 100%;
+            max-width: 330px;
+            background: linear-gradient(180deg, #171412 0%, #0c0a09 100%);
+            border: 1.5px solid rgba(212, 175, 55, 0.55);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), inset 0 0 18px rgba(212, 175, 55, 0.08);
+            position: relative;
+        }
+        .card-gold-frame::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            pointer-events: none;
+        }
+        .gold-label {
+            font-size: 0.72rem;
+            color: #d4af37;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .gold-main-val {
+            font-size: 1.85rem;
+            font-weight: 900;
+            color: #ffffff;
+            direction: ltr;
+            text-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+        }
 
-        .btn-claim { width: 100%; max-width: 330px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; padding: 15px; border-radius: 16px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(59,130,246,0.4); margin-bottom: 10px; transition: transform 0.1s; }
-        .btn-claim:active { transform: scale(0.97); }
+        /* كبسولة العائد المباشر */
+        .live-yield-tag {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 95, 70, 0.35));
+            border: 1px solid rgba(16, 185, 129, 0.6);
+            padding: 7px 18px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #34d399;
+            margin-bottom: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            direction: ltr;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
+        }
 
-        .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, var(--gold), #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
-        .btn-ad:active { transform: scale(0.97); }
+        /* هالة القمر المركزية ذات العمق المعدني */
+        .moon-chassis {
+            width: 148px;
+            height: 148px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(12, 10, 9, 0.95) 72%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            border: 2px solid rgba(245, 158, 11, 0.65);
+            box-shadow: 0 0 35px var(--gold-glow), inset 0 0 25px rgba(245, 158, 11, 0.2);
+            position: relative;
+            animation: floatChassis 3.5s ease-in-out infinite;
+        }
+        @keyframes floatChassis { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+        .moon-icon-inner {
+            font-size: 78px;
+            filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.8));
+        }
 
-        .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
-        .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 10px; border-radius: 14px; transition: all 0.25s ease; flex: 1; }
-        .nav-btn span { font-size: 1.25rem; transition: transform 0.25s; }
-        .nav-btn.active { color: #fff; background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(59,130,246,0.4); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
-        .nav-btn.active span { transform: scale(1.15); }
-        .notification-dot { position: absolute; top: 4px; right: 12px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; }
+        /* معدل الإنتاج */
+        .mining-rate-pill {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; }
-        .modal-box { background: var(--card-bg); padding: 22px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(59,130,246,0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
+        /* زر المطالبة البارز ذو اللمعة المعدنية */
+        .btn-gold-claim {
+            width: 100%;
+            max-width: 330px;
+            background: linear-gradient(180deg, #fef08a 0%, #f59e0b 45%, #b45309 85%, #78350f 100%);
+            border: 1.5px solid #fffbeb;
+            padding: 14px;
+            border-radius: 18px;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #1a0f02;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.55), inset 0 2px 2px rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            transition: all 0.15s ease;
+            letter-spacing: 0.5px;
+        }
+        .btn-gold-claim:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+        }
 
-        .levelup-box { background: radial-gradient(circle at top, #1e1b4b, #0f172a); border: 2px solid var(--gold); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); padding: 28px 20px; }
-        .levelup-icon { font-size: 4.5rem; margin-bottom: 10px; display: inline-block; }
+        /* زر الإعلان المباشر لـ Adsterra */
+        .btn-ad-direct {
+            width: 100%;
+            max-width: 330px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(16, 185, 129, 0.12));
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-gold);
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+        .btn-ad-direct:active { transform: scale(0.97); }
 
-        .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
-        .wallet-card-box .label { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px; }
-        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; direction: ltr; }
-        .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--gold); margin-top: 4px; font-weight: bold; direction: ltr; }
+        /* شريط التنقل السفلي */
+        .bottom-nav-dock {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 90;
+            display: flex;
+            justify-content: center;
+        }
+        .dock-bar {
+            background: rgba(12, 10, 9, 0.94);
+            backdrop-filter: blur(18px);
+            padding: 7px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 22px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9);
+        }
+        .dock-btn {
+            background: none;
+            border: none;
+            color: #78716c;
+            font-size: 0.68rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            position: relative;
+            padding: 6px 10px;
+            border-radius: 14px;
+            transition: all 0.25s ease;
+            flex: 1;
+        }
+        .dock-btn span { font-size: 1.25rem; transition: transform 0.25s; }
+        .dock-btn.active {
+            color: #fef08a;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(0, 0, 0, 0.4));
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+        }
+        .dock-btn.active span { transform: scale(1.15); }
+        .alert-dot {
+            position: absolute;
+            top: 4px;
+            right: 12px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.58rem;
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* النوافذ المنبثقة بتنسيق داكن ملكي */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 4, 7, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            z-index: 100;
+        }
+        .modal-box {
+            background: #0f0d0b;
+            padding: 22px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            border: 1.5px solid rgba(212, 175, 55, 0.4);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95);
+        }
+        .modal-title { font-size: 1.15rem; color: #fef08a; margin-bottom: 8px; font-weight: bold; }
+        .modal-desc { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5; }
+
+        .wallet-card-box {
+            background: #050403;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .wallet-card-box .label { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
+        .wallet-card-box .value-moon { font-size: 1.35rem; color: #34d399; font-weight: bold; direction: ltr; }
+        .wallet-card-box .value-usd { font-size: 0.9rem; color: #fef08a; margin-top: 3px; font-weight: bold; direction: ltr; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
+        .friend-btn {
+            background: linear-gradient(135deg, #b45309, #78350f);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 11px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+        .friend-btn.share-btn {
+            background: linear-gradient(135deg, #059669, #065f46);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
 
-        .elite-partner-card { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2)); border: 1.5px solid var(--gold); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
-        .elite-partner-card .e-title { font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+        .elite-partner-card {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(16, 185, 129, 0.12));
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+        .elite-partner-card .e-title { font-size: 0.82rem; color: #fef08a; font-weight: bold; margin-bottom: 4px; }
         .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
 
-        .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
-        .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
-        .team-commission-card strong { font-size: 1.5rem; color: #fff; display: block; direction: ltr; }
+        .team-commission-card {
+            background: #050403;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .team-commission-card span { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
+        .team-commission-card strong { font-size: 1.4rem; color: #fff; display: block; direction: ltr; }
 
-        .invite-bonus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; background: #070b19; padding: 10px; border-radius: 14px; text-align: center; }
-        .bonus-box span { display: block; font-size: 0.65rem; color: #94a3b8; margin-bottom: 3px; }
-        .bonus-box strong { font-size: 0.95rem; color: #fff; direction: ltr; display: inline-block; }
+        .invite-bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+            background: #050403;
+            padding: 10px;
+            border-radius: 14px;
+            text-align: center;
+        }
+        .bonus-box span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
+        .bonus-box strong { font-size: 0.9rem; color: #fff; direction: ltr; display: inline-block; }
 
-        .miners-header-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-        .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
-        .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
+        .miners-header-card {
+            background: #050403;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+        .miners-header-card div span { display: block; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 3px; }
+        .miners-header-card div strong { font-size: 0.9rem; color: #fff; }
 
-        .levels-list-container { max-height: 250px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
-        .level-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; }
-        .level-card-item.current { border: 2px solid var(--gold); background: rgba(245,158,11,0.15); }
-        .level-info h5 { font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
-        .level-info p { font-size: 0.7rem; color: #94a3b8; }
-        .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; color: #94a3b8; background: rgba(255,255,255,0.05); }
-        .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); }
+        .levels-list-container {
+            max-height: 240px;
+            overflow-y: auto;
+            background: #050403;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+        .level-card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #15120e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+        }
+        .level-card-item.current {
+            border: 1.5px solid rgba(245, 158, 11, 0.7);
+            background: rgba(245, 158, 11, 0.12);
+        }
+        .level-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
+        .level-info p { font-size: 0.68rem; color: var(--text-dim); }
+        .level-badge-status {
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 10px;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .current .level-badge-status { color: #fef08a; background: rgba(245, 158, 11, 0.25); }
 
-        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #070b19; padding: 8px; border-radius: 14px; width: 100%; }
-        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 1px; text-align: center; font-size: 0.65rem; color: #94a3b8; }
-        .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); }
-        .checkin-day strong { display: block; font-size: 0.75rem; color: #fff; margin-top: 2px; }
+        .checkin-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 14px;
+            background: #050403;
+            padding: 8px;
+            border-radius: 14px;
+            width: 100%;
+        }
+        .checkin-day {
+            background: #15120e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 6px 1px;
+            text-align: center;
+            font-size: 0.62rem;
+            color: var(--text-dim);
+        }
+        .checkin-day.active {
+            border-color: var(--emerald-glow);
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--emerald-glow);
+        }
+        .checkin-day strong { display: block; font-size: 0.72rem; color: #fff; margin-top: 2px; }
 
-        .tasks-list-container { max-height: 220px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
-        .task-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
-        .task-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
-        .task-info p { font-size: 0.7rem; color: var(--green); font-weight: bold; direction: ltr; text-align: right; }
-        .task-action-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
-        .task-action-btn.verify { background: var(--gold); color: #000; }
-        .task-action-btn.done { background: #374151; color: #94a3b8; cursor: default; }
+        .tasks-list-container {
+            max-height: 220px;
+            overflow-y: auto;
+            background: #050403;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+        .task-card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #15120e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+        .task-info h5 { font-size: 0.8rem; color: #fff; margin-bottom: 2px; }
+        .task-info p { font-size: 0.68rem; color: #34d399; font-weight: bold; direction: ltr; text-align: right; }
+        .task-action-btn {
+            background: linear-gradient(135deg, #b45309, #78350f);
+            color: #fff;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .task-action-btn.verify { background: #f59e0b; color: #000; }
+        .task-action-btn.done { background: #292524; color: #78716c; cursor: default; border: none; }
 
-        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 8px; text-align: center; font-size: 0.85rem; outline: none; }
-        .input-wallet:focus { border-color: var(--blue); }
-        .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; direction: ltr; }
+        .input-wallet {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #44403c;
+            background: #050403;
+            color: #fff;
+            margin-bottom: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .input-wallet:focus { border-color: rgba(245, 158, 11, 0.6); }
+        .ref-box {
+            background: #050403;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px dashed rgba(245, 158, 11, 0.5);
+            font-size: 0.72rem;
+            color: #fde68a;
+            word-break: break-all;
+            margin-bottom: 10px;
+            direction: ltr;
+        }
         .bottom-spacer { height: 75px; }
     </style>
 </head>
 <body>
 
+    <!-- الهيدر العلوي الخاص بـ MoonTap -->
     <div class="top-nav">
         <div class="balance-badge"><span id="totalBal">0.00</span> MOON 🪙</div>
         <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
     </div>
 
+    <!-- الصفحة الرئيسية للتعدين -->
     <div class="main-stage">
         <div class="timer-box" id="timerBox">
             <div class="timer-dot"></div>
             <span id="countdownTimer">24:00:00</span>
         </div>
 
-        <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">1</span></div>
-        <div class="cloud-mining-brand">MoonTap Mining</div>
-
-        <div class="coin-wrapper">
-            <div class="coin-icon">🌕</div>
+        <!-- كرت الأصول الفاخر -->
+        <div class="card-gold-frame">
+            <div class="gold-label">MOONTAP ASSETS</div>
+            <div class="gold-main-val" id="pendingReward">0.0000</div>
+            <div style="font-size: 0.72rem; color: #d4af37; margin-top: 2px;">MOON</div>
         </div>
 
-        <div class="mining-reward-label">مكافأة التعدين المتجمعة (سعة 24 ساعة: <span id="maxCapText">40</span> MOON)</div>
-        <div class="mining-reward-val" id="pendingReward">0.0000</div>
-        <div class="mining-speed-info">الإنتاج اليومي: <strong style="color:var(--gold)" id="dailyRateInfo">40.00</strong> MOON · القيمة: <span id="dynamicPriceVal">0.0000</span> USDT</div>
+        <div class="live-yield-tag">
+            📈 +<span id="btnClaimVal">0.00</span> <span style="font-size:0.75rem">MOON</span>
+        </div>
 
-        <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
+        <!-- هالة القمر المعدنية الفاخرة -->
+        <div class="moon-chassis">
+            <div class="moon-icon-inner">🌕</div>
+        </div>
+
+        <div class="mining-rate-pill">
+            الإنتاج اليومي: <strong style="color:#fde68a" id="dailyRateInfo">40.00</strong> MOON · القيمة: <span id="dynamicPriceVal">0.0000</span> USDT
+        </div>
+
+        <button class="btn-gold-claim" id="btnClaim" onclick="executeClaimMiningReward()">
+            📥 استلام أرباح التعدين النشط
+        </button>
         
-        <button class="btn-ad" id="adsterra-btn" onclick="openAdsterraLink()">🌐 زيارة موقع الراعي واكسب +2 MOON</button>
+        <button class="btn-ad-direct" id="adsterra-btn" onclick="openAdsterraLink()">
+            ⚡ فتح رابط الراعي واكسب +2 MOON 🚀
+        </button>
         
         <div class="bottom-spacer"></div>
     </div>
 
-    <div class="bottom-nav-wrapper">
-        <div class="bottom-nav">
-            <button class="nav-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>💳</span> المحفظة</button>
-            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> الأصدقاء</button>
-            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> المعدنون</button>
-            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
-            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> التعدين</button>
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-nav-dock">
+        <div class="dock-bar">
+            <button class="dock-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>💳</span> المحفظة</button>
+            <button class="dock-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> الأصدقاء</button>
+            <button class="dock-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> المعدنون</button>
+            <button class="dock-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> المهام <div class="alert-dot" id="taskDot">4</div></button>
+            <button class="dock-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> التعدين</button>
         </div>
     </div>
 
     <!-- نافذة المحفظة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
-            <div class="modal-title">💳 سحب أرباح MoonTap</div>
-            <div class="modal-desc">إدارة محفظتك وسحب الأرباح بكل سهولة وأمان.</div>
+            <div class="modal-title">💳 محفظة السحب</div>
+            <div class="modal-desc">إدارة رصيدك وسحب أرباحك بكل موثوقية.</div>
             
             <div class="wallet-card-box">
                 <span class="label">إجمالي رصيدك المتاح للسحب</span>
@@ -180,49 +586,42 @@
                 <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
             </div>
 
-            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة USDT الخاصة بك...">
-            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="أدخل كمية MOON للسحب (الحد الأدنى 5000)">
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة USDT (TRC20 / TON)...">
+            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="كمية السحب (الحد الأدنى 5000 MOON)">
             
-            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
-            <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('walletModal')">إغلاق</button>
+            <button class="btn-gold-claim" style="font-size:0.95rem; padding:12px; margin-bottom:8px;" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
+            <button class="friend-btn" style="width:100%; background:#292524;" onclick="closeModal('walletModal')">إغلاق</button>
         </div>
     </div>
 
     <!-- نافذة الأصدقاء -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
-            <div class="modal-title">👥 شبكة الشركاء & الفريق</div>
-            <div class="modal-desc">ابنِ فريقك النشط وكن شريكاً لحصد أعلى العوائد!</div>
+            <div class="modal-title">👥 شبكة الأصدقاء والإحالات</div>
+            <div class="modal-desc">ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!</div>
             
             <div class="elite-partner-card" id="eliteCardBox">
                 <div class="e-title">⭐ شريك النخبة (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
-                <div class="e-desc" id="eliteDescText">ادعُ 10 مستخدمين نشطين لتفعيل سرعة مضاعفة +50%!</div>
+                <div class="e-desc" id="eliteDescText">ادعُ 10 أصدقاء نشطين لتفعيل المضاعفة الدائمة!</div>
             </div>
 
             <div class="friends-actions">
                 <button class="friend-btn" onclick="copyRefLink()">📋 نسخ الرابط</button>
-                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة الرابط</button>
+                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة</button>
             </div>
 
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
 
             <div class="team-commission-card">
-                <span>مجمع أرباح الفريق</span>
+                <span>عائدات الفريق المتراكمة</span>
                 <strong>MOON <span id="teamCommVal">0.00</span></strong>
-                <div style="font-size: 0.9rem; color: var(--gold); margin-top: 5px; font-weight: bold; direction: ltr;">
+                <div style="font-size: 0.85rem; color: #fef08a; margin-top: 4px; direction: ltr;">
                     ≈ <span id="teamCommUsdtVal">0.000</span> USDT
                 </div>
             </div>
 
-            <button class="btn-claim" style="width:100%; margin-bottom:12px; padding:12px;" onclick="claimTeamCommission()">المطالبة بعوائد الفريق</button>
-
-            <div class="invite-bonus-grid">
-                <div class="bonus-box"><span>الفريق</span><strong id="teamCount">0</strong></div>
-                <div class="bonus-box"><span>نشطون</span><strong id="activeTeamCount">0</strong></div>
-                <div class="bonus-box"><span>مكافأة الإحالة</span><strong style="color:var(--green)">0.010 USDT</strong></div>
-            </div>
-
-            <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('refModal')">إغلاق</button>
+            <button class="btn-gold-claim" style="font-size:0.95rem; padding:10px; margin-bottom:10px;" onclick="claimTeamCommission()">تحصيل عوائد الفريق</button>
+            <button class="friend-btn" style="width:100%; background:#292524;" onclick="closeModal('refModal')">إغلاق</button>
         </div>
     </div>
 
@@ -231,21 +630,21 @@
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title">⚡ مستويات التعدين</div>
             <div class="miners-header-card">
-                <div><span>إنتاجك اليومي</span><strong style="color:var(--green)" id="dailyEarnings">40.0</strong></div>
+                <div><span>إنتاجك اليومي</span><strong style="color:#34d399" id="dailyEarnings">40.0</strong></div>
                 <div><span>القمة</span><strong>150</strong></div>
-                <div><span>مستواك</span><strong style="color:var(--gold)" id="modalLevel">1</strong></div>
+                <div><span>مستواك</span><strong style="color:#fef08a" id="modalLevel">1</strong></div>
             </div>
             <div class="levels-list-container" id="levelsListContainer"></div>
-            <button class="btn-ad" style="width:100%; margin-top:5px; background:#374151;" onclick="closeModal('minersModal')">إغلاق</button>
+            <button class="friend-btn" style="width:100%; margin-top:4px; background:#292524;" onclick="closeModal('minersModal')">إغلاق</button>
         </div>
     </div>
 
     <!-- نافذة المهام -->
     <div class="modal-overlay" id="tasksModal">
         <div class="modal-box" style="max-width: 400px;">
-            <div class="modal-title">📋 مهام ومكافآت MoonTap</div>
+            <div class="modal-title">📋 المهام والمكافآت</div>
             
-            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">📅 تسجيل الدخول اليومي (كل 24 ساعة)</div>
+            <div style="text-align: right; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;">📅 الحضور اليومي (كل 24 ساعة)</div>
             <div class="checkin-grid">
                 <div class="checkin-day active" id="day1Box">D1<br><strong>5+</strong></div>
                 <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
@@ -255,9 +654,9 @@
                 <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
                 <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
             </div>
-            <button class="btn-claim" id="checkinBtn" style="margin-bottom:12px; padding:9px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول</button>
+            <button class="btn-gold-claim" id="checkinBtn" style="font-size:0.85rem; padding:9px; margin-bottom:10px;" onclick="claimDailyCheckin()">📥 استلام مكافأة الحضور (+5)</button>
 
-            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">⭐ المهام والروابط الإعلانية</div>
+            <div style="text-align: right; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;">⭐ المهام والروابط النشطة</div>
             <div class="tasks-list-container">
                 <div class="task-card-item">
                     <div class="task-info">
@@ -289,20 +688,20 @@
                 </div>
             </div>
 
-            <button class="btn-ad" style="width:100%; background:#374151; padding:9px;" onclick="closeModal('tasksModal')">إغلاق</button>
+            <button class="friend-btn" style="width:100%; background:#292524; padding:9px;" onclick="closeModal('tasksModal')">إغلاق</button>
         </div>
     </div>
 
     <!-- نافذة الترقية -->
     <div class="modal-overlay" id="levelUpModal" style="z-index: 200;">
-        <div class="modal-box levelup-box">
-            <div class="levelup-icon">🎉</div>
-            <div class="modal-title" style="color: var(--gold); font-size: 1.4rem;">ترقية مستوى المنجم!</div>
-            <div class="modal-desc" style="color: #fff; font-size: 0.95rem; margin-top: 10px;">
-                مبارك لك! لقد تم نقلك بنجاح إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
-                ⚡ زادت سرعة تعدينك اليومية إلى <strong style="color:var(--green)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
+        <div class="modal-box" style="background: radial-gradient(circle at top, #292524, #0f0d0b); border: 2px solid #f59e0b;">
+            <div style="font-size: 3.5rem; margin-bottom: 8px;">👑</div>
+            <div class="modal-title" style="color: #fef08a; font-size: 1.3rem;">تمت ترقية المنجم!</div>
+            <div class="modal-desc" style="color: #fff; font-size: 0.9rem; margin-top: 8px;">
+                مبارك! ارتقيت إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
+                ⚡ زاد إنتاجك اليومي ليصبح <strong style="color:#34d399"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
             </div>
-            <button class="btn-claim" style="background: linear-gradient(135deg, var(--gold), #d97706); width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">🚀 مواصلة التعدين</button>
+            <button class="btn-gold-claim" style="font-size:0.95rem; padding:12px; margin-top:8px;" onclick="closeModal('levelUpModal')">متابعة التعدين</button>
         </div>
     </div>
 
@@ -329,7 +728,7 @@
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        const storageKey = 'moontap_adsterra_system_v29_' + userId;
+        const storageKey = 'moontap_adsterra_v30_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -383,7 +782,7 @@
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.balance += 2.00;
             updateUI();
-            showMessage("🚀 شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.");
+            showMessage("⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.");
         }
 
         function openAdsterraTask(taskId, rewardAmount) {
@@ -393,7 +792,7 @@
             userState.balance += rewardAmount;
             persistData();
             updateUI();
-            showMessage(`🎉 رائع! تمت زيارة الرابط وحصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 تم إكمال المهمة بنجاح وحصلت على +${rewardAmount} MOON.`);
         }
 
         function getDailyMiningLimit(lvl) {
@@ -451,7 +850,7 @@
             let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
             if (data.isStopped) {
-                if (timerSpan) timerSpan.innerText = `00:00:00 (ممتلئ - متوقف)`;
+                if (timerSpan) timerSpan.innerText = `00:00:00 (ممتلئ)`;
                 if (timerBox) timerBox.classList.add('stopped');
             } else {
                 if (timerSpan) timerSpan.innerText = timeStr;
@@ -460,7 +859,6 @@
 
             document.getElementById('pendingReward').innerText = data.mined.toFixed(4);
             document.getElementById('btnClaimVal').innerText = data.mined.toFixed(2);
-            document.getElementById('maxCapText').innerText = data.dailyLimit;
             document.getElementById('dailyRateInfo').innerText = data.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = data.dailyLimit.toFixed(1);
         }
@@ -475,13 +873,13 @@
 
         function executeClaimMiningReward() {
             let data = getCurrentMinedData();
-            if (data.mined < 0.01) { showMessage("⚠️ انتظر قليلاً حتى يتجمع قدر بسيط من عملات MOON للمطالبة بها!"); return; }
+            if (data.mined < 0.01) { showMessage("⚠️ انتظر حتى يتجمع قدر بسيط من MOON للمطالبة!"); return; }
             let claimedAmount = data.mined;
             userState.balance += claimedAmount;
             userState.miningStartTime = Date.now(); 
             persistData();
             updateUI();
-            showMessage(`✅ تم استلام ${claimedAmount.toFixed(2)} MOON بنجاح! عاد المؤقت إلى 24:00:00 وبدأ التعدين الجديد.`);
+            showMessage(`✅ تم تحصيل ${claimedAmount.toFixed(2)} MOON بنجاح وتجددت دورة التعدين.`);
         }
 
         function updateUI() {
@@ -490,7 +888,6 @@
                 document.getElementById('totalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('userLevel').innerText = userState.level;
-                document.getElementById('mainLevelBadge').innerText = userState.level;
                 document.getElementById('modalLevel').innerText = userState.level;
                 document.getElementById('teamCount').innerText = userState.activeTeamCount;
                 document.getElementById('activeTeamCount').innerText = userState.activeTeamCount;
@@ -525,16 +922,16 @@
             const container = document.getElementById('levelsListContainer');
             if(!container) return;
             let html = '';
-            for (let i = userState.level; i <= 150; i++) {
+            for (let i = 1; i <= 150; i++) {
                 let requiredCoins = getRequiredBalanceForLevel(i);
                 let levelDailyRate = getDailyMiningLimit(i);
                 let isCurrent = (i === userState.level);
-                let cardClass = isCurrent ? 'current' : 'locked';
-                let statusText = isCurrent ? '🔥 مستواك النشط' : `🔒 يتطلب ${requiredCoins} MOON`;
-                html += `<div class="level-card-item ${cardClass}">
+                let cardClass = isCurrent ? 'level-card-item current' : 'level-card-item';
+                let statusText = isCurrent ? '⚡ مستواك الحالي' : `🔒 يتطلب ${requiredCoins} MOON`;
+                html += `<div class="${cardClass}">
                     <div class="level-info">
-                        <h5>🚀 منجم المستوى (${i})</h5>
-                        <p>الإنتاج اليومي: <strong style="color:var(--green)">${levelDailyRate} MOON</strong> / 24 ساعة</p>
+                        <h5>منجم المستوى (${i})</h5>
+                        <p>الإنتاج اليومي: <strong style="color:#34d399">${levelDailyRate} MOON</strong></p>
                     </div>
                     <div class="level-badge-status">${statusText}</div>
                 </div>`;
@@ -543,7 +940,7 @@
         }
 
         function handleChannelTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد قمت بالاشتراك واستلام مكافأة هذه المهمة مسبقاً!"); return; }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد استلمت مكافأة هذه المهمة مسبقاً!"); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
                 userState.pendingVerifyTasks.push(taskId);
@@ -554,11 +951,11 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             updateUI();
-            showMessage(`🎉 تم التحقق من اشتراكك في القناة بنجاح! حصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 تم التحقق من الاشتراك بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
 
         function handleShareTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت مهمة المشاركة مسبقاً!"); return; }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ تم إنجاز هذه المهمة مسبقاً!"); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 shareReferral();
                 userState.pendingVerifyTasks.push(taskId);
@@ -569,7 +966,7 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             updateUI();
-            showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 شكراً للمشاركة! حصلت على +${rewardAmount} MOON.`);
         }
 
         function checkCompletedTasksUI() {
@@ -579,10 +976,9 @@
                 let btn = document.getElementById('taskBtn' + taskId);
                 if (!btn) continue;
                 if (userState.completedTasks.includes(taskId)) {
-                    btn.innerText = "مكتمل ✓";
+                    btn.innerText = "منجز ✓";
                     btn.classList.remove('verify');
                     btn.classList.add('done');
-                    btn.style.background = '#374151';
                 } else if (userState.pendingVerifyTasks.includes(taskId)) {
                     btn.innerText = "تحقق واستلم 🔍";
                     btn.classList.add('verify');
@@ -605,9 +1001,9 @@
                 let hours = Math.floor(remainingTime / (1000 * 60 * 60));
                 let minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
                 checkinBtn.innerText = `⏳ متاح بعد: ${hours}س و ${minutes}د`;
-                checkinBtn.style.background = '#374151';
+                checkinBtn.style.background = '#292524';
             } else {
-                checkinBtn.innerText = "📥 استلام مكافأة تسجيل الدخول (+5 MOON)";
+                checkinBtn.innerText = "📥 استلام مكافأة الحضور اليومي (+5)";
                 checkinBtn.style.background = '';
             }
         }
@@ -615,22 +1011,22 @@
         function claimDailyCheckin() {
             let now = Date.now();
             if (userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS)) {
-                showMessage("⚠️ لقد استلمت مكافأة الدخول اليومي بالفعل! عد غداً."); return;
+                showMessage("⚠️ تم الحضور اليوم بالفعل! عد غداً."); return;
             }
             userState.balance += 5.00;
             userState.lastCheckinTime = now;
             updateUI();
-            showMessage("🎉 استلمت مكافأة تسجيل الدخول اليومي بنجاح (+5 MOON)!");
+            showMessage("🎉 تم استلام مكافأة الحضور اليومي بنجاح (+5 MOON)!");
         }
 
         async function submitWithdraw() {
             const walletAddr = document.getElementById('walletInput').value.trim();
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
-            if (!walletAddr || walletAddr.length < 10) { showMessage("⚠️ يرجى إدخال عنوان أو رابط محفظة صحيح أولاً!"); return; }
+            if (!walletAddr || walletAddr.length < 10) { showMessage("⚠️ أدخل عنوان محفظة صحيح ومعتمد أولاً!"); return; }
             userState.savedWallet = walletAddr;
             persistData();
-            if (amountVal < 5000) { showMessage("⚠️ الحد الأدنى للسحب هو 5000 عملة MOON."); return; }
-            if (amountVal > userState.balance) { showMessage("⚠️ رصيدك الحالي غير كافٍ لسحب هذه الكمية!"); return; }
+            if (amountVal < 5000) { showMessage("⚠️ الحد الأدنى للسحب هو 5000 MOON."); return; }
+            if (amountVal > userState.balance) { showMessage("⚠️ رصيدك المتاح غير كافٍ لإتمام السحب!"); return; }
             
             userState.balance -= amountVal;
             let usdtEquivalent = ((amountVal / 5000) * 0.20).toFixed(3);
@@ -641,7 +1037,7 @@
                 const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
                 await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
             } catch (e) {}
-            showMessage(`✅ تم حفظ محفظتك وإرسال طلب سحب (${amountVal} MOON ≈ ${usdtEquivalent} USDT) بنجاح!`);
+            showMessage(`✅ تم إرسال طلب السحب بنجاح (${amountVal} MOON ≈ ${usdtEquivalent} USDT)!`);
         }
 
         function copyRefLink() {
@@ -652,7 +1048,7 @@
 
         function shareReferral() {
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
-            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية فوراً عبر رابطي:\n\n${refLink}`);
+            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية عبر رابطي:\n\n${refLink}`);
             openTelegramUrlSafely(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
         }
 
@@ -663,7 +1059,7 @@
             userState.balance += claimedMoon;
             userState.teamCommission = 0.0;
             updateUI();
-            showMessage(`✅ تمت إضافة عوائد الفريق (${claimedMoon.toFixed(2)} MOON ≈ ${claimedUsdt} USDT) إلى رصيدك بنجاح!`);
+            showMessage(`✅ تمت إضافة عوائد الفريق (${claimedMoon.toFixed(2)} MOON ≈ ${claimedUsdt} USDT) إلى رصيدك!`);
         }
 
         function showMessage(msg) {
@@ -673,20 +1069,21 @@
         function switchTab(modalId, btnEl) {
             document.querySelectorAll('.modal-overlay').forEach(m => { if (m.id !== 'levelUpModal') m.style.display = 'none'; });
             document.getElementById(modalId).style.display = 'flex';
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'refModal') syncWithSupabase();
+            if (modalId === 'minersModal') renderLevelsList();
         }
 
         function openMiningTab(btnEl) { 
             document.querySelectorAll('.modal-overlay').forEach(m => { if (m.id !== 'levelUpModal') m.style.display = 'none'; });
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
         }
 
         function closeModal(id) { 
             document.getElementById(id).style.display = 'none'; 
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('navMiningBtn').classList.add('active');
         }
     </script>
