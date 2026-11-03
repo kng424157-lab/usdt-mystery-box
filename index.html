@@ -11,7 +11,6 @@
     <style>
         :root {
             --bg-obsidian: #05070c;
-            --gold-gradient: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #7d5a00 100%);
             --gold-glow: rgba(212, 175, 55, 0.35);
             --emerald-glow: #10b981;
             --text-gold: #fde68a;
@@ -603,7 +602,6 @@
                 <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
                 <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
             </div>
-            <!-- زر الحضور اليومي مع مؤقت تنازلي حي -->
             <button class="btn-gold-claim" id="checkinBtn" style="font-size:0.85rem; padding:9px; margin-bottom:10px;" onclick="claimDailyCheckin()">📥 استلام مكافأة الحضور (+5)</button>
 
             <div style="text-align: right; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;">⭐ بروتوكولات الأصول والروابط النشطة</div>
@@ -670,15 +668,20 @@
         const REF_REWARD_USDT = 0.010;
         const REF_REWARD_MOON = 250.00;
 
+        // الحصول على معرف المستخدم بدقة وثبات تام لعدم تصفير الحساب أبداً
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('mt_guest_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
-        localStorage.setItem('mt_guest_id', userId);
+        let userId = telegramUser?.id ? telegramUser.id.toString() : (localStorage.getItem('moontap_fixed_user_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
+        localStorage.setItem('moontap_fixed_user_id', userId);
 
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        let userState = {
+        const localCacheKey = 'moontap_secure_storage_' + userId;
+
+        // تحميل البيانات الفوري من الذاكرة المحلية (لتفادي أي تصفير لحظي عند إعادة التحميل)
+        let cachedRaw = localStorage.getItem(localCacheKey);
+        let userState = cachedRaw ? JSON.parse(cachedRaw) : {
             balance: 0.00,
             level: 1,
             teamCount: 0,
@@ -691,63 +694,13 @@
             savedWallet: ''
         };
 
-        // دالة جامعة لجلب بيانات المستخدم سحابياً من Supabase لضمان عدم تصفير الرصيد أبداً عند التحديث
-        async function loadUserDataFromCloud() {
+        if (!userState.miningStartTime) userState.miningStartTime = Date.now();
+        if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+
+        // دالة الحفظ المزدوج (محلياً وفي سحابة Supabase لضمان أقصى حماية لحقوق المستخدمين)
+        async function saveUserData() {
             try {
-                let inviterId = null;
-                if (startParam) { inviterId = startParam.replace('ref_', '').trim(); }
-
-                let { data: existingUser, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
-                if (existingUser) {
-                    // إذا كان المستخدم موجود مسبقاً، نقوم بجلب رصيده وحفظه لضمان حقوقه
-                    userState.balance = parseFloat(existingUser.balance) || 0.00;
-                    userState.level = parseInt(existingUser.level) || 1;
-                    userState.teamCommission = parseFloat(existingUser.team_commission) || 0.00;
-                    userState.lastCheckinTime = parseInt(existingUser.last_checkin) || 0;
-                    userState.miningStartTime = parseInt(existingUser.mining_start) || Date.now();
-                    userState.savedWallet = existingUser.wallet || '';
-                    if(existingUser.completed_tasks) userState.completedTasks = JSON.parse(existingUser.completed_tasks);
-                } else {
-                    // تسجيل المستخدم الجديد لأول مرة في السحابة
-                    await supabaseClient.from('users').upsert([{ 
-                        id: userId, 
-                        inviter_id: inviterId && inviterId !== userId ? inviterId : null,
-                        balance: 0.00,
-                        level: 1,
-                        team_commission: 0.00,
-                        last_checkin: 0,
-                        mining_start: Date.now(),
-                        wallet: '',
-                        completed_tasks: JSON.stringify([])
-                    }]);
-                }
-
-                // فحص الإحالات والفريق
-                let { data: refs, errorRef } = await supabaseClient.from('users').select('id').eq('inviter_id', userId);
-                if (refs) {
-                    userState.teamCount = refs.length;
-                    userState.activeTeamCount = refs.length;
-                }
-
-                updateUI();
-            } catch (err) {
-                console.log("Cloud load error, falling back to local:", err);
-                // Fallback للاحتياط في حال انقطاع الإنترنت
-                let local = localStorage.getItem('moontap_safe_v32_' + userId);
-                if(local) userState = JSON.parse(local);
-                updateUI();
-            }
-        }
-
-        // دالة لحفظ البيانات فوراً في قاعدة البيانات السحابية لضمان حقوق المستخدمين
-        async function saveUserDataToCloud() {
-            try {
-                localStorage.setItem('moontap_safe_v32_' + userId, JSON.stringify(userState));
+                localStorage.setItem(localCacheKey, JSON.stringify(userState));
                 await supabaseClient.from('users').upsert([{ 
                     id: userId,
                     balance: userState.balance,
@@ -759,7 +712,58 @@
                     completed_tasks: JSON.stringify(userState.completedTasks)
                 }]);
             } catch (err) {
-                console.log("Cloud save error:", err);
+                console.log("Sync error:", err);
+            }
+        }
+
+        // جلب أحدث البيانات من السحابة عند الفتح مع الدمج الآمن
+        async function loadUserDataFromCloud() {
+            try {
+                let inviterId = null;
+                if (startParam) { inviterId = startParam.replace('ref_', '').trim(); }
+
+                let { data: cloudUser } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (cloudUser) {
+                    // إذا وجدنا رصيداً في السحابة وكان أكبر أو محدثاً، نعتمد الأمان الأعلى
+                    if (parseFloat(cloudUser.balance) >= userState.balance) {
+                        userState.balance = parseFloat(cloudUser.balance) || 0.00;
+                        userState.level = parseInt(cloudUser.level) || 1;
+                        userState.teamCommission = parseFloat(cloudUser.team_commission) || 0.00;
+                        userState.lastCheckinTime = parseInt(cloudUser.last_checkin) || 0;
+                        userState.miningStartTime = parseInt(cloudUser.mining_start) || userState.miningStartTime;
+                        userState.savedWallet = cloudUser.wallet || userState.savedWallet;
+                        if(cloudUser.completed_tasks) userState.completedTasks = JSON.parse(cloudUser.completed_tasks);
+                    }
+                } else {
+                    await supabaseClient.from('users').upsert([{ 
+                        id: userId, 
+                        inviter_id: inviterId && inviterId !== userId ? inviterId : null,
+                        balance: userState.balance,
+                        level: userState.level,
+                        team_commission: userState.teamCommission,
+                        last_checkin: userState.lastCheckinTime,
+                        mining_start: userState.miningStartTime,
+                        wallet: userState.savedWallet,
+                        completed_tasks: JSON.stringify(userState.completedTasks)
+                    }]);
+                }
+
+                let { data: refs } = await supabaseClient.from('users').select('id').eq('inviter_id', userId);
+                if (refs) {
+                    userState.teamCount = refs.length;
+                    userState.activeTeamCount = refs.length;
+                }
+
+                saveUserData();
+                updateUI();
+            } catch (err) {
+                console.log("Cloud load warning:", err);
+                updateUI();
             }
         }
 
@@ -771,19 +775,19 @@
         function openAdsterraLink() {
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.balance += 2.00;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
-            showMessage("⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيد أصولك.");
+            showMessage("⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.");
         }
 
         function openAdsterraTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت هذا البروتوكول مسبقاً!"); return; }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت هذه المهمة مسبقاً!"); return; }
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
-            showMessage(`🎉 تم تفعيل العقد بنجاح وحصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 تم تفعيل البروتوكول بنجاح وحصلت على +${rewardAmount} MOON.`);
         }
 
         function getDailyMiningLimit(lvl) {
@@ -806,7 +810,7 @@
             }
             if (newCalculatedLevel > userState.level) {
                 userState.level = newCalculatedLevel;
-                saveUserDataToCloud();
+                saveUserData();
                 document.getElementById('newLevelReached').innerText = userState.level;
                 document.getElementById('newDailyCap').innerText = getDailyMiningLimit(userState.level);
                 document.getElementById('levelUpModal').style.display = 'flex';
@@ -826,7 +830,6 @@
             return { mined: minedAmount, remainingMs: remainingMs, isStopped: isStopped, dailyLimit: dailyLimit };
         }
 
-        // تحديث جميع المؤقتات الحية لحظياً
         function updateAllTimersUI() {
             let miningData = getCurrentMinedData();
             let timerSpan = document.getElementById('countdownTimer');
@@ -850,7 +853,6 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            // عداد الحضور اليومي التنازلي الحي
             let checkinBtn = document.getElementById('checkinBtn');
             if (checkinBtn) {
                 let now = Date.now();
@@ -873,6 +875,7 @@
         setInterval(() => { updateAllTimersUI(); }, 1000);
 
         window.addEventListener('DOMContentLoaded', () => {
+            updateUI();
             loadUserDataFromCloud();
         });
 
@@ -882,7 +885,7 @@
             let claimedAmount = data.mined;
             userState.balance += claimedAmount;
             userState.miningStartTime = Date.now(); 
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             showMessage(`✅ تم تحصيل ${claimedAmount.toFixed(2)} MOON بنجاح وتجددت دورة التعدين.`);
         }
@@ -948,13 +951,13 @@
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
                 userState.pendingVerifyTasks.push(taskId);
-                saveUserDataToCloud();
+                saveUserData();
                 checkCompletedTasksUI();
                 return;
             }
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             showMessage(`🎉 تم التحقق من الاشتراك بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
@@ -964,13 +967,13 @@
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 shareReferral();
                 userState.pendingVerifyTasks.push(taskId);
-                saveUserDataToCloud();
+                saveUserData();
                 checkCompletedTasksUI();
                 return;
             }
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             showMessage(`🎉 شكراً للمشاركة! حصلت على +${rewardAmount} MOON.`);
         }
@@ -1006,7 +1009,7 @@
             }
             userState.balance += 5.00;
             userState.lastCheckinTime = now;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             updateAllTimersUI();
             showMessage("🎉 تم استلام مكافأة الحضور اليومي بنجاح (+5 MOON)!");
@@ -1017,14 +1020,14 @@
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
             if (!walletAddr || walletAddr.length < 10) { showMessage("⚠️ أدخل عنوان محفظة صحيح ومعتمد أولاً!"); return; }
             userState.savedWallet = walletAddr;
-            saveUserDataToCloud();
+            saveUserData();
             if (amountVal < 5000) { showMessage("⚠️ الحد الأدنى للسحب هو 5000 MOON."); return; }
             if (amountVal > userState.balance) { showMessage("⚠️ رصيدك المتاح غير كافٍ لإتمام السحب!"); return; }
             
             userState.balance -= amountVal;
             let usdtEquivalent = ((amountVal / 5000) * 0.20).toFixed(3);
             document.getElementById('withdrawAmountInput').value = '';
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             
             showMessage(`✅ تم إرسال طلب السحب بنجاح (${amountVal} MOON ≈ ${usdtEquivalent} USDT)!`);
@@ -1048,7 +1051,7 @@
             let claimedUsdt = ((claimedMoon / REF_REWARD_MOON) * REF_REWARD_USDT).toFixed(3);
             userState.balance += claimedMoon;
             userState.teamCommission = 0.0;
-            saveUserDataToCloud();
+            saveUserData();
             updateUI();
             showMessage(`✅ تمت إضافة عوائد الفريق (${claimedMoon.toFixed(2)} MOON ≈ ${claimedUsdt} USDT) إلى رصيدك!`);
         }
@@ -1078,4 +1081,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
