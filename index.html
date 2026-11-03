@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MoonTap Cloud Mining</title>
+    <title>MoonTap Cloud Mining Core</title>
     
-    <!-- مكتبات النظام الأساسية -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
         :root {
-            --bg-dark: #070b19;
-            --card-bg: #111827;
-            --gold: #f59e0b;
-            --gold-glow: rgba(245, 158, 11, 0.5);
-            --green: #10b981;
-            --blue: #3b82f6;
-            --red: #ef4444;
+            --bg-deep: #050b14;
+            --bg-card: #0f172a;
+            --cyan-primary: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.3);
+            --emerald: #10b981;
+            --blue-accent: #3b82f6;
             --text-light: #f8fafc;
+            --text-muted: #94a3b8;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; user-select: none; }
+        
         body { 
-            background: radial-gradient(circle at center, #1e1b4b 0%, var(--bg-dark) 100%); 
+            background: radial-gradient(circle at 50% 0%, #0c1e38 0%, #070e1b 50%, var(--bg-deep) 100%); 
             color: var(--text-light); 
             min-height: 100vh; 
             display: flex; 
@@ -30,104 +31,108 @@
             justify-content: space-between; 
             overflow-x: hidden; 
         }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05)); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: var(--gold); font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(245,158,11,0.2); }
-        .balance-badge { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05)); border: 1px solid var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
 
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
+        /* شريط علوي تقني فاخر */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .badge { background: rgba(6, 182, 212, 0.1); border: 1px solid var(--cyan-primary); padding: 6px 14px; border-radius: 12px; font-size: 0.82rem; color: var(--cyan-primary); font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 0 12px var(--cyan-glow); }
+        .balance-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald); padding: 6px 14px; border-radius: 12px; font-size: 0.82rem; color: var(--emerald); font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 0 12px rgba(16,185,129,0.2); }
+
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 15px; text-align: center; }
         
-        .timer-box { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(16,185,129,0.2); transition: all 0.3s; }
-        .timer-box.stopped { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: var(--red); box-shadow: 0 0 12px rgba(239,68,68,0.2); }
-        .timer-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 1s infinite; }
-        .timer-box.stopped .timer-dot { background: var(--red); animation: none; }
-        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
+        /* مؤقت تقني */
+        .timer-box { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald); color: var(--emerald); padding: 6px 16px; border-radius: 14px; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(16,185,129,0.2); }
+        .timer-box.stopped { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
+        .timer-dot { width: 7px; height: 7px; background: var(--emerald); border-radius: 50%; animation: pulseDot 1.2s infinite; }
+        .timer-box.stopped .timer-dot { background: #ef4444; animation: none; }
 
-        .cloud-mining-title { font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px; letter-spacing: 1px; }
-        .cloud-mining-brand { font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 15px; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .cloud-mining-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
+        .cloud-mining-brand { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 15px; text-shadow: 0 0 20px rgba(6,182,212,0.4); }
 
-        .coin-wrapper { width: 170px; height: 170px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 75%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(245,158,11,0.5); position: relative; animation: floatCoin 3s ease-in-out infinite; }
+        /* أيقونة التعدين الرقمي */
+        .coin-wrapper { width: 170px; height: 170px; background: radial-gradient(circle, var(--cyan-glow) 0%, rgba(59,130,246,0.1) 60%, transparent 80%); display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-bottom: 15px; border: 2px solid rgba(6, 182, 212, 0.5); position: relative; animation: floatCoin 3s ease-in-out infinite; box-shadow: 0 0 35px var(--cyan-glow); }
         @keyframes floatCoin { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .coin-icon { font-size: 90px; filter: drop-shadow(0 0 10px rgba(245,158,11,0.6)); }
+        .coin-icon { font-size: 90px; filter: drop-shadow(0 0 15px rgba(6,182,212,0.6)); }
 
-        .mining-reward-label { font-size: 0.8rem; color: #94a3b8; margin-top: 10px; }
-        .mining-reward-val { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .mining-speed-info { font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; background: rgba(255,255,255,0.04); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        .mining-reward-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 5px; }
+        .mining-reward-val { font-size: 2rem; font-weight: bold; color: #fff; margin-bottom: 4px; direction: ltr; }
+        .mining-speed-info { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 18px; background: rgba(255,255,255,0.03); padding: 7px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
 
-        .btn-claim { width: 100%; max-width: 330px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; padding: 15px; border-radius: 16px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(59,130,246,0.4); margin-bottom: 10px; transition: transform 0.1s; }
+        /* الأزرار التقنية الاحترافية */
+        .btn-claim { width: 100%; max-width: 340px; background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid rgba(56,189,248,0.4); padding: 14px; border-radius: 14px; font-size: 1rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(2,132,199,0.4); margin-bottom: 12px; transition: all 0.2s; }
         .btn-claim:active { transform: scale(0.97); }
 
-        .btn-ad { width: 100%; max-width: 330px; background: linear-gradient(135deg, #f59e0b, #b45309); border: none; padding: 13px; border-radius: 16px; font-size: 0.9rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(245,158,11,0.3); transition: transform 0.1s; }
+        .btn-ad { width: 100%; max-width: 340px; background: linear-gradient(135deg, #0d9488, #0f766e); border: 1px solid rgba(45,212,191,0.4); padding: 13px; border-radius: 14px; font-size: 0.92rem; font-weight: bold; color: #fff; cursor: pointer; box-shadow: 0 6px 20px rgba(13,148,136,0.4); transition: all 0.2s; }
         .btn-ad:active { transform: scale(0.97); }
 
-        .bottom-nav-wrapper { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 90; display: flex; justify-content: center; }
-        .bottom-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 10px; border-radius: 14px; transition: all 0.25s ease; flex: 1; }
-        .nav-btn span { font-size: 1.25rem; transition: transform 0.25s; }
-        .nav-btn.active { color: #fff; background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.2)); border: 1px solid rgba(59,130,246,0.4); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+        /* شريط التنقل السفلي */
+        .bottom-nav-wrapper { position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 90; display: flex; justify-content: center; }
+        .bottom-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 20px; border: 1px solid rgba(6, 182, 212, 0.2); width: 100%; max-width: 420px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; padding: 6px 8px; border-radius: 12px; transition: all 0.3s ease; flex: 1; }
+        .nav-btn span { font-size: 1.25rem; transition: transform 0.3s; }
+        .nav-btn.active { color: var(--cyan-primary); background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 0 12px var(--cyan-glow); }
         .nav-btn.active span { transform: scale(1.15); }
-        .notification-dot { position: absolute; top: 4px; right: 12px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; animation: pulseDot 1.5s infinite; }
-        @keyframes pulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .notification-dot { position: absolute; top: 3px; right: 8px; background: #ef4444; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 10px; font-weight: bold; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.2s ease-out; }
+        /* النوافذ المنبثقة */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 15px; z-index: 100; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        .modal-box { background: var(--card-bg); padding: 22px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(59,130,246,0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .modal-title { font-size: 1.2rem; color: #fff; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .modal-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5; }
+        .modal-box { background: var(--bg-card); padding: 22px; border-radius: 22px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(6, 182, 212, 0.3); max-height: 85vh; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        .modal-title { font-size: 1.2rem; color: var(--cyan-primary); margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .modal-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5; }
 
-        .levelup-box { background: radial-gradient(circle at top, #1e1b4b, #0f172a); border: 2px solid var(--gold); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); padding: 28px 20px; }
-        .levelup-icon { font-size: 4.5rem; margin-bottom: 10px; display: inline-block; animation: bounce 1.2s infinite; filter: drop-shadow(0 0 15px rgba(245,158,11,0.6)); }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .levelup-box { background: radial-gradient(circle at top, #0c1e38, var(--bg-card)); border: 2px solid var(--cyan-primary); box-shadow: 0 0 40px var(--cyan-glow); padding: 28px 20px; }
+        .levelup-icon { font-size: 4rem; margin-bottom: 10px; display: inline-block; }
 
-        .wallet-card-box { background: #070b19; border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
-        .wallet-card-box .label { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px; }
-        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--green); font-weight: bold; direction: ltr; }
-        .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--gold); margin-top: 4px; font-weight: bold; direction: ltr; }
+        .wallet-card-box { background: var(--bg-deep); border: 1px solid rgba(6,182,212,0.2); border-radius: 16px; padding: 14px; margin-bottom: 12px; text-align: center; }
+        .wallet-card-box .label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .wallet-card-box .value-moon { font-size: 1.4rem; color: var(--emerald); font-weight: bold; direction: ltr; }
+        .wallet-card-box .value-usd { font-size: 0.95rem; color: var(--cyan-primary); margin-top: 4px; font-weight: bold; direction: ltr; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .friend-btn { background: var(--blue); border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
-        .friend-btn.share-btn { background: linear-gradient(135deg, var(--gold), #d97706); }
+        .friend-btn { background: #0284c7; border: none; padding: 11px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(2,132,199,0.3); }
+        .friend-btn.share-btn { background: linear-gradient(135deg, #0d9488, #0f766e); }
 
-        .elite-partner-card { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2)); border: 1.5px solid var(--gold); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
-        .elite-partner-card .e-title { font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+        .elite-partner-card { background: rgba(6, 182, 212, 0.08); border: 1px solid var(--cyan-primary); border-radius: 16px; padding: 12px; margin-bottom: 12px; text-align: right; }
+        .elite-partner-card .e-title { font-size: 0.85rem; color: var(--cyan-primary); font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
         .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
 
-        .team-commission-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
-        .team-commission-card span { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+        .team-commission-card { background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 15px; margin-bottom: 12px; text-align: center; }
+        .team-commission-card span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 5px; }
         .team-commission-card strong { font-size: 1.5rem; color: #fff; text-shadow: 0 0 10px rgba(16,185,129,0.3); display: block; direction: ltr; }
 
-        .invite-bonus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; background: #070b19; padding: 10px; border-radius: 14px; text-align: center; }
-        .bonus-box span { display: block; font-size: 0.65rem; color: #94a3b8; margin-bottom: 3px; }
+        .invite-bonus-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; background: var(--bg-deep); padding: 10px; border-radius: 14px; text-align: center; }
+        .bonus-box span { display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 3px; }
         .bonus-box strong { font-size: 0.95rem; color: #fff; direction: ltr; display: inline-block; }
 
-        .miners-header-card { background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-        .miners-header-card div span { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px; }
+        .miners-header-card { background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+        .miners-header-card div span { display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 3px; }
         .miners-header-card div strong { font-size: 0.95rem; color: #fff; }
 
-        .levels-list-container { max-height: 250px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .levels-list-container { max-height: 250px; overflow-y: auto; background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
         .level-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; }
-        .level-card-item.current { border: 2px solid var(--gold); background: rgba(245,158,11,0.15); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+        .level-card-item.current { border: 2px solid var(--cyan-primary); background: rgba(6,182,212,0.15); box-shadow: 0 0 12px var(--cyan-glow); }
         .level-info h5 { font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
-        .level-info p { font-size: 0.7rem; color: #94a3b8; }
-        .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; color: #94a3b8; background: rgba(255,255,255,0.05); }
-        .current .level-badge-status { color: var(--gold); background: rgba(245,158,11,0.25); }
+        .level-info p { font-size: 0.7rem; color: var(--text-muted); }
+        .level-badge-status { font-size: 0.72rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; color: var(--text-muted); background: rgba(255,255,255,0.05); }
+        .current .level-badge-status { color: var(--cyan-primary); background: rgba(6,182,212,0.25); }
 
-        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: #070b19; padding: 8px; border-radius: 14px; width: 100%; }
-        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 1px; text-align: center; font-size: 0.65rem; color: #94a3b8; }
-        .checkin-day.active { border-color: var(--green); background: rgba(16,185,129,0.2); color: var(--green); }
+        .checkin-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 15px; background: var(--bg-deep); padding: 8px; border-radius: 14px; width: 100%; }
+        .checkin-day { background: #151e36; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 6px 1px; text-align: center; font-size: 0.65rem; color: var(--text-muted); }
+        .checkin-day.active { border-color: var(--emerald); background: rgba(16,185,129,0.2); color: var(--emerald); }
         .checkin-day strong { display: block; font-size: 0.75rem; color: #fff; margin-top: 2px; }
 
-        .tasks-list-container { max-height: 220px; overflow-y: auto; background: #070b19; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
+        .tasks-list-container { max-height: 220px; overflow-y: auto; background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: right; }
         .task-card-item { display: flex; justify-content: space-between; align-items: center; background: #151e36; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
         .task-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
-        .task-info p { font-size: 0.7rem; color: var(--green); font-weight: bold; direction: ltr; text-align: right; }
-        .task-action-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .task-action-btn.verify { background: var(--gold); color: #000; animation: pulseDot 1.2s infinite; }
-        .task-action-btn.done { background: #374151; color: #94a3b8; cursor: default; animation: none; }
+        .task-info p { font-size: 0.7rem; color: var(--emerald); font-weight: bold; direction: ltr; text-align: right; }
+        .task-action-btn { background: #0284c7; color: #fff; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .task-action-btn.verify { background: var(--cyan-primary); color: #000; }
+        .task-action-btn.done { background: #374151; color: var(--text-muted); cursor: default; }
 
-        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: #070b19; color: #fff; margin-bottom: 8px; text-align: center; font-size: 0.85rem; outline: none; }
-        .input-wallet:focus { border-color: var(--blue); }
-        .ref-box { background: #070b19; padding: 10px; border-radius: 12px; border: 1px dashed var(--blue); font-size: 0.75rem; color: #93c5fd; word-break: break-all; margin-bottom: 10px; direction: ltr; }
+        .input-wallet { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #374151; background: var(--bg-deep); color: #fff; margin-bottom: 8px; text-align: center; font-size: 0.85rem; outline: none; }
+        .input-wallet:focus { border-color: var(--cyan-primary); }
+        .ref-box { background: var(--bg-deep); padding: 10px; border-radius: 12px; border: 1px dashed var(--cyan-primary); font-size: 0.75rem; color: #67e8f9; word-break: break-all; margin-bottom: 10px; direction: ltr; }
         .bottom-spacer { height: 75px; }
     </style>
 </head>
@@ -135,7 +140,7 @@
 
     <div class="top-nav">
         <div class="balance-badge"><span id="totalBal">0.00</span> MOON 🪙</div>
-        <div class="badge">⚡ المستوى <span id="userLevel">1</span></div>
+        <div class="badge">⚡ عقد التعدين: المستوى <span id="userLevel">1</span></div>
     </div>
 
     <div class="main-stage">
@@ -144,21 +149,21 @@
             <span id="countdownTimer">24:00:00</span>
         </div>
 
-        <div class="cloud-mining-title">منجم مستوى <span id="mainLevelBadge">1</span></div>
-        <div class="cloud-mining-brand">MoonTap Mining</div>
+        <div class="cloud-mining-title">عقد التعدين السحابي الذكي - تيربو <span id="mainLevelBadge">1</span></div>
+        <div class="cloud-mining-brand">MoonTap Protocol</div>
 
         <div class="coin-wrapper">
-            <div class="coin-icon">🌕</div>
+            <div class="coin-icon">🌐</div>
         </div>
 
-        <div class="mining-reward-label">مكافأة التعدين المتجمعة (سعة 24 ساعة: <span id="maxCapText">40</span> MOON)</div>
+        <div class="mining-reward-label">عائد التعدين المتراكم (السعة القصوى: <span id="maxCapText">40</span> MOON)</div>
         <div class="mining-reward-val" id="pendingReward">0.0000</div>
-        <div class="mining-speed-info">الإنتاج اليومي: <strong style="color:var(--gold)" id="dailyRateInfo">40.00</strong> MOON · القيمة: <span id="dynamicPriceVal">0.0000</span> USDT</div>
+        <div class="mining-speed-info">معدل الإنتاج اليومي: <strong style="color:var(--cyan-primary)" id="dailyRateInfo">40.00</strong> MOON · القيمة السوقية: <span id="dynamicPriceVal">0.0000</span> USDT</div>
 
-        <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 مطالبة بالمكافأة · MOON <span id="btnClaimVal">0.00</span></button>
+        <button class="btn-claim" id="btnClaim" onclick="executeClaimMiningReward()">📥 تحصيل أرباح التعدين النشط · MOON <span id="btnClaimVal">0.00</span></button>
         
-        <!-- زر فتح رابط إعلان Adsterra المباشر -->
-        <button class="btn-ad" id="adsterra-btn" onclick="openAdsterraLink()">🌐 زيارة موقع الراعي (Adsterra) واكسب +2 MOON</button>
+        <!-- زر الترويج الاحترافي والتقني -->
+        <button class="btn-ad" id="adsterra-btn" onclick="openAdsterraLink()">⚡ تفعيل عقد السرعة الإضافي (+2 MOON) 🚀</button>
         
         <div class="bottom-spacer"></div>
     </div>
@@ -166,79 +171,79 @@
     <div class="bottom-nav-wrapper">
         <div class="bottom-nav">
             <button class="nav-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>💳</span> المحفظة</button>
-            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> الأصدقاء</button>
-            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> المعدنون</button>
-            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> المهام <div class="notification-dot" id="taskDot">4</div></button>
-            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> التعدين</button>
+            <button class="nav-btn" id="navRefBtn" onclick="switchTab('refModal', this)"><span>👥</span> شبكة الإحالات</button>
+            <button class="nav-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)"><span>⚡</span> عقد التعدين</button>
+            <button class="nav-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)"><span>📋</span> مهام العقد <div class="notification-dot" id="taskDot">4</div></button>
+            <button class="nav-btn active" id="navMiningBtn" onclick="openMiningTab(this)"><span>⛏️</span> المنصة</button>
         </div>
     </div>
 
     <!-- نافذة المحفظة -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
-            <div class="modal-title">💳 سحب أرباح MoonTap</div>
-            <div class="modal-desc">إدارة محفظتك وسحب الأرباح بكل سهولة وأمان.</div>
+            <div class="modal-title">💳 المحفظة الذكية وعمليات السحب</div>
+            <div class="modal-desc">إدارة أصولك الرقمية وسحب الأرباح مباشرة عبر شبكة البلوكشين.</div>
             
             <div class="wallet-card-box">
-                <span class="label">إجمالي رصيدك المتاح للسحب</span>
+                <span class="label">إجمالي رصيد الأصول المتاح</span>
                 <div class="value-moon">MOON <span id="modalBal">0.00</span></div>
                 <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
             </div>
 
-            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل رابط / عنوان محفظة USDT الخاصة بك...">
-            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="أدخل كمية MOON للسحب (الحد الأدنى 5000)">
+            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة USDT (TRC20 / TON)...">
+            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="كمية السحب (الحد الأدنى 5000 MOON)">
             
-            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
+            <button class="btn-claim" style="width:100%; margin-bottom:8px;" onclick="submitWithdraw()">🚀 تنفيذ طلب السحب الفوري</button>
             <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('walletModal')">إغلاق</button>
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء والفريق -->
+    <!-- نافذة شبكة الإحالات -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
-            <div class="modal-title">👥 شبكة الشركاء & الفريق</div>
-            <div class="modal-desc">ابنِ فريقك النشط وكن "شريك النخبة الملكي" لتحصد أعلى العوائد!</div>
+            <div class="modal-title">👥 شبكة الإحالات والأرباح التبادلية</div>
+            <div class="modal-desc">قم بدعوة الشركاء وابنِ شبكة تعدينك النشطة لمضاعفة الأرباح بنسبة +50%!</div>
             
             <div class="elite-partner-card" id="eliteCardBox">
-                <div class="e-title">⭐ شريك النخبة الملكي (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
-                <div class="e-desc" id="eliteDescText">ادعُ 10 مستخدمين نشطين لتفعيل سرعة مضاعفة +50%!</div>
+                <div class="e-title">⭐ شريك النخبة المعتمد (<span id="eliteStatusText">غير مفعل 0/10</span>)</div>
+                <div class="e-desc" id="eliteDescText">أشرك 10 أعضاء نشطين لتفعيل عقد المضاعفة الذكي تلقائياً!</div>
             </div>
 
             <div class="friends-actions">
                 <button class="friend-btn" onclick="copyRefLink()">📋 نسخ الرابط</button>
-                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة الرابط</button>
+                <button class="friend-btn share-btn" onclick="shareReferral()">📤 مشاركة الشبكة</button>
             </div>
 
-            <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
+            <div class="ref-box" id="myRefLink">جاري توليد رابط الإحالة...</div>
 
             <div class="team-commission-card">
-                <span>مجمع أرباح الشريك (الفريق)</span>
+                <span>عائدات شبكة الإحالات المتراكمة</span>
                 <strong>MOON <span id="teamCommVal">0.00</span></strong>
-                <div style="font-size: 0.9rem; color: var(--gold); margin-top: 5px; font-weight: bold; direction: ltr;">
+                <div style="font-size: 0.9rem; color: var(--cyan-primary); margin-top: 5px; font-weight: bold; direction: ltr;">
                     ≈ <span id="teamCommUsdtVal">0.000</span> USDT
                 </div>
             </div>
 
-            <button class="btn-claim" style="width:100%; margin-bottom:12px; padding:12px;" onclick="claimTeamCommission()">المطالبة بعوائد الفريق</button>
+            <button class="btn-claim" style="width:100%; margin-bottom:12px; padding:12px;" onclick="claimTeamCommission()">تحصيل عوائد الشبكة</button>
 
             <div class="invite-bonus-grid">
-                <div class="bonus-box"><span>الفريق</span><strong id="teamCount">0</strong></div>
+                <div class="bonus-box"><span>الشبكة</span><strong id="teamCount">0</strong></div>
                 <div class="bonus-box"><span>نشطون</span><strong id="activeTeamCount">0</strong></div>
-                <div class="bonus-box"><span>مكافأة الإحالة</span><strong style="color:var(--green)">0.010 USDT</strong></div>
+                <div class="bonus-box"><span>مكافأة العضو</span><strong style="color:var(--emerald)">0.010$</strong></div>
             </div>
 
             <button class="btn-ad" style="width:100%; background:#374151;" onclick="closeModal('refModal')">إغلاق</button>
         </div>
     </div>
 
-    <!-- نافذة المعدنون -->
+    <!-- نافذة العقود -->
     <div class="modal-overlay" id="minersModal">
         <div class="modal-box" style="max-width: 390px;">
-            <div class="modal-title">⚡ رحلة ملوك التعدين</div>
+            <div class="modal-title">⚡ ترقية عقود التعدين الذكية</div>
             <div class="miners-header-card">
-                <div><span>إنتاجك اليومي</span><strong style="color:var(--green)" id="dailyEarnings">40.0</strong></div>
-                <div><span>القمة</span><strong>150</strong></div>
-                <div><span>مستواك</span><strong style="color:var(--gold)" id="modalLevel">1</strong></div>
+                <div><span>إنتاجك اليومي</span><strong style="color:var(--emerald)" id="dailyEarnings">40.0</strong></div>
+                <div><span>الحد الأقصى</span><strong>150</strong></div>
+                <div><span>عقدك الحالي</span><strong style="color:var(--cyan-primary)" id="modalLevel">1</strong></div>
             </div>
             <div class="levels-list-container" id="levelsListContainer"></div>
             <button class="btn-ad" style="width:100%; margin-top:5px; background:#374151;" onclick="closeModal('minersModal')">إغلاق</button>
@@ -248,9 +253,9 @@
     <!-- نافذة المهام -->
     <div class="modal-overlay" id="tasksModal">
         <div class="modal-box" style="max-width: 400px;">
-            <div class="modal-title">📋 مهام ومكافآت MoonTap</div>
+            <div class="modal-title">📋 مهام البروتوكول والمكافآت</div>
             
-            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">📅 تسجيل الدخول اليومي (كل 24 ساعة)</div>
+            <div style="text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: bold;">📅 التحقق اليومي من النشاط (كل 24 ساعة)</div>
             <div class="checkin-grid">
                 <div class="checkin-day active" id="day1Box">D1<br><strong>5+</strong></div>
                 <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
@@ -260,34 +265,34 @@
                 <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
                 <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
             </div>
-            <button class="btn-claim" id="checkinBtn" style="margin-bottom:12px; padding:9px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة تسجيل الدخول</button>
+            <button class="btn-claim" id="checkinBtn" style="margin-bottom:12px; padding:9px; font-size:0.85rem;" onclick="claimDailyCheckin()">📥 استلام مكافأة التحقق اليومي (+5)</button>
 
-            <div style="text-align: right; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; font-weight: bold;">⭐ المهام والروابط الإعلانية</div>
+            <div style="text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: bold;">⭐ بروتوكولات الشراكة والروابط النشطة</div>
             <div class="tasks-list-container">
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>📢 الاشتراك في قناة البوت الرسمية</h5>
+                        <h5>📢 الانضمام لقناة البث الرسمية</h5>
                         <p>+50.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn1" onclick="handleChannelTask(1, 50)">اشتراك</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>📤 مشاركة القناة / البوت مع صديق</h5>
+                        <h5>📤 مشاركة منصة التعدين مع زميل</h5>
                         <p>+30.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 30)">مشاركة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>🌐 زيارة رابط إعلاني (1)</h5>
+                        <h5>🌐 بروتوكول الشراكة التقنية (1)</h5>
                         <p>+15.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn3" onclick="openAdsterraTask(3, 15)">زيارة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5>🌐 زيارة رابط إعلاني (2)</h5>
+                        <h5>🌐 بروتوكول الشراكة التقنية (2)</h5>
                         <p>+15.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn4" onclick="openAdsterraTask(4, 15)">زيارة</button>
@@ -298,21 +303,20 @@
         </div>
     </div>
 
-    <!-- نافذة الترقية للمستوى الجديد -->
+    <!-- نافذة الترقية الذكية للعقد -->
     <div class="modal-overlay" id="levelUpModal" style="z-index: 200;">
         <div class="modal-box levelup-box">
-            <div class="levelup-icon">🎉</div>
-            <div class="modal-title" style="color: var(--gold); font-size: 1.4rem;">ترقية مستوى المنجم!</div>
-            <div class="modal-desc" style="color: #fff; font-size: 0.95rem; margin-top: 10px;">
-                مبارك لك! لقد تم نقلك بنجاح إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
-                ⚡ زادت سرعة تعدينك اليومية إلى <strong style="color:var(--green)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
+            <div class="levelup-icon">🚀</div>
+            <div class="modal-title" style="color: var(--cyan-primary); font-size: 1.35rem;">تمت ترقية عقد التعدين بنجاح!</div>
+            <div class="modal-desc" style="color: #fff; font-size: 0.92rem; margin-top: 10px;">
+                تهانينا! تم ترقية عقدك إلى <strong>المستوى <span id="newLevelReached">2</span></strong> تلقائياً عبر الشبكة.<br><br>
+                ⚡ تضاعفت سرعة التعدين اليومية لتصل إلى <strong style="color:var(--emerald)"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
             </div>
-            <button class="btn-claim" style="background: linear-gradient(135deg, var(--gold), #d97706); width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">🚀 مواصلة التعدين</button>
+            <button class="btn-claim" style="background: linear-gradient(135deg, var(--cyan-primary), #0284c7); color:#000; width: 100%; margin-top: 10px;" onclick="closeModal('levelUpModal')">متابعة العمليات</button>
         </div>
     </div>
 
     <script>
-        // ====== إعدادات الربط السحابي (Supabase) ======
         const SUPABASE_URL = 'https://udkgvdwoteksgixuvbrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pm7dvD7MbK0GuI8WUbb5IA_MPdYzN1P';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -322,8 +326,6 @@
 
         const BOT_USERNAME = "UsdtMysteryBox77_bot";
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
-        
-        // تم تحديث الرابط المباشر لمنصة Adsterra بنجاح
         const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
 
         const REF_REWARD_USDT = 0.010;
@@ -335,14 +337,9 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
-        const startParam = tg?.initDataUnsafe?.start_param 
-                        || urlParams.get('tgWebAppStartParam') 
-                        || urlParams.get('startapp') 
-                        || urlParams.get('start') 
-                        || hashParams.get('tgWebAppStartParam') 
-                        || null;
+        const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        const storageKey = 'moontap_adsterra_system_v21_' + userId;
+        const storageKey = 'moontap_adsterra_system_v23_' + userId;
 
         let savedData = localStorage.getItem(storageKey);
         let userState = savedData ? JSON.parse(savedData) : {
@@ -364,36 +361,27 @@
         async function syncWithSupabase() {
             try {
                 let inviterId = null;
-                if (startParam) {
-                    inviterId = startParam.replace('ref_', '').trim();
-                }
+                if (startParam) { inviterId = startParam.replace('ref_', '').trim(); }
 
                 await supabaseClient.from('users').upsert([{ 
                     id: userId, 
                     inviter_id: inviterId && inviterId !== userId ? inviterId : null 
                 }]);
 
-                let { data: refs, error } = await supabaseClient
-                    .from('users')
-                    .select('id')
-                    .eq('inviter_id', userId);
+                let { data: refs, error } = await supabaseClient.from('users').select('id').eq('inviter_id', userId);
 
                 if (refs) {
                     let totalRefs = refs.length;
                     if (totalRefs !== userState.teamCount) {
                         let diff = totalRefs - userState.teamCount;
-                        if (diff > 0) {
-                            userState.teamCommission += (diff * REF_REWARD_MOON);
-                        }
+                        if (diff > 0) { userState.teamCommission += (diff * REF_REWARD_MOON); }
                         userState.teamCount = totalRefs;
                         userState.activeTeamCount = totalRefs;
                         persistData();
                         updateUI();
                     }
                 }
-            } catch (err) {
-                console.log("Cloud sync error:", err);
-            }
+            } catch (err) { console.log("Cloud sync error:", err); }
         }
 
         function openTelegramUrlSafely(url) {
@@ -405,20 +393,17 @@
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.balance += 2.00;
             updateUI();
-            showMessage("🚀 شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.");
+            showMessage("⚡ تم تفعيل بروتوكول السرعة بنجاح! أضيفت +2 MOON إلى رصيدك.");
         }
 
         function openAdsterraTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { 
-                showMessage("⚠️ لقد أنجزت هذه المهمة مسبقاً!"); 
-                return; 
-            }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ تم إنجاز هذا البروتوكول مسبقاً!"); return; }
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             persistData();
             updateUI();
-            showMessage(`🎉 رائع! تمت زيارة الرابط وحصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 اكتمل البروتوكول بنجاح وحصلت على +${rewardAmount} MOON.`);
         }
 
         function getDailyMiningLimit(lvl) {
@@ -449,8 +434,7 @@
         }
 
         function persistData() {
-            try { localStorage.setItem(storageKey, JSON.stringify(userState)); } 
-            catch(e) { console.log("Storage error:", e); }
+            try { localStorage.setItem(storageKey, JSON.stringify(userState)); } catch(e){}
         }
 
         const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
@@ -477,7 +461,7 @@
             let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
             if (data.isStopped) {
-                if (timerSpan) timerSpan.innerText = `00:00:00 (ممتلئ - متوقف)`;
+                if (timerSpan) timerSpan.innerText = `00:00:00 (اكتملت السعة)`;
                 if (timerBox) timerBox.classList.add('stopped');
             } else {
                 if (timerSpan) timerSpan.innerText = timeStr;
@@ -491,9 +475,7 @@
             document.getElementById('dailyEarnings').innerText = data.dailyLimit.toFixed(1);
         }
 
-        setInterval(() => {
-            updateMiningEngineUI();
-        }, 1000);
+        setInterval(() => { updateMiningEngineUI(); }, 1000);
 
         window.addEventListener('DOMContentLoaded', () => {
             if (userState.savedWallet) document.getElementById('walletInput').value = userState.savedWallet;
@@ -503,13 +485,13 @@
 
         function executeClaimMiningReward() {
             let data = getCurrentMinedData();
-            if (data.mined < 0.01) { showMessage("⚠️ انتظر قليلاً حتى يتجمع قدر بسيط من عملات MOON للمطالبة بها!"); return; }
+            if (data.mined < 0.01) { showMessage("⚠️ انتظر حتى يتجمع رصيد كافٍ للتحصيل!"); return; }
             let claimedAmount = data.mined;
             userState.balance += claimedAmount;
             userState.miningStartTime = Date.now(); 
             persistData();
             updateUI();
-            showMessage(`✅ تم استلام ${claimedAmount.toFixed(2)} MOON بنجاح! عاد المؤقت إلى 24:00:00 وبدأ التعدين الجديد.`);
+            showMessage(`✅ تم تحصيل ${claimedAmount.toFixed(2)} MOON بنجاح وإعادة تشغيل دورة التعدين.`);
         }
 
         function updateUI() {
@@ -530,7 +512,7 @@
 
                 let eliteStatus = document.getElementById('eliteStatusText');
                 if (eliteStatus) {
-                    if (userState.activeTeamCount >= 10) eliteStatus.innerText = `مفعل ✅ (${userState.activeTeamCount}/10)`;
+                    if (userState.activeTeamCount >= 10) eliteStatus.innerText = `نشط ✅ (${userState.activeTeamCount}/10)`;
                     else eliteStatus.innerText = `غير مفعل ${userState.activeTeamCount}/10`;
                 }
 
@@ -546,7 +528,7 @@
                 checkCheckinStatusUI();
                 updateMiningEngineUI();
                 persistData();
-            } catch(e) { console.log("UI Error:", e); }
+            } catch(e){}
         }
 
         function renderLevelsList() {
@@ -558,11 +540,11 @@
                 let levelDailyRate = getDailyMiningLimit(i);
                 let isCurrent = (i === userState.level);
                 let cardClass = isCurrent ? 'current' : 'locked';
-                let statusText = isCurrent ? '🔥 مستواك النشط' : `🔒 يتطلب ${requiredCoins} MOON`;
+                let statusText = isCurrent ? '⚡ العقد الحالي النشط' : `🔒 يتطلب ${requiredCoins} MOON`;
                 html += `<div class="level-card-item ${cardClass}">
                     <div class="level-info">
-                        <h5>🚀 منجم المستوى (${i})</h5>
-                        <p>الإنتاج اليومي: <strong style="color:var(--green)">${levelDailyRate} MOON</strong> / 24 ساعة</p>
+                        <h5>عقد التعدين مستوى (${i})</h5>
+                        <p>الإنتاج اليومي: <strong style="color:var(--emerald)">${levelDailyRate} MOON</strong></p>
                     </div>
                     <div class="level-badge-status">${statusText}</div>
                 </div>`;
@@ -571,7 +553,7 @@
         }
 
         function handleChannelTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد قمت بالاشتراك واستلام مكافأة هذه المهمة مسبقاً!"); return; }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ تم استلام مكافأة هذا البند مسبقاً!"); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
                 userState.pendingVerifyTasks.push(taskId);
@@ -582,11 +564,11 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             updateUI();
-            showMessage(`🎉 تم التحقق من اشتراكك في القناة بنجاح! حصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 تم التحقق من الاشتراك بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
 
         function handleShareTask(taskId, rewardAmount) {
-            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ لقد أنجزت مهمة المشاركة مسبقاً!"); return; }
+            if (userState.completedTasks.includes(taskId)) { showMessage("⚠️ تم إنجاز هذه المهمة مسبقاً!"); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 shareReferral();
                 userState.pendingVerifyTasks.push(taskId);
@@ -597,7 +579,7 @@
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             updateUI();
-            showMessage(`🎉 شكراً لمشاركتك البوت! حصلت على +${rewardAmount} MOON.`);
+            showMessage(`🎉 تم تأكيد المشاركة بنجاح! حصلت على +${rewardAmount} MOON.`);
         }
 
         function checkCompletedTasksUI() {
@@ -607,12 +589,12 @@
                 let btn = document.getElementById('taskBtn' + taskId);
                 if (!btn) continue;
                 if (userState.completedTasks.includes(taskId)) {
-                    btn.innerText = "مكتمل ✓";
+                    btn.innerText = "منجز ✓";
                     btn.classList.remove('verify');
                     btn.classList.add('done');
                     btn.style.background = '#374151';
                 } else if (userState.pendingVerifyTasks.includes(taskId)) {
-                    btn.innerText = "تحقق واستلم 🔍";
+                    btn.innerText = "تحقق الآن 🔍";
                     btn.classList.add('verify');
                 }
             }
@@ -635,7 +617,7 @@
                 checkinBtn.innerText = `⏳ متاح بعد: ${hours}س و ${minutes}د`;
                 checkinBtn.style.background = '#374151';
             } else {
-                checkinBtn.innerText = "📥 استلام مكافأة تسجيل الدخول (+5 MOON)";
+                checkinBtn.innerText = "📥 استلام مكافأة التحقق اليومي (+5 MOON)";
                 checkinBtn.style.background = '';
             }
         }
@@ -643,22 +625,22 @@
         function claimDailyCheckin() {
             let now = Date.now();
             if (userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS)) {
-                showMessage("⚠️ لقد استلمت مكافأة الدخول اليومي بالفعل! عد غداً."); return;
+                showMessage("⚠️ تم التحقق اليومي مسبقاً! عد غداً."); return;
             }
             userState.balance += 5.00;
             userState.lastCheckinTime = now;
             updateUI();
-            showMessage("🎉 استلاست مكافأة تسجيل الدخول اليومي بنجاح (+5 MOON)!");
+            showMessage("🎉 تم استلام مكافأة التحقق اليومي بنجاح (+5 MOON)!");
         }
 
         async function submitWithdraw() {
             const walletAddr = document.getElementById('walletInput').value.trim();
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
-            if (!walletAddr || walletAddr.length < 10) { showMessage("⚠️ يرجى إدخال عنوان أو رابط محفظة صحيح أولاً!"); return; }
+            if (!walletAddr || walletAddr.length < 10) { showMessage("⚠️ يرجى ادخال عنوان محفظة صحيح ومعتمد!"); return; }
             userState.savedWallet = walletAddr;
             persistData();
-            if (amountVal < 5000) { showMessage("⚠️ الحد الأدنى للسحب هو 5000 عملة MOON."); return; }
-            if (amountVal > userState.balance) { showMessage("⚠️ رصيدك الحالي غير كافٍ لسحب هذه الكمية!"); return; }
+            if (amountVal < 5000) { showMessage("⚠️ الحد الأدنى لعمليات السحب هو 5000 MOON."); return; }
+            if (amountVal > userState.balance) { showMessage("⚠️ الرصيد المتاح غير كافٍ لإتمام عملية السحب!"); return; }
             
             userState.balance -= amountVal;
             let usdtEquivalent = ((amountVal / 5000) * 0.20).toFixed(3);
@@ -669,7 +651,7 @@
                 const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
                 await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
             } catch (e) {}
-            showMessage(`✅ تم حفظ محفظتك وإرسال طلب سحب (${amountVal} MOON ≈ ${usdtEquivalent} USDT) بنجاح! ستتم المعالجة قريباً.`);
+            showMessage(`✅ تم إرسال طلب السحب بنجاح (${amountVal} MOON ≈ ${usdtEquivalent} USDT) للمعالجة عبر الشبكة.`);
         }
 
         function copyRefLink() {
@@ -680,23 +662,22 @@
 
         function shareReferral() {
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
-            const text = encodeURIComponent(`انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية فوراً عبر رابطي:\n\n${refLink}`);
+            const text = encodeURIComponent(`انضم إلى منصة MoonTap للتعدين الذكي وابدأ بتحقيق الأرباح الرقمية عبر رابطي:\n\n${refLink}`);
             openTelegramUrlSafely(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
         }
 
         function claimTeamCommission() {
-            if (userState.teamCommission <= 0) { showMessage("⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!"); return; }
+            if (userState.teamCommission <= 0) { showMessage("⚠️ لا توجد عوائد شبكة قابلة للتحصيل حالياً!"); return; }
             let claimedMoon = userState.teamCommission;
             let claimedUsdt = ((claimedMoon / REF_REWARD_MOON) * REF_REWARD_USDT).toFixed(3);
             userState.balance += claimedMoon;
             userState.teamCommission = 0.0;
             updateUI();
-            showMessage(`✅ تمت إضافة عوائد الفريق (${claimedMoon.toFixed(2)} MOON ≈ ${claimedUsdt} USDT) إلى رصيدك بنجاح!`);
+            showMessage(`✅ تمت إضافة عوائد شبكة الإحالات (${claimedMoon.toFixed(2)} MOON) إلى رصيدك بنجاح!`);
         }
 
         function showMessage(msg) {
-            if (tg && typeof tg.showAlert === 'function') { tg.showAlert(msg); } 
-            else { alert(msg); }
+            if (tg && typeof tg.showAlert === 'function') { tg.showAlert(msg); } else { alert(msg); }
         }
 
         function switchTab(modalId, btnEl) {
