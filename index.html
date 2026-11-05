@@ -76,7 +76,6 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .lang-switch-btn:active { transform: scale(0.95); }
 
         .main-stage {
             flex: 1;
@@ -215,7 +214,6 @@
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
-        .btn-ad-direct:active { transform: scale(0.97); }
 
         .bottom-nav-dock {
             position: fixed;
@@ -486,7 +484,6 @@
 </head>
 <body>
 
-    <!-- الشريط العلوي مع زر تبديل اللغة -->
     <div class="top-nav">
         <div class="balance-badge"><span id="totalBal">0.00</span> MOON 🪙</div>
         <button class="lang-switch-btn" onclick="toggleLanguage()" id="langBtn">English 🌐</button>
@@ -528,7 +525,6 @@
         <div class="bottom-spacer"></div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
     <div class="bottom-nav-dock">
         <div class="dock-bar">
             <button class="dock-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)"><span>💳</span> <span id="tabWalletTxt">المحفظة</span></button>
@@ -686,18 +682,16 @@
         const REF_REWARD_MOON = 250.00;
 
         let telegramUser = tg?.initDataUnsafe?.user;
-        let userId = (telegramUser && telegramUser.id) ? telegramUser.id.toString() : (localStorage.getItem('moontap_real_telegram_id') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
-        if (telegramUser && telegramUser.id) {
-            localStorage.setItem('moontap_real_telegram_id', userId);
-        }
+        let userId = (telegramUser && telegramUser.id) ? telegramUser.id.toString() : (localStorage.getItem('moontap_permanent_uid') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
+        localStorage.setItem('moontap_permanent_uid', userId);
 
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        const localCacheKey = 'moontap_master_storage_v38_' + userId;
+        // مفتاح ثابت دائم لا يتغير أبداً
+        const PERMANENT_STORAGE_KEY = 'moontap_user_data_permanent_' + userId;
 
-        // إدارة اللغة
         let currentLang = localStorage.getItem('moontap_lang_' + userId) || 'ar';
 
         const i18n = {
@@ -906,8 +900,43 @@
             updateAllTimersUI();
         }
 
-        let cachedRaw = localStorage.getItem(localCacheKey);
-        let userState = cachedRaw ? JSON.parse(cachedRaw) : {
+        // دالة استرداد أي رصيد قديم كان مخزناً في أي إصدار سابق
+        function recoverAnyLegacyBalance() {
+            let maxFoundBal = 0.00;
+            let bestState = null;
+
+            // فحص المفتاح الدائم أولاً
+            let permRaw = localStorage.getItem(PERMANENT_STORAGE_KEY);
+            if (permRaw) {
+                try {
+                    let parsed = JSON.parse(permRaw);
+                    if (parsed && parsed.balance > maxFoundBal) {
+                        maxFoundBal = parsed.balance;
+                        bestState = parsed;
+                    }
+                } catch(e){}
+            }
+
+            // فحص جميع المفاتيح التاريخية لاسترداد رصيدك المفقود
+            for (let i = 0; i < localStorage.length; i++) {
+                let k = localStorage.key(i);
+                if (k && k.includes('moontap_') && (k.includes(userId) || k.includes('storage') || k.includes('safe'))) {
+                    try {
+                        let data = JSON.parse(localStorage.getItem(k));
+                        if (data && typeof data.balance === 'number' && data.balance > maxFoundBal) {
+                            maxFoundBal = data.balance;
+                            bestState = data;
+                        }
+                    } catch(e){}
+                }
+            }
+
+            return bestState;
+        }
+
+        let legacyData = recoverAnyLegacyBalance();
+
+        let userState = legacyData ? legacyData : {
             balance: 0.00,
             level: 1,
             teamCount: 0,
@@ -924,9 +953,12 @@
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
 
+        // حفظ الرصيد مباشرة في المفتاح الدائم
+        localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
+
         async function saveUserData() {
             try {
-                localStorage.setItem(localCacheKey, JSON.stringify(userState));
+                localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
                 await supabaseClient.from('users').upsert([{ 
                     id: userId,
                     balance: userState.balance,
@@ -1372,4 +1404,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
