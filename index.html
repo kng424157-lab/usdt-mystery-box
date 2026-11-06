@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MoonTap Cloud Mining</title>
+    <title>MoonTap Empire - Ultimate Ecosystem</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -16,6 +16,7 @@
             --emerald-glow: #10b981;
             --text-gold: #fde68a;
             --text-dim: #94a3b8;
+            --danger-red: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, 'Segoe UI', Arial, sans-serif; user-select: none; }
@@ -86,6 +87,28 @@
             padding: 12px 14px;
             text-align: center;
         }
+
+        /* درع الطاقة الفضائي (إضافة نفسية محفزة) */
+        .shield-banner {
+            width: 100%;
+            max-width: 330px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 7, 12, 0.8));
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 14px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+        .shield-banner.warning {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(5, 7, 12, 0.8));
+            border-color: var(--danger-red);
+            animation: pulseWarning 1.5s infinite;
+        }
+        @keyframes pulseWarning { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         .timer-box {
             background: rgba(16, 185, 129, 0.1);
@@ -158,26 +181,26 @@
         }
 
         .moon-chassis {
-            width: 138px;
-            height: 138px;
+            width: 130px;
+            height: 130px;
             background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(12, 10, 9, 0.95) 72%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border: 2px solid rgba(245, 158, 11, 0.65);
             box-shadow: 0 0 35px var(--gold-glow), inset 0 0 25px rgba(245, 158, 11, 0.2);
             position: relative;
             animation: floatChassis 3.5s ease-in-out infinite;
         }
         @keyframes floatChassis { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .moon-icon-inner { font-size: 72px; filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.8)); }
+        .moon-icon-inner { font-size: 68px; filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.8)); }
 
         .mining-rate-pill {
             font-size: 0.75rem;
             color: var(--text-dim);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             background: rgba(255, 255, 255, 0.03);
             padding: 6px 14px;
             border-radius: 14px;
@@ -189,7 +212,7 @@
             max-width: 330px;
             background: linear-gradient(180deg, #fef08a 0%, #f59e0b 45%, #b45309 85%, #78350f 100%);
             border: 1.5px solid #fffbeb;
-            padding: 13px;
+            padding: 12px;
             border-radius: 16px;
             font-size: 1.05rem;
             font-weight: 900;
@@ -206,15 +229,16 @@
             max-width: 330px;
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(16, 185, 129, 0.14));
             border: 1px solid rgba(245, 158, 11, 0.45);
-            padding: 11px;
+            padding: 10px;
             border-radius: 14px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: var(--text-gold);
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
 
+        /* القائمة السفلية المتعددة المنافذ */
         .bottom-nav-dock {
             position: fixed;
             bottom: 8px;
@@ -227,14 +251,14 @@
         .dock-bar {
             background: rgba(14, 12, 10, 0.96);
             backdrop-filter: blur(20px);
-            padding: 5px 8px;
+            padding: 4px 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-radius: 18px;
             border: 1px solid rgba(212, 175, 55, 0.3);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
         }
         .dock-btn {
@@ -246,24 +270,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 2px;
             position: relative;
-            padding: 5px 4px;
-            border-radius: 13px;
+            padding: 4px 2px;
+            border-radius: 12px;
             transition: all 0.2s ease;
             flex: 1;
         }
         .dock-icon {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
         }
         .dock-icon svg {
-            width: 19px;
-            height: 19px;
+            width: 17px;
+            height: 17px;
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
@@ -271,9 +294,9 @@
             stroke-linejoin: round;
         }
         .dock-label {
-            font-size: 0.65rem;
+            font-size: 0.58rem;
             font-weight: bold;
-            line-height: 1.1;
+            line-height: 1;
             white-space: nowrap;
         }
         .dock-btn.active {
@@ -282,25 +305,20 @@
             border: 1px solid rgba(245, 158, 11, 0.5);
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
         }
-        .dock-btn.active .dock-icon {
-            transform: translateY(-1px);
-            filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.6));
-        }
         .alert-dot {
             position: absolute;
             top: 2px;
-            right: 18%;
+            right: 14%;
             background: #ef4444;
             color: #fff;
-            font-size: 0.55rem;
-            min-width: 15px;
-            height: 15px;
+            font-size: 0.5rem;
+            min-width: 13px;
+            height: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: bold;
-            box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
         }
 
         .modal-overlay {
@@ -316,7 +334,7 @@
         }
         .modal-box {
             background: #0f0d0b;
-            padding: 22px;
+            padding: 20px;
             border-radius: 24px;
             width: 100%;
             max-width: 380px;
@@ -326,30 +344,30 @@
             overflow-y: auto;
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95);
         }
-        .modal-title { font-size: 1.15rem; color: #fef08a; margin-bottom: 8px; font-weight: bold; }
-        .modal-desc { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5; }
+        .modal-title { font-size: 1.1rem; color: #fef08a; margin-bottom: 6px; font-weight: bold; }
+        .modal-desc { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4; }
 
         .wallet-card-box {
             background: #050403;
             border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
             text-align: center;
         }
-        .wallet-card-box .label { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
-        .wallet-card-box .value-moon { font-size: 1.35rem; color: #34d399; font-weight: bold; direction: ltr; }
-        .wallet-card-box .value-usd { font-size: 0.9rem; color: #fef08a; margin-top: 3px; font-weight: bold; direction: ltr; }
+        .wallet-card-box .label { font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 3px; }
+        .wallet-card-box .value-moon { font-size: 1.3rem; color: #34d399; font-weight: bold; direction: ltr; }
+        .wallet-card-box .value-usd { font-size: 0.85rem; color: #fef08a; margin-top: 2px; font-weight: bold; direction: ltr; }
 
-        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .friend-btn {
             background: linear-gradient(135deg, #b45309, #78350f);
             border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 11px;
+            padding: 10px;
             border-radius: 12px;
             color: #fff;
             font-weight: bold;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             cursor: pointer;
         }
         .friend-btn.share-btn { background: linear-gradient(135deg, #059669, #065f46); }
@@ -358,60 +376,60 @@
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(16, 185, 129, 0.12));
             border: 1px solid rgba(212, 175, 55, 0.5);
             border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
             text-align: inherit;
         }
-        .elite-partner-card .e-title { font-size: 0.82rem; color: #fef08a; font-weight: bold; margin-bottom: 4px; }
-        .elite-partner-card .e-desc { font-size: 0.7rem; color: #cbd5e1; line-height: 1.4; }
+        .elite-partner-card .e-title { font-size: 0.78rem; color: #fef08a; font-weight: bold; margin-bottom: 3px; }
+        .elite-partner-card .e-desc { font-size: 0.68rem; color: #cbd5e1; line-height: 1.3; }
 
         .team-commission-card {
             background: #050403;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
             text-align: center;
         }
-        .team-commission-card span { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
-        .team-commission-card strong { font-size: 1.4rem; color: #fff; display: block; direction: ltr; }
+        .team-commission-card span { font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 3px; }
+        .team-commission-card strong { font-size: 1.3rem; color: #fff; display: block; direction: ltr; }
 
         .invite-bonus-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            margin-bottom: 12px;
+            gap: 5px;
+            margin-bottom: 10px;
             background: #050403;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px;
-            border-radius: 14px;
+            padding: 8px;
+            border-radius: 12px;
             text-align: center;
         }
-        .bonus-box span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 3px; }
-        .bonus-box strong { font-size: 0.88rem; color: #fff; direction: ltr; display: inline-block; }
+        .bonus-box span { display: block; font-size: 0.62rem; color: var(--text-dim); margin-bottom: 2px; }
+        .bonus-box strong { font-size: 0.85rem; color: #fff; direction: ltr; display: inline-block; }
 
         .miners-header-card {
             background: #050403;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
             text-align: center;
         }
-        .miners-header-card div span { display: block; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 3px; }
-        .miners-header-card div strong { font-size: 0.9rem; color: #fff; }
+        .miners-header-card div span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 2px; }
+        .miners-header-card div strong { font-size: 0.85rem; color: #fff; }
 
         .levels-list-container {
-            max-height: 240px;
+            max-height: 220px;
             overflow-y: auto;
             background: #050403;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 8px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 6px;
+            margin-bottom: 10px;
             text-align: inherit;
         }
         .level-card-item {
@@ -420,21 +438,21 @@
             align-items: center;
             background: #15120e;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 10px 12px;
-            margin-bottom: 6px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 5px;
         }
         .level-card-item.current {
             border: 1.5px solid rgba(245, 158, 11, 0.7);
             background: rgba(245, 158, 11, 0.12);
         }
-        .level-info h5 { font-size: 0.82rem; color: #fff; margin-bottom: 2px; }
-        .level-info p { font-size: 0.68rem; color: var(--text-dim); }
+        .level-info h5 { font-size: 0.78rem; color: #fff; margin-bottom: 2px; }
+        .level-info p { font-size: 0.65rem; color: var(--text-dim); }
         .level-badge-status {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: bold;
-            padding: 4px 10px;
-            border-radius: 10px;
+            padding: 3px 8px;
+            border-radius: 8px;
             color: var(--text-dim);
             background: rgba(255, 255, 255, 0.05);
         }
@@ -443,44 +461,34 @@
         .checkin-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 14px;
+            gap: 3px;
+            margin-bottom: 12px;
             background: #050403;
-            padding: 8px;
-            border-radius: 14px;
+            padding: 6px;
+            border-radius: 12px;
             width: 100%;
         }
         .checkin-day {
             background: #15120e;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 6px 1px;
+            border-radius: 8px;
+            padding: 5px 1px;
             text-align: center;
-            font-size: 0.62rem;
+            font-size: 0.58rem;
             color: var(--text-dim);
-            transition: all 0.25s ease;
         }
-        .checkin-day.claimed {
-            border-color: rgba(245, 158, 11, 0.45);
-            background: rgba(245, 158, 11, 0.1);
-            color: #fde68a;
-        }
-        .checkin-day.active {
-            border-color: var(--emerald-glow);
-            background: rgba(16, 185, 129, 0.22);
-            color: var(--emerald-glow);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
-        }
-        .checkin-day strong { display: block; font-size: 0.72rem; color: #fff; margin-top: 2px; }
+        .checkin-day.claimed { border-color: rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.1); color: #fde68a; }
+        .checkin-day.active { border-color: var(--emerald-glow); background: rgba(16, 185, 129, 0.22); color: var(--emerald-glow); }
+        .checkin-day strong { display: block; font-size: 0.68rem; color: #fff; margin-top: 2px; }
 
         .tasks-list-container {
-            max-height: 220px;
+            max-height: 200px;
             overflow-y: auto;
             background: #050403;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 8px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 6px;
+            margin-bottom: 10px;
             text-align: inherit;
         }
         .task-card-item {
@@ -489,54 +497,54 @@
             align-items: center;
             background: #15120e;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            gap: 8px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            gap: 6px;
         }
-        .task-info h5 { font-size: 0.78rem; color: #fff; margin-bottom: 2px; }
-        .task-info p { font-size: 0.66rem; color: #34d399; font-weight: bold; direction: ltr; text-align: start; }
+        .task-info h5 { font-size: 0.74rem; color: #fff; margin-bottom: 2px; }
+        .task-info p { font-size: 0.62rem; color: #34d399; font-weight: bold; direction: ltr; text-align: start; }
         .task-action-btn {
             background: linear-gradient(135deg, #b45309, #78350f);
             color: #fff;
             border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 6px 10px;
-            border-radius: 10px;
-            font-size: 0.7rem;
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-size: 0.66rem;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            min-width: 78px;
+            min-width: 70px;
             text-align: center;
         }
         .task-action-btn.verify { background: #f59e0b; color: #000; }
-        .task-action-btn.done { background: #292524; color: #a8a29e; cursor: default; border: 1px solid rgba(255,255,255,0.06); font-size: 0.66rem; direction: ltr; }
+        .task-action-btn.done { background: #292524; color: #a8a29e; cursor: default; border: 1px solid rgba(255,255,255,0.06); font-size: 0.62rem; direction: ltr; }
 
         .input-wallet {
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             border: 1px solid #44403c;
             background: #050403;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             outline: none;
         }
         .input-wallet:focus { border-color: rgba(245, 158, 11, 0.6); }
         .ref-box {
             background: #050403;
-            padding: 10px;
-            border-radius: 12px;
+            padding: 8px;
+            border-radius: 10px;
             border: 1px dashed rgba(245, 158, 11, 0.5);
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             color: #fde68a;
             word-break: break-all;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             direction: ltr;
         }
-        .bottom-spacer { height: 68px; }
+        .bottom-spacer { height: 62px; }
     </style>
 </head>
 <body>
@@ -548,6 +556,12 @@
     </div>
 
     <div class="main-stage">
+        <!-- درع طاقة المنجم النفسي (يحفز المستخدم على التفاعل المستمر) -->
+        <div class="shield-banner" id="shieldBanner">
+            <span>🛡️ <span id="shieldText">درع الحماية الكمي نشط</span></span>
+            <strong id="shieldTime" style="direction: ltr; color: #34d399;">24:00:00</strong>
+        </div>
+
         <div class="timer-box" id="timerBox">
             <div class="timer-dot"></div>
             <span id="countdownTimer">24:00:00</span>
@@ -563,12 +577,12 @@
             📈 +<span id="btnClaimVal">0.00</span> <span style="font-size:0.75rem">MOON</span>
         </div>
 
-        <div class="moon-chassis">
+        <div class="moon-chassis" onclick="triggerEasterEgg()">
             <div class="moon-icon-inner">🌕</div>
         </div>
 
         <div class="mining-rate-pill">
-            <span id="dailyRateLabel">الإنتاج اليومي:</span> <strong style="color:#fde68a" id="dailyRateInfo">40.00</strong> MOON · <span id="priceLabel">القيمة:</span> <span id="dynamicPriceVal">0.0000</span> USDT
+            <span id="dailyRateLabel">الإنتاج اليومي:</span> <strong style="color:#fde68a" id="dailyRateInfo">20.00</strong> MOON · <span id="priceLabel">القيمة:</span> <span id="dynamicPriceVal">0.0000</span> USDT
         </div>
 
         <button class="btn-gold-claim" id="btnClaim" onclick="executeClaimMiningReward()">
@@ -576,67 +590,43 @@
         </button>
         
         <button class="btn-ad-direct" id="adsterra-btn" onclick="openAdsterraLink()">
-            ⚡ فتح رابط الراعي واكسب +2 MOON 🚀
+            ⚡ فتح رابط الراعي واكسب +1 MOON 🚀
         </button>
         
         <div class="bottom-spacer"></div>
     </div>
 
+    <!-- القائمة السفلية المتعددة المنافذ (تمت إضافة منفذ المعمل الكمي الجديد) -->
     <div class="bottom-nav-dock">
         <div class="dock-bar">
             <button class="dock-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)">
-                <div class="dock-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
-                        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
-                        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-                    </svg>
-                </div>
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div>
                 <div class="dock-label" id="tabWalletTxt">المحفظة</div>
             </button>
 
             <button class="dock-btn" id="navRefBtn" onclick="switchTab('refModal', this)">
-                <div class="dock-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <div class="dock-label" id="tabFriendsTxt">الأصدقاء</div>
             </button>
 
+            <button class="dock-btn" id="navLabBtn" onclick="switchTab('labModal', this)">
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.583 1.414l-4.834 4.834A4 4 0 0 0 2 18.5V20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-1.5a4 4 0 0 0-1.583-3.225l-4.834-4.834A2 2 0 0 1 14 9.527V2"/><line x1="8.5" x2="15.5" y1="2" y2="2"/><line x1="7" x2="17" y1="12" y2="12"/></svg></div>
+                <div class="dock-label" id="tabLabTxt">المعمل</div>
+            </button>
+
             <button class="dock-btn" id="navMinersBtn" onclick="switchTab('minersModal', this)">
-                <div class="dock-icon">
-                    <svg viewBox="0 0 24 24">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
-                </div>
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
                 <div class="dock-label" id="tabMinersTxt">المعدنون</div>
             </button>
 
             <button class="dock-btn" id="navTasksBtn" onclick="switchTab('tasksModal', this)">
-                <div class="dock-icon">
-                    <svg viewBox="0 0 24 24">
-                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                        <path d="m9 14 2 2 4-4"/>
-                    </svg>
-                </div>
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></div>
                 <div class="dock-label" id="tabTasksTxt">المهام</div>
                 <div class="alert-dot" id="taskDot">4</div>
             </button>
 
             <button class="dock-btn active" id="navMiningBtn" onclick="openMiningTab(this)">
-                <div class="dock-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M14.5 5.5 18.5 9.5"/>
-                        <path d="m3 21 9-9"/>
-                        <path d="M12.5 3.5c2 0 5.5 1.5 8 4-2.5 2.5-4 6-4 8"/>
-                        <path d="M7.5 8.5c0-2 1.5-5.5 4-8"/>
-                    </svg>
-                </div>
+                <div class="dock-icon"><svg viewBox="0 0 24 24"><path d="M14.5 5.5 18.5 9.5"/><path d="m3 21 9-9"/><path d="M12.5 3.5c2 0 5.5 1.5 8 4-2.5 2.5-4 6-4 8"/><path d="M7.5 8.5c0-2 1.5-5.5 4-8"/></svg></div>
                 <div class="dock-label" id="tabMiningTxt">التعدين</div>
             </button>
         </div>
@@ -655,14 +645,31 @@
             </div>
 
             <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة USDT (TRC20 / TON)...">
-            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="كمية السحب (الحد الأدنى 5000 MOON)">
+            <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="كمية السحب (الحد الأدنى 1000 MOON)">
             
             <button class="btn-gold-claim" style="font-size:0.95rem; padding:12px; margin-bottom:8px;" id="btnSubmitWithdraw" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
             <button class="friend-btn" style="width:100%; background:#292524;" onclick="closeModal('walletModal')"><span class="closeTxt">إغلاق</span></button>
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء -->
+    <!-- نافذة المعمل الكمي الجديد (منفذ تصفية وتحويل الأرباح الإضافي لتوليد مشاهدات إعلانية) -->
+    <div class="modal-overlay" id="labModal">
+        <div class="modal-box">
+            <div class="modal-title" id="labTitle">🧪 المعمل الكمي المتقدم</div>
+            <div class="modal-desc" id="labDesc">قم بتنشيط معالج التبريد لتكرير الأصول وضاعف أرباحك بنسبة +10%!</div>
+            
+            <div class="wallet-card-box">
+                <span class="label" id="labStatusLabel">حالة المعالج النشط</span>
+                <div class="value-moon" id="labStateTxt" style="color: #f59e0b;">جاهز للتشغيل ⚡</div>
+                <div style="font-size: 0.8rem; color: #fde68a; margin-top: 4px; direction: ltr;" id="labTimerTxt">00:00:00</div>
+            </div>
+
+            <button class="btn-gold-claim" style="font-size:0.9rem; padding:11px; margin-bottom:8px;" id="btnStartLab" onclick="startQuantumRefining()">⚛️ بدء دورة المعالجة (مشاهدة إعلان)</button>
+            <button class="friend-btn" style="width:100%; background:#292524;" onclick="closeModal('labModal')"><span class="closeTxt">إغلاق</span></button>
+        </div>
+    </div>
+
+    <!-- نافذة الأصدقاء (مع زر رسالة الإقناع الجاهزة) -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
             <div class="modal-title" id="refTitle">👥 شبكة الأصدقاء والإحالات</div>
@@ -678,12 +685,17 @@
                 <button class="friend-btn share-btn" onclick="shareReferral()" id="btnShareLink">📤 مشاركة</button>
             </div>
 
+            <!-- زر رسالة الإقناع السحرية لجعل كل مستخدم مسوقاً شرساً -->
+            <button class="btn-ad-direct" style="width:100%; margin-bottom:10px; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(245,158,11,0.2));" onclick="copyViralPitch()" id="btnViralPitch">
+                💬 نسخ رسالة الإقناع السحرية للأصدقاء ✨
+            </button>
+
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
 
             <div class="invite-bonus-grid">
                 <div class="bonus-box"><span id="lblTotalTeam">إجمالي الفريق</span><strong id="teamCount">0</strong></div>
                 <div class="bonus-box"><span id="lblActiveTeam">النشطون</span><strong id="activeTeamCount" style="color:#34d399">0</strong></div>
-                <div class="bonus-box"><span id="lblRefBonus">مكافأة الدعوة</span><strong style="color:#fef08a">+250 MOON</strong></div>
+                <div class="bonus-box"><span id="lblRefBonus">مكافأة الدعوة</span><strong style="color:#fef08a">+50 MOON</strong></div>
             </div>
 
             <div class="team-commission-card">
@@ -704,7 +716,7 @@
         <div class="modal-box" style="max-width: 390px;">
             <div class="modal-title" id="minersTitle">⚡ مستويات التعدين</div>
             <div class="miners-header-card">
-                <div><span id="minersDailyLabel">إنتاجك اليومي</span><strong style="color:#34d399" id="dailyEarnings">40.0</strong></div>
+                <div><span id="minersDailyLabel">إنتاجك اليومي</span><strong style="color:#34d399" id="dailyEarnings">20.0</strong></div>
                 <div><span id="minersMaxLabel">القمة</span><strong>150</strong></div>
                 <div><span id="minersLevelLabel">مستواك</span><strong style="color:#fef08a" id="modalLevel">1</strong></div>
             </div>
@@ -720,13 +732,13 @@
             
             <div style="text-align: inherit; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;" id="checkinHeader">📅 الحضور اليومي المتدرج (كل 24 ساعة)</div>
             <div class="checkin-grid">
-                <div class="checkin-day" id="day1Box">D1<br><strong>+5</strong></div>
-                <div class="checkin-day" id="day2Box">D2<br><strong>+10</strong></div>
-                <div class="checkin-day" id="day3Box">D3<br><strong>+15</strong></div>
-                <div class="checkin-day" id="day4Box">D4<br><strong>+20</strong></div>
-                <div class="checkin-day" id="day5Box">D5<br><strong>+25</strong></div>
-                <div class="checkin-day" id="day6Box">D6<br><strong>+30</strong></div>
-                <div class="checkin-day" id="day7Box">D7⭐<br><strong>+50</strong></div>
+                <div class="checkin-day" id="day1Box">D1<br><strong>+1</strong></div>
+                <div class="checkin-day" id="day2Box">D2<br><strong>+2</strong></div>
+                <div class="checkin-day" id="day3Box">D3<br><strong>+3</strong></div>
+                <div class="checkin-day" id="day4Box">D4<br><strong>+4</strong></div>
+                <div class="checkin-day" id="day5Box">D5<br><strong>+5</strong></div>
+                <div class="checkin-day" id="day6Box">D6<br><strong>+7</strong></div>
+                <div class="checkin-day" id="day7Box">D7⭐<br><strong>+10</strong></div>
             </div>
             <button class="btn-gold-claim" id="checkinBtn" style="font-size:0.85rem; padding:9px; margin-bottom:10px;" onclick="claimDailyCheckin()">📥 استلام مكافأة الحضور</button>
 
@@ -735,30 +747,30 @@
                 <div class="task-card-item">
                     <div class="task-info">
                         <h5 id="task1Title">📢 الاشتراك في قناة البوت الرسمية</h5>
-                        <p>+50.00 MOON</p>
+                        <p>+15.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn1" onclick="handleChannelTask(1, 50)">اشتراك</button>
+                    <button class="task-action-btn" id="taskBtn1" onclick="handleChannelTask(1, 15)">اشتراك</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
                         <h5 id="task2Title">📤 مشاركة البوت مع صديق (كل 24 ساعة)</h5>
-                        <p>+30.00 MOON</p>
+                        <p>+10.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 30)">مشاركة</button>
+                    <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 10)">مشاركة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
                         <h5 id="task3Title">🌐 تفعيل عقد رصد البيانات (كل 6 ساعات)</h5>
-                        <p>+20.00 MOON</p>
+                        <p>+5.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn3" onclick="openAdsterraTask(3, 20)">تفعيل</button>
+                    <button class="task-action-btn" id="taskBtn3" onclick="openAdsterraTask(3, 5)">تفعيل</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
                         <h5 id="task4Title">🌐 فتح بوابات التخزين السحابي (كل 6 ساعات)</h5>
-                        <p>+20.00 MOON</p>
+                        <p>+5.00 MOON</p>
                     </div>
-                    <button class="task-action-btn" id="taskBtn4" onclick="openAdsterraTask(4, 20)">فتح</button>
+                    <button class="task-action-btn" id="taskBtn4" onclick="openAdsterraTask(4, 5)">فتح</button>
                 </div>
             </div>
 
@@ -773,7 +785,7 @@
             <div class="modal-title" style="color: #fef08a; font-size: 1.3rem;" id="lvlUpModalTitle">تمت ترقية المنجم!</div>
             <div class="modal-desc" style="color: #fff; font-size: 0.9rem; margin-top: 8px;" id="lvlUpModalDesc">
                 مبارك! ارتقيت إلى <strong>المستوى <span id="newLevelReached">2</span></strong>.<br><br>
-                ⚡ زاد إنتاجك اليومي ليصبح <strong style="color:#34d399"><span id="newDailyCap">80</span> MOON</strong> كل 24 ساعة!<br>
+                ⚡ زاد إنتاجك اليومي ليصبح <strong style="color:#34d399"><span id="newDailyCap">40</span> MOON</strong> كل 24 ساعة!<br>
             </div>
             <button class="btn-gold-claim" style="font-size:0.95rem; padding:12px; margin-top:8px;" id="lvlUpModalBtn" onclick="closeModal('levelUpModal')">متابعة التعدين</button>
         </div>
@@ -791,12 +803,12 @@
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
         const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
 
-        const REF_REWARD_USDT = 0.010;
-        const REF_REWARD_MOON = 250.00;
+        const REF_REWARD_USDT = 0.05;
+        const REF_REWARD_MOON = 50.00;
 
         const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
         const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
-        const CHECKIN_REWARDS = [5, 10, 15, 20, 25, 30, 50];
+        const CHECKIN_REWARDS = [1, 2, 3, 4, 5, 7, 10];
 
         let telegramUser = tg?.initDataUnsafe?.user;
         let userId = (telegramUser && telegramUser.id) ? telegramUser.id.toString() : (localStorage.getItem('moontap_permanent_uid') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
@@ -806,7 +818,6 @@
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        // نفس المفتاح الثابت الدائم لضمان حفظ رصيدك ومستواك بالكامل
         const PERMANENT_STORAGE_KEY = 'moontap_user_data_permanent_' + userId;
 
         let currentLang = localStorage.getItem('moontap_lang_' + userId) || 'ar';
@@ -818,9 +829,10 @@
                 dailyRateLabel: "الإنتاج اليومي:",
                 priceLabel: "القيمة:",
                 btnClaim: "📥 استلام أرباح التعدين النشط",
-                btnAd: "⚡ فتح رابط الراعي واكسب +2 MOON 🚀",
+                btnAd: "⚡ فتح رابط الراعي واكسب +1 MOON 🚀",
                 tabWallet: "المحفظة",
                 tabFriends: "الأصدقاء",
+                tabLab: "المعمل",
                 tabMiners: "المعدنون",
                 tabTasks: "المهام",
                 tabMining: "التعدين",
@@ -828,8 +840,12 @@
                 walletDesc: "إدارة رصيدك وسحب أرباحك بكل موثوقية.",
                 walletAvailable: "إجمالي رصيدك المتاح للسحب",
                 walletInputPlaceholder: "أدخل عنوان محفظة USDT (TRC20 / TON)...",
-                withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 5000 MOON)",
+                withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 1000 MOON)",
                 btnSubmitWithdraw: "🚀 إرسال طلب السحب",
+                labTitle: "🧪 المعمل الكمي المتقدم",
+                labDesc: "قم بتنشيط معالج التبريد لتكرير الأصول وضاعف أرباحك بنسبة +10%!",
+                labStatusLabel: "حالة المعالج النشط",
+                btnStartLab: "⚛️ بدء دورة المعالجة (مشاهدة إعلان)",
                 refTitle: "👥 شبكة الأصدقاء والإحالات",
                 refDesc: "ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!",
                 eliteTitle: "شريك النخبة",
@@ -837,6 +853,7 @@
                 eliteDescInactive: "ادعُ 10 أصدقاء نشطين لتفعيل المضاعفة الدائمة!",
                 btnCopyLink: "📋 نسخ الرابط",
                 btnShareLink: "📤 مشاركة",
+                btnViralPitch: "💬 نسخ رسالة الإقناع السحرية للأصدقاء ✨",
                 lblTotalTeam: "إجمالي الفريق",
                 lblActiveTeam: "النشطون",
                 lblRefBonus: "مكافأة الدعوة",
@@ -868,19 +885,21 @@
                 fullCap: "00:00:00 (مكتمل)",
                 alertWait: "⚠️ انتظر حتى يتجمع قدر بسيط من MOON للمطالبة!",
                 alertClaimSuccess: "✅ تم تحصيل {amount} MOON بنجاح وتجددت دورة التعدين.",
-                alertAdReward: "⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.",
+                alertAdReward: "⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +1 MOON إلى رصيدك.",
                 alertTaskDone: "⚠️ هذه المهمة في فترة الانتظار حالياً! تابع المؤقت.",
                 alertTaskReward: "🎉 تم إنجاز المهمة بنجاح وحصلت على +{amount} MOON.",
                 alertDailyDone: "⚠️ لم يحن موعد استلام المكافأة بعد! تابع العد التنازلي.",
                 alertDailyReward: "🎉 تم استلام مكافأة اليوم D{day} بنجاح (+{rew} MOON)!",
                 alertWalletInvalid: "⚠️ أدخل عنوان محفظة صحيح ومعتمد أولاً!",
-                alertMinWithdraw: "⚠️ الحد الأدنى للسحب هو 5000 MOON.",
+                alertMinWithdraw: "⚠️ الحد الأدنى للسحب هو 1000 MOON.",
                 alertBalanceLow: "⚠️ رصيدك المتاح غير كافٍ لإتمام السحب!",
                 alertWithdrawSuccess: "✅ تم إرسال طلب السحب بنجاح ({amount} MOON ≈ {usdt} USDT)!",
                 alertCopied: "📋 تم نسخ رابط الإحالة بنجاح!",
+                alertViralCopied: "✨ تم نسخ رسالة الإقناع السحرية! أرسلها لأصدقائك الآن.",
                 alertNoTeam: "⚠️ لا توجد عوائد فريق للمطالبة بها حالياً!",
                 alertTeamReward: "✅ تمت إضافة عوائد الفريق ({amount} MOON ≈ {usdt} USDT) إلى رصيدك!",
                 shareText: "انضم إلي في التعدين السحابي مع MoonTap واربح العملات الرقمية عبر رابطي:\n\n",
+                viralPitchText: "🔥 فرصة لا تعوض! بدأت للتو بالتعدين في منصة MoonTap السحابية واربح عملات حقيقية مجاناً!\n\n🚀 انضم معي الآن قبل إغلاق مرحلة التسجيل المبكر عبر رابطي:\n\n",
                 lvlUpTitle: "تمت ترقية المنجم!",
                 lvlUpDesc: "مبارك! ارتقيت إلى <strong>المستوى {lvl}</strong>.<br><br>⚡ زاد إنتاجك اليومي ليصبح <strong style='color:#34d399'>{cap} MOON</strong> كل 24 ساعة!<br>",
                 lvlUpBtn: "متابعة التعدين"
@@ -891,9 +910,10 @@
                 dailyRateLabel: "Daily Rate:",
                 priceLabel: "Value:",
                 btnClaim: "📥 Claim Mining Rewards",
-                btnAd: "⚡ Visit Sponsor Link & Earn +2 MOON 🚀",
+                btnAd: "⚡ Visit Sponsor Link & Earn +1 MOON 🚀",
                 tabWallet: "Wallet",
                 tabFriends: "Friends",
+                tabLab: "Lab",
                 tabMiners: "Miners",
                 tabTasks: "Tasks",
                 tabMining: "Mining",
@@ -901,8 +921,12 @@
                 walletDesc: "Manage and withdraw your assets securely.",
                 walletAvailable: "Available Balance for Withdrawal",
                 walletInputPlaceholder: "Enter USDT (TRC20 / TON) Address...",
-                withdrawAmountPlaceholder: "Withdraw Amount (Min 5000 MOON)",
+                withdrawAmountPlaceholder: "Withdraw Amount (Min 1000 MOON)",
                 btnSubmitWithdraw: "🚀 Submit Withdrawal Request",
+                labTitle: "🧪 Advanced Quantum Lab",
+                labDesc: "Activate cooling processor to refine assets and boost earnings by +10%!",
+                labStatusLabel: "Active Processor Status",
+                btnStartLab: "⚛️ Start Refining Cycle (Watch Ad)",
                 refTitle: "👥 Referral Network & Friends",
                 refDesc: "Invite partners & boost your mining speed by +50%!",
                 eliteTitle: "Elite Partner",
@@ -910,6 +934,7 @@
                 eliteDescInactive: "Invite 10 active friends to unlock 2X boost forever!",
                 btnCopyLink: "📋 Copy Link",
                 btnShareLink: "📤 Share",
+                btnViralPitch: "💬 Copy Magical Pitch for Friends ✨",
                 lblTotalTeam: "Total Team",
                 lblActiveTeam: "Active",
                 lblRefBonus: "Invite Bonus",
@@ -941,19 +966,21 @@
                 fullCap: "00:00:00 (Full)",
                 alertWait: "⚠️ Wait until you accumulate enough MOON to claim!",
                 alertClaimSuccess: "✅ Successfully claimed {amount} MOON! New cycle started.",
-                alertAdReward: "⚡ Thanks for visiting our sponsor! +2 MOON added to your assets.",
+                alertAdReward: "⚡ Thanks for visiting our sponsor! +1 MOON added to your assets.",
                 alertTaskDone: "⚠️ This task is currently on cooldown! Check the timer.",
                 alertTaskReward: "🎉 Task completed! +{amount} MOON added.",
                 alertDailyDone: "⚠️ Daily reward already claimed! Follow countdown.",
                 alertDailyReward: "🎉 Day D{day} check-in claimed (+{rew} MOON)!",
                 alertWalletInvalid: "⚠️ Enter a valid wallet address first!",
-                alertMinWithdraw: "⚠️ Minimum withdrawal is 5000 MOON.",
+                alertMinWithdraw: "⚠️ Minimum withdrawal is 1000 MOON.",
                 alertBalanceLow: "⚠️ Insufficient balance for withdrawal!",
                 alertWithdrawSuccess: "✅ Withdrawal submitted ({amount} MOON ≈ {usdt} USDT)!",
                 alertCopied: "📋 Referral link copied successfully!",
+                alertViralCopied: "✨ Magical pitch copied! Send it to your friends now.",
                 alertNoTeam: "⚠️ No team rewards available to claim right now!",
                 alertTeamReward: "✅ Added team rewards ({amount} MOON ≈ {usdt} USDT) to your balance!",
                 shareText: "Join me on MoonTap Cloud Mining and earn free crypto:\n\n",
+                viralPitchText: "🔥 Incredible opportunity! Just started mining on MoonTap Cloud and earning real crypto free!\n\n🚀 Join me now before early access closes via my link:\n\n",
                 lvlUpTitle: "Mining Node Upgraded!",
                 lvlUpDesc: "Congratulations! Reached <strong>Level {lvl}</strong>.<br><br>⚡ Daily output increased to <strong style='color:#34d399'>{cap} MOON</strong> every 24h!<br>",
                 lvlUpBtn: "Continue Mining"
@@ -981,6 +1008,7 @@
 
             document.getElementById('tabWalletTxt').innerText = t.tabWallet;
             document.getElementById('tabFriendsTxt').innerText = t.tabFriends;
+            document.getElementById('tabLabTxt').innerText = t.tabLab;
             document.getElementById('tabMinersTxt').innerText = t.tabMiners;
             document.getElementById('tabTasksTxt').innerText = t.tabTasks;
             document.getElementById('tabMiningTxt').innerText = t.tabMining;
@@ -992,11 +1020,17 @@
             document.getElementById('withdrawAmountInput').placeholder = t.withdrawAmountPlaceholder;
             document.getElementById('btnSubmitWithdraw').innerText = t.btnSubmitWithdraw;
 
+            document.getElementById('labTitle').innerText = t.labTitle;
+            document.getElementById('labDesc').innerText = t.labDesc;
+            document.getElementById('labStatusLabel').innerText = t.labStatusLabel;
+            document.getElementById('btnStartLab').innerText = t.btnStartLab;
+
             document.getElementById('refTitle').innerText = t.refTitle;
             document.getElementById('refDesc').innerText = t.refDesc;
             document.getElementById('eliteTitleTxt').innerText = t.eliteTitle;
             document.getElementById('btnCopyLink').innerText = t.btnCopyLink;
             document.getElementById('btnShareLink').innerText = t.btnShareLink;
+            document.getElementById('btnViralPitch').innerText = t.btnViralPitch;
             document.getElementById('lblTotalTeam').innerText = t.lblTotalTeam;
             document.getElementById('lblActiveTeam').innerText = t.lblActiveTeam;
             document.getElementById('lblRefBonus').innerText = t.lblRefBonus;
@@ -1074,7 +1108,8 @@
             miningStartTime: Date.now(),
             savedWallet: '',
             hasCelebratedAllTasks: false,
-            inviterId: null
+            inviterId: null,
+            labCooldown: 0
         };
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
@@ -1082,13 +1117,10 @@
         if (!userState.completedTasks) userState.completedTasks = [];
         if (!userState.taskCooldowns) userState.taskCooldowns = {};
         if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
-
-        // إذا كان المستخدم قد سجل حضوره اليوم الأول في الكود السابق، نضبط العداد على 1 لينتقل تلقائياً إلى D2
         if (typeof userState.checkinStreak !== 'number') {
             userState.checkinStreak = userState.lastCheckinTime > 0 ? 1 : 0;
         }
 
-        // تنظيف المهام الدورية (2 و 3 و 4) من مصفوفة المهام الدائمة القديمة لكي تعمل بنظام الساعات الجديد
         userState.completedTasks = userState.completedTasks.filter(id => id === 1);
 
         if (startParam && !userState.inviterId) {
@@ -1153,21 +1185,21 @@
         function openAdsterraLink() {
             const t = i18n[currentLang];
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.balance += 2.00;
+            userState.balance += 1.00;
             saveUserData();
             updateUI();
             showMessage(t.alertAdReward);
         }
 
         function getDailyMiningLimit(lvl) {
-            let base = lvl * 40;
+            let base = lvl * 20;
             if (userState.activeTeamCount >= 10) base = base * 1.5;
             return base;
         }
 
         function getRequiredBalanceForLevel(targetLvl) {
             let total = 0;
-            for (let i = 1; i < targetLvl; i++) total += (i * 50);
+            for (let i = 1; i < targetLvl; i++) total += (i * 100);
             return total;
         }
 
@@ -1210,7 +1242,7 @@
             let streak = userState.checkinStreak || 0;
             let now = Date.now();
             let isWaiting = userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS);
-            let currentTargetDayIndex = streak % 7; // 0 to 6 (D1 to D7)
+            let currentTargetDayIndex = streak % 7;
 
             for (let i = 0; i < 7; i++) {
                 let box = document.getElementById('day' + (i + 1) + 'Box');
@@ -1218,7 +1250,6 @@
                 box.classList.remove('active', 'claimed');
 
                 if (isWaiting) {
-                    // أثناء انتظار الـ 24 ساعة، نظهر الأيام المستلمة في هذه الدورة ونبرز اليوم القادم
                     let claimedInCycle = streak % 7 === 0 ? 7 : streak % 7;
                     if (i < claimedInCycle) {
                         box.classList.add('claimed');
@@ -1240,26 +1271,43 @@
             let miningData = getCurrentMinedData();
             let timerSpan = document.getElementById('countdownTimer');
             let timerBox = document.getElementById('timerBox');
+            let shieldBanner = document.getElementById('shieldBanner');
+            let shieldTime = document.getElementById('shieldTime');
 
             let timeStr = formatRemainingTime(miningData.remainingMs);
 
             if (miningData.isStopped) {
                 if (timerSpan) timerSpan.innerText = t.fullCap;
                 if (timerBox) timerBox.classList.add('stopped');
+                if (shieldBanner) shieldBanner.classList.add('warning');
             } else {
                 if (timerSpan) timerSpan.innerText = timeStr;
                 if (timerBox) timerBox.classList.remove('stopped');
+                if (shieldBanner) shieldBanner.classList.remove('warning');
             }
+
+            if (shieldTime) shieldTime.innerText = timeStr;
 
             document.getElementById('pendingReward').innerText = miningData.mined.toFixed(4);
             document.getElementById('btnClaimVal').innerText = miningData.mined.toFixed(2);
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            // تحديث زر وشبكة الحضور اليومي المتدرج (D1 - D7)
+            // تحديث المعمل الكمي
+            let labStateTxt = document.getElementById('labStateTxt');
+            let labTimerTxt = document.getElementById('labTimerTxt');
+            let now = Date.now();
+            let labRem = (userState.labCooldown || 0) - now;
+            if (labRem > 0) {
+                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "قيد التبريد والمعالجة ⚛️" : "Refining in progress ⚛️";
+                if (labTimerTxt) labTimerTxt.innerText = formatRemainingTime(labRem);
+            } else {
+                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "جاهز للتشغيل ⚡" : "Ready to run ⚡";
+                if (labTimerTxt) labTimerTxt.innerText = "00:00:00";
+            }
+
             let checkinBtn = document.getElementById('checkinBtn');
             if (checkinBtn) {
-                let now = Date.now();
                 let nextDayIndex = (userState.checkinStreak || 0) % 7;
                 let nextDayNum = nextDayIndex + 1;
                 let nextReward = CHECKIN_REWARDS[nextDayIndex];
@@ -1300,6 +1348,31 @@
             showMessage(t.alertClaimSuccess.replace('{amount}', claimedAmount.toFixed(2)));
         }
 
+        // تفاعل المعمل الكمي (إضافة وقت بقاء إضافي للمستخدم ومقدار مكافأة)
+        function startQuantumRefining() {
+            let now = Date.now();
+            if (userState.labCooldown && (now < userState.labCooldown)) {
+                showMessage(currentLang === 'ar' ? "⚠️ المعمل قيد التبريد حالياً! انتظر انتهاء المؤقت." : "⚠️ Lab is currently cooling down! Wait for timer.");
+                return;
+            }
+            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
+            userState.labCooldown = Date.now() + (15 * 60 * 1000); // 15 دقيقة تبريد
+            userState.balance += 5.00; // مكافأة تكرير المعمل
+            saveUserData();
+            updateUI();
+            triggerCelebration();
+            showMessage(currentLang === 'ar' ? "⚛️ تمت عملية التكرير بنجاح وأُضيف طيف +5 MOON لرصيدك!" : "⚛️ Refining complete! +5 MOON added.");
+        }
+
+        // نسخ رسالة الإقناع السحرية الجاهزة للمستخدم لزيادة التسويق الذاتي
+        function copyViralPitch() {
+            const t = i18n[currentLang];
+            const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
+            const fullMsg = `${t.viralPitchText}${refLink}`;
+            navigator.clipboard.writeText(fullMsg);
+            showMessage(t.alertViralCopied);
+        }
+
         function updateUI() {
             try {
                 const t = i18n[currentLang];
@@ -1315,7 +1388,7 @@
                 if (tcEl) tcEl.innerText = userState.teamCount || 0;
                 if (atcEl) atcEl.innerText = userState.activeTeamCount || 0;
 
-                let teamCommUsdt = (userState.teamCommission / REF_REWARD_MOON) * REF_REWARD_USDT;
+                let teamCommUsdt = userState.teamCommission * 0.001;
                 let commUsdtEl = document.getElementById('teamCommUsdtVal');
                 if (commUsdtEl) commUsdtEl.innerText = teamCommUsdt.toFixed(3);
                 document.getElementById('teamCommVal').innerText = userState.teamCommission.toFixed(2);
@@ -1332,7 +1405,7 @@
                     }
                 }
 
-                let usdValue = (userState.balance / 5000) * 0.20;
+                let usdValue = userState.balance * 0.001;
                 document.getElementById('dynamicPriceVal').innerText = usdValue.toFixed(4);
                 document.getElementById('modalUsdVal').innerText = usdValue.toFixed(4);
 
@@ -1377,10 +1450,20 @@
             }
         }
 
+        // تفاعل سري مخفي عند الضغط على أيقونة القمر الرئيسية (صندوق كنز عشوائي)
+        function triggerEasterEgg() {
+            let bonus = Math.floor(Math.random() * 3) + 1;
+            userState.balance += bonus;
+            saveUserData();
+            updateUI();
+            triggerCelebration();
+            showMessage(currentLang === 'ar' ? `🎁 اكتشفت طاقة نيزكية مخفية! حصلت على +${bonus} MOON إضافية!` : `🎁 Discovered hidden meteorite energy! +${bonus} MOON added!`);
+        }
+
         function getTaskCooldownDuration(taskId) {
-            if (taskId === 2) return TWENTY_FOUR_HOURS_MS; // المشاركة كل 24 ساعة
-            if (taskId === 3 || taskId === 4) return SIX_HOURS_MS; // الإعلانات كل 6 ساعات
-            return 0; // القناة مرة واحدة فقط
+            if (taskId === 2) return TWENTY_FOUR_HOURS_MS;
+            if (taskId === 3 || taskId === 4) return SIX_HOURS_MS;
+            return 0;
         }
 
         function isTaskOnCooldown(taskId) {
@@ -1391,7 +1474,6 @@
             return (Date.now() - lastTime) < duration;
         }
 
-        // 1. مهمة القناة الرسمية (مرة واحدة فقط)
         function handleChannelTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
             if (userState.completedTasks.includes(taskId)) { showMessage(t.alertTaskDone); return; }
@@ -1411,7 +1493,6 @@
             showMessage(t.alertTaskReward.replace('{amount}', rewardAmount));
         }
 
-        // 2. مهمة المشاركة مع صديق (تتجدد كل 24 ساعة)
         function handleShareTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
             if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
@@ -1431,7 +1512,6 @@
             showMessage(t.alertTaskReward.replace('{amount}', rewardAmount));
         }
 
-        // 3 & 4. مهام الإعلانات المباشرة (تتجدد كل 6 ساعات)
         function openAdsterraTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
             if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
@@ -1544,11 +1624,11 @@
             if (!walletAddr || walletAddr.length < 10) { showMessage(t.alertWalletInvalid); return; }
             userState.savedWallet = walletAddr;
             saveUserData();
-            if (amountVal < 5000) { showMessage(t.alertMinWithdraw); return; }
+            if (amountVal < 1000) { showMessage(t.alertMinWithdraw); return; }
             if (amountVal > userState.balance) { showMessage(t.alertBalanceLow); return; }
             
             userState.balance -= amountVal;
-            let usdtEquivalent = ((amountVal / 5000) * 0.20).toFixed(3);
+            let usdtEquivalent = (amountVal * 0.001).toFixed(3);
             document.getElementById('withdrawAmountInput').value = '';
             saveUserData();
             updateUI();
@@ -1579,7 +1659,7 @@
             const t = i18n[currentLang];
             if (userState.teamCommission <= 0) { showMessage(t.alertNoTeam); return; }
             let claimedMoon = userState.teamCommission;
-            let claimedUsdt = ((claimedMoon / REF_REWARD_MOON) * REF_REWARD_USDT).toFixed(3);
+            let claimedUsdt = (claimedMoon * 0.001).toFixed(3);
             userState.balance += claimedMoon;
             userState.teamCommission = 0.0;
             saveUserData();
@@ -1615,4 +1695,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
