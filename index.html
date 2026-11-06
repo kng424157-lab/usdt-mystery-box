@@ -215,7 +215,6 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
 
-        /* القائمة السفلية المدمجة والاحترافية مع أيقونات SVG */
         .bottom-nav-dock {
             position: fixed;
             bottom: 8px;
@@ -376,6 +375,20 @@
         }
         .team-commission-card span { font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
         .team-commission-card strong { font-size: 1.4rem; color: #fff; display: block; direction: ltr; }
+
+        .invite-bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+            background: #050403;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            border-radius: 14px;
+            text-align: center;
+        }
+        .bonus-box span { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 3px; }
+        .bonus-box strong { font-size: 0.88rem; color: #fff; direction: ltr; display: inline-block; }
 
         .miners-header-card {
             background: #050403;
@@ -657,6 +670,13 @@
 
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
 
+            <!-- إحصائيات الفريق والعمولات -->
+            <div class="invite-bonus-grid">
+                <div class="bonus-box"><span id="lblTotalTeam">إجمالي الفريق</span><strong id="teamCount">0</strong></div>
+                <div class="bonus-box"><span id="lblActiveTeam">النشطون</span><strong id="activeTeamCount" style="color:#34d399">0</strong></div>
+                <div class="bonus-box"><span id="lblRefBonus">مكافأة الدعوة</span><strong style="color:#fef08a">+250 MOON</strong></div>
+            </div>
+
             <div class="team-commission-card">
                 <span id="teamEarningsLabel">عائدات الفريق المتراكمة</span>
                 <strong>MOON <span id="teamCommVal">0.00</span></strong>
@@ -804,6 +824,9 @@
                 eliteDescInactive: "ادعُ 10 أصدقاء نشطين لتفعيل المضاعفة الدائمة!",
                 btnCopyLink: "📋 نسخ الرابط",
                 btnShareLink: "📤 مشاركة",
+                lblTotalTeam: "إجمالي الفريق",
+                lblActiveTeam: "النشطون",
+                lblRefBonus: "مكافأة الدعوة",
                 teamEarnings: "عائدات الفريق المتراكمة",
                 btnClaimTeam: "تحصيل عوائد الفريق",
                 minersTitle: "⚡ مستويات التعدين",
@@ -874,6 +897,9 @@
                 eliteDescInactive: "Invite 10 active friends to unlock 2X boost forever!",
                 btnCopyLink: "📋 Copy Link",
                 btnShareLink: "📤 Share",
+                lblTotalTeam: "Total Team",
+                lblActiveTeam: "Active",
+                lblRefBonus: "Invite Bonus",
                 teamEarnings: "Accumulated Team Rewards",
                 btnClaimTeam: "Claim Team Rewards",
                 minersTitle: "⚡ Mining Nodes & Levels",
@@ -958,6 +984,9 @@
             document.getElementById('eliteTitleTxt').innerText = t.eliteTitle;
             document.getElementById('btnCopyLink').innerText = t.btnCopyLink;
             document.getElementById('btnShareLink').innerText = t.btnShareLink;
+            document.getElementById('lblTotalTeam').innerText = t.lblTotalTeam;
+            document.getElementById('lblActiveTeam').innerText = t.lblActiveTeam;
+            document.getElementById('lblRefBonus').innerText = t.lblRefBonus;
             document.getElementById('teamEarningsLabel').innerText = t.teamEarnings;
             document.getElementById('btnClaimTeam').innerText = t.btnClaimTeam;
 
@@ -1022,84 +1051,79 @@
             level: 1,
             teamCount: 0,
             activeTeamCount: 0,
+            rewardedRefsCount: 0,
             teamCommission: 0,
             completedTasks: [],
             pendingVerifyTasks: [],
             lastCheckinTime: 0,
             miningStartTime: Date.now(),
             savedWallet: '',
-            hasCelebratedAllTasks: false
+            hasCelebratedAllTasks: false,
+            inviterId: null
         };
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+        if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
+
+        // التقاط معرف الداعي وحفظه بشكل دائم لمنع فقدانه
+        if (startParam && !userState.inviterId) {
+            let cleanInviter = startParam.replace('ref_', '').trim();
+            if (cleanInviter && cleanInviter !== userId) {
+                userState.inviterId = cleanInviter;
+            }
+        }
 
         localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
 
         async function saveUserData() {
             try {
                 localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
-                await supabaseClient.from('users').upsert([{ 
-                    id: userId,
-                    balance: userState.balance,
-                    level: userState.level,
-                    team_commission: userState.teamCommission,
-                    last_checkin: userState.lastCheckinTime,
-                    mining_start: userState.miningStartTime,
-                    wallet: userState.savedWallet,
-                    completed_tasks: JSON.stringify(userState.completedTasks)
-                }]);
+                // حفظ سحابي آمن يحافظ على inviter_id دون الكتابة فوقه بقيمة فارغة
+                let payload = { id: userId };
+                if (userState.inviterId) {
+                    payload.inviter_id = userState.inviterId;
+                }
+                await supabaseClient.from('users').upsert([payload]);
             } catch (err) {
                 console.log("Sync error:", err);
             }
         }
 
-        async function loadUserDataFromCloud() {
+        // دالة مخصصة لفحص الإحالات وإضافة العمولة فوراً (250 MOON لكل إحالة جديدة)
+        async function syncReferralsAndCloud() {
             try {
-                let inviterId = null;
-                if (startParam) { inviterId = startParam.replace('ref_', '').trim(); }
+                // 1. تسجيل المستخدم الحالي مع الداعي الخاص به إن وجد
+                let payload = { id: userId };
+                if (userState.inviterId) {
+                    payload.inviter_id = userState.inviterId;
+                }
+                await supabaseClient.from('users').upsert([payload]);
 
-                let { data: cloudUser } = await supabaseClient
+                // 2. جلب جميع المستخدمين الذين سجلوا عبر رابط إحالة هذا المستخدم
+                let { data: refs, error } = await supabaseClient
                     .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
+                    .select('id')
+                    .eq('inviter_id', userId);
 
-                if (cloudUser) {
-                    let cloudBal = parseFloat(cloudUser.balance) || 0.00;
-                    if (cloudBal >= userState.balance) {
-                        userState.balance = cloudBal;
-                        userState.level = parseInt(cloudUser.level) || 1;
-                        userState.teamCommission = parseFloat(cloudUser.team_commission) || 0.00;
-                        userState.lastCheckinTime = parseInt(cloudUser.last_checkin) || 0;
-                        userState.miningStartTime = parseInt(cloudUser.mining_start) || userState.miningStartTime;
-                        userState.savedWallet = cloudUser.wallet || userState.savedWallet;
-                        if(cloudUser.completed_tasks) userState.completedTasks = JSON.parse(cloudUser.completed_tasks);
+                if (!error && refs) {
+                    let totalFetchedRefs = refs.length;
+                    
+                    // إذا زاد عدد المحالين عن العدد الذي تمت مكافأته سابقاً، نضيف العمولة فوراً
+                    if (totalFetchedRefs > userState.rewardedRefsCount) {
+                        let newRefsDiff = totalFetchedRefs - userState.rewardedRefsCount;
+                        userState.teamCommission += (newRefsDiff * REF_REWARD_MOON);
+                        userState.rewardedRefsCount = totalFetchedRefs;
                     }
-                } else {
-                    await supabaseClient.from('users').upsert([{ 
-                        id: userId, 
-                        inviter_id: inviterId && inviterId !== userId ? inviterId : null,
-                        balance: userState.balance,
-                        level: userState.level,
-                        team_commission: userState.teamCommission,
-                        last_checkin: userState.lastCheckinTime,
-                        mining_start: userState.miningStartTime,
-                        wallet: userState.savedWallet,
-                        completed_tasks: JSON.stringify(userState.completedTasks)
-                    }]);
+
+                    userState.teamCount = totalFetchedRefs;
+                    userState.activeTeamCount = totalFetchedRefs;
+                    localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
                 }
 
-                let { data: refs } = await supabaseClient.from('users').select('id').eq('inviter_id', userId);
-                if (refs) {
-                    userState.teamCount = refs.length;
-                    userState.activeTeamCount = refs.length;
-                }
-
-                saveUserData();
                 updateUI();
             } catch (err) {
-                console.log("Cloud load warning:", err);
+                console.log("Referral sync warning:", err);
                 updateUI();
             }
         }
@@ -1208,7 +1232,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             applyLanguage();
             updateUI();
-            loadUserDataFromCloud();
+            syncReferralsAndCloud();
         });
 
         function executeClaimMiningReward() {
@@ -1232,6 +1256,12 @@
                 document.getElementById('userLevel').innerText = userState.level;
                 document.getElementById('modalLevel').innerText = userState.level;
                 if(userState.savedWallet) document.getElementById('walletInput').value = userState.savedWallet;
+
+                // تحديث أعداد الفريق والعمولات
+                let tcEl = document.getElementById('teamCount');
+                let atcEl = document.getElementById('activeTeamCount');
+                if (tcEl) tcEl.innerText = userState.teamCount || 0;
+                if (atcEl) atcEl.innerText = userState.activeTeamCount || 0;
 
                 let teamCommUsdt = (userState.teamCommission / REF_REWARD_MOON) * REF_REWARD_USDT;
                 let commUsdtEl = document.getElementById('teamCommUsdtVal');
@@ -1428,6 +1458,11 @@
             saveUserData();
             updateUI();
             
+            try {
+                const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
+                await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
+            } catch (e) {}
+
             showMessage(t.alertWithdrawSuccess.replace('{amount}', amountVal).replace('{usdt}', usdtEquivalent));
         }
 
@@ -1466,6 +1501,7 @@
             document.getElementById(modalId).style.display = 'flex';
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
+            if (modalId === 'refModal') syncReferralsAndCloud(); // فحص وتحديث الإحالات فوراً عند فتح نافذة الأصدقاء
             if (modalId === 'minersModal') renderLevelsList();
             if (modalId === 'tasksModal') checkCompletedTasksUI();
         }
