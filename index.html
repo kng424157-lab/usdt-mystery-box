@@ -458,11 +458,18 @@
             text-align: center;
             font-size: 0.62rem;
             color: var(--text-dim);
+            transition: all 0.25s ease;
+        }
+        .checkin-day.claimed {
+            border-color: rgba(245, 158, 11, 0.45);
+            background: rgba(245, 158, 11, 0.1);
+            color: #fde68a;
         }
         .checkin-day.active {
             border-color: var(--emerald-glow);
-            background: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.22);
             color: var(--emerald-glow);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
         }
         .checkin-day strong { display: block; font-size: 0.72rem; color: #fff; margin-top: 2px; }
 
@@ -485,21 +492,25 @@
             border-radius: 12px;
             padding: 10px 12px;
             margin-bottom: 8px;
+            gap: 8px;
         }
-        .task-info h5 { font-size: 0.8rem; color: #fff; margin-bottom: 2px; }
-        .task-info p { font-size: 0.68rem; color: #34d399; font-weight: bold; direction: ltr; text-align: start; }
+        .task-info h5 { font-size: 0.78rem; color: #fff; margin-bottom: 2px; }
+        .task-info p { font-size: 0.66rem; color: #34d399; font-weight: bold; direction: ltr; text-align: start; }
         .task-action-btn {
             background: linear-gradient(135deg, #b45309, #78350f);
             color: #fff;
             border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 10px;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: bold;
             cursor: pointer;
+            white-space: nowrap;
+            min-width: 78px;
+            text-align: center;
         }
         .task-action-btn.verify { background: #f59e0b; color: #000; }
-        .task-action-btn.done { background: #292524; color: #78716c; cursor: default; border: none; }
+        .task-action-btn.done { background: #292524; color: #a8a29e; cursor: default; border: 1px solid rgba(255,255,255,0.06); font-size: 0.66rem; direction: ltr; }
 
         .input-wallet {
             width: 100%;
@@ -571,7 +582,6 @@
         <div class="bottom-spacer"></div>
     </div>
 
-    <!-- القائمة السفلية المحدثة بلوقوهات فيكتور احترافية وحجم متناسق -->
     <div class="bottom-nav-dock">
         <div class="dock-bar">
             <button class="dock-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)">
@@ -670,7 +680,6 @@
 
             <div class="ref-box" id="myRefLink">جاري إنشاء الرابط...</div>
 
-            <!-- إحصائيات الفريق والعمولات -->
             <div class="invite-bonus-grid">
                 <div class="bonus-box"><span id="lblTotalTeam">إجمالي الفريق</span><strong id="teamCount">0</strong></div>
                 <div class="bonus-box"><span id="lblActiveTeam">النشطون</span><strong id="activeTeamCount" style="color:#34d399">0</strong></div>
@@ -709,17 +718,17 @@
         <div class="modal-box" style="max-width: 400px;">
             <div class="modal-title" id="tasksTitle">📋 المهام والمكافآت</div>
             
-            <div style="text-align: inherit; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;" id="checkinHeader">📅 الحضور اليومي (كل 24 ساعة)</div>
+            <div style="text-align: inherit; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;" id="checkinHeader">📅 الحضور اليومي المتدرج (كل 24 ساعة)</div>
             <div class="checkin-grid">
-                <div class="checkin-day active" id="day1Box">D1<br><strong>5+</strong></div>
-                <div class="checkin-day" id="day2Box">D2<br><strong>10+</strong></div>
-                <div class="checkin-day" id="day3Box">D3<br><strong>15+</strong></div>
-                <div class="checkin-day" id="day4Box">D4<br><strong>20+</strong></div>
-                <div class="checkin-day" id="day5Box">D5<br><strong>25+</strong></div>
-                <div class="checkin-day" id="day6Box">D6<br><strong>30+</strong></div>
-                <div class="checkin-day" id="day7Box">D7⭐<br><strong>50+</strong></div>
+                <div class="checkin-day" id="day1Box">D1<br><strong>+5</strong></div>
+                <div class="checkin-day" id="day2Box">D2<br><strong>+10</strong></div>
+                <div class="checkin-day" id="day3Box">D3<br><strong>+15</strong></div>
+                <div class="checkin-day" id="day4Box">D4<br><strong>+20</strong></div>
+                <div class="checkin-day" id="day5Box">D5<br><strong>+25</strong></div>
+                <div class="checkin-day" id="day6Box">D6<br><strong>+30</strong></div>
+                <div class="checkin-day" id="day7Box">D7⭐<br><strong>+50</strong></div>
             </div>
-            <button class="btn-gold-claim" id="checkinBtn" style="font-size:0.85rem; padding:9px; margin-bottom:10px;" onclick="claimDailyCheckin()">📥 استلام مكافأة الحضور (+5)</button>
+            <button class="btn-gold-claim" id="checkinBtn" style="font-size:0.85rem; padding:9px; margin-bottom:10px;" onclick="claimDailyCheckin()">📥 استلام مكافأة الحضور</button>
 
             <div style="text-align: inherit; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; font-weight: bold;" id="tasksHeader">⭐ بروتوكولات الأصول والروابط النشطة</div>
             <div class="tasks-list-container">
@@ -732,21 +741,21 @@
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5 id="task2Title">📤 مشاركة البوت مع صديق</h5>
+                        <h5 id="task2Title">📤 مشاركة البوت مع صديق (كل 24 ساعة)</h5>
                         <p>+30.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn2" onclick="handleShareTask(2, 30)">مشاركة</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5 id="task3Title">🌐 تفعيل عقد رصد البيانات التقنية (1)</h5>
+                        <h5 id="task3Title">🌐 تفعيل عقد رصد البيانات (كل 6 ساعات)</h5>
                         <p>+20.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn3" onclick="openAdsterraTask(3, 20)">تفعيل</button>
                 </div>
                 <div class="task-card-item">
                     <div class="task-info">
-                        <h5 id="task4Title">🌐 فتح بوابات التخزين السحابي (2)</h5>
+                        <h5 id="task4Title">🌐 فتح بوابات التخزين السحابي (كل 6 ساعات)</h5>
                         <p>+20.00 MOON</p>
                     </div>
                     <button class="task-action-btn" id="taskBtn4" onclick="openAdsterraTask(4, 20)">فتح</button>
@@ -785,6 +794,10 @@
         const REF_REWARD_USDT = 0.010;
         const REF_REWARD_MOON = 250.00;
 
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+        const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+        const CHECKIN_REWARDS = [5, 10, 15, 20, 25, 30, 50];
+
         let telegramUser = tg?.initDataUnsafe?.user;
         let userId = (telegramUser && telegramUser.id) ? telegramUser.id.toString() : (localStorage.getItem('moontap_permanent_uid') || 'guest_' + Math.floor(100000 + Math.random() * 900000));
         localStorage.setItem('moontap_permanent_uid', userId);
@@ -793,7 +806,7 @@
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
-        // نفس المفتاح الثابت الدائم لضمان عدم تصفير أو ضياع أي عملة
+        // نفس المفتاح الثابت الدائم لضمان حفظ رصيدك ومستواك بالكامل
         const PERMANENT_STORAGE_KEY = 'moontap_user_data_permanent_' + userId;
 
         let currentLang = localStorage.getItem('moontap_lang_' + userId) || 'ar';
@@ -834,14 +847,14 @@
                 minersMax: "القمة",
                 minersLevel: "مستواك",
                 tasksTitle: "📋 المهام والمكافآت",
-                checkinHeader: "📅 الحضور اليومي (كل 24 ساعة)",
-                checkinAvailable: "📥 استلام مكافأة الحضور (+5)",
-                checkinWaiting: "⏳ متاح بعد: ",
+                checkinHeader: "📅 الحضور اليومي المتدرج (كل 24 ساعة)",
+                checkinAvailable: "📥 استلام مكافأة اليوم D{day} (+{rew} MOON)",
+                checkinWaiting: "⏳ اليوم التالي D{day} بعد: ",
                 tasksHeader: "⭐ بروتوكولات الأصول والروابط النشطة",
                 task1: "📢 الاشتراك في قناة البوت الرسمية",
-                task2: "📤 مشاركة البوت مع صديق",
-                task3: "🌐 تفعيل عقد رصد البيانات التقنية (1)",
-                task4: "🌐 فتح بوابات التخزين السحابي (2)",
+                task2: "📤 مشاركة البوت مع صديق (كل 24 ساعة)",
+                task3: "🌐 تفعيل عقد رصد البيانات (كل 6 ساعات)",
+                task4: "🌐 فتح بوابات التخزين السحابي (كل 6 ساعات)",
                 btnSubscribe: "اشتراك",
                 btnShare: "مشاركة",
                 btnActivate: "تفعيل",
@@ -856,10 +869,10 @@
                 alertWait: "⚠️ انتظر حتى يتجمع قدر بسيط من MOON للمطالبة!",
                 alertClaimSuccess: "✅ تم تحصيل {amount} MOON بنجاح وتجددت دورة التعدين.",
                 alertAdReward: "⚡ شكراً لزيارتك موقع الراعي! تمت إضافة +2 MOON إلى رصيدك.",
-                alertTaskDone: "⚠️ لقد أنجزت هذا البروتوكول مسبقاً!",
-                alertTaskReward: "🎉 تم تفعيل البروتوكول بنجاح وحصلت على +{amount} MOON.",
+                alertTaskDone: "⚠️ هذه المهمة في فترة الانتظار حالياً! تابع المؤقت.",
+                alertTaskReward: "🎉 تم إنجاز المهمة بنجاح وحصلت على +{amount} MOON.",
                 alertDailyDone: "⚠️ لم يحن موعد استلام المكافأة بعد! تابع العد التنازلي.",
-                alertDailyReward: "🎉 تم استلام مكافأة الحضور اليومي بنجاح (+5 MOON)!",
+                alertDailyReward: "🎉 تم استلام مكافأة اليوم D{day} بنجاح (+{rew} MOON)!",
                 alertWalletInvalid: "⚠️ أدخل عنوان محفظة صحيح ومعتمد أولاً!",
                 alertMinWithdraw: "⚠️ الحد الأدنى للسحب هو 5000 MOON.",
                 alertBalanceLow: "⚠️ رصيدك المتاح غير كافٍ لإتمام السحب!",
@@ -907,14 +920,14 @@
                 minersMax: "Cap",
                 minersLevel: "Your Level",
                 tasksTitle: "📋 Tasks & Rewards",
-                checkinHeader: "📅 Daily Check-in (Every 24h)",
-                checkinAvailable: "📥 Claim Daily Reward (+5)",
-                checkinWaiting: "⏳ Available in: ",
+                checkinHeader: "📅 Progressive Daily Check-in (Every 24h)",
+                checkinAvailable: "📥 Claim Day D{day} Reward (+{rew} MOON)",
+                checkinWaiting: "⏳ Next Day D{day} in: ",
                 tasksHeader: "⭐ Active Protocol Tasks",
                 task1: "📢 Join Official Announcement Channel",
-                task2: "📤 Share MoonTap with Friends",
-                task3: "🌐 Activate Tech Protocol (1)",
-                task4: "🌐 Access Partner Cloud Gateway (2)",
+                task2: "📤 Share MoonTap with Friends (Every 24h)",
+                task3: "🌐 Activate Tech Protocol 1 (Every 6h)",
+                task4: "🌐 Access Cloud Gateway 2 (Every 6h)",
                 btnSubscribe: "Join",
                 btnShare: "Share",
                 btnActivate: "Activate",
@@ -929,10 +942,10 @@
                 alertWait: "⚠️ Wait until you accumulate enough MOON to claim!",
                 alertClaimSuccess: "✅ Successfully claimed {amount} MOON! New cycle started.",
                 alertAdReward: "⚡ Thanks for visiting our sponsor! +2 MOON added to your assets.",
-                alertTaskDone: "⚠️ You have already completed this task!",
-                alertTaskReward: "🎉 Protocol verified! +{amount} MOON added.",
+                alertTaskDone: "⚠️ This task is currently on cooldown! Check the timer.",
+                alertTaskReward: "🎉 Task completed! +{amount} MOON added.",
                 alertDailyDone: "⚠️ Daily reward already claimed! Follow countdown.",
-                alertDailyReward: "🎉 Daily check-in claimed (+5 MOON)!",
+                alertDailyReward: "🎉 Day D{day} check-in claimed (+{rew} MOON)!",
                 alertWalletInvalid: "⚠️ Enter a valid wallet address first!",
                 alertMinWithdraw: "⚠️ Minimum withdrawal is 5000 MOON.",
                 alertBalanceLow: "⚠️ Insufficient balance for withdrawal!",
@@ -1055,6 +1068,8 @@
             teamCommission: 0,
             completedTasks: [],
             pendingVerifyTasks: [],
+            taskCooldowns: {},
+            checkinStreak: 0,
             lastCheckinTime: 0,
             miningStartTime: Date.now(),
             savedWallet: '',
@@ -1064,9 +1079,18 @@
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+        if (!userState.completedTasks) userState.completedTasks = [];
+        if (!userState.taskCooldowns) userState.taskCooldowns = {};
         if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
 
-        // التقاط معرف الداعي وحفظه بشكل دائم لمنع فقدانه
+        // إذا كان المستخدم قد سجل حضوره اليوم الأول في الكود السابق، نضبط العداد على 1 لينتقل تلقائياً إلى D2
+        if (typeof userState.checkinStreak !== 'number') {
+            userState.checkinStreak = userState.lastCheckinTime > 0 ? 1 : 0;
+        }
+
+        // تنظيف المهام الدورية (2 و 3 و 4) من مصفوفة المهام الدائمة القديمة لكي تعمل بنظام الساعات الجديد
+        userState.completedTasks = userState.completedTasks.filter(id => id === 1);
+
         if (startParam && !userState.inviterId) {
             let cleanInviter = startParam.replace('ref_', '').trim();
             if (cleanInviter && cleanInviter !== userId) {
@@ -1079,7 +1103,6 @@
         async function saveUserData() {
             try {
                 localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
-                // حفظ سحابي آمن يحافظ على inviter_id دون الكتابة فوقه بقيمة فارغة
                 let payload = { id: userId };
                 if (userState.inviterId) {
                     payload.inviter_id = userState.inviterId;
@@ -1090,17 +1113,14 @@
             }
         }
 
-        // دالة مخصصة لفحص الإحالات وإضافة العمولة فوراً (250 MOON لكل إحالة جديدة)
         async function syncReferralsAndCloud() {
             try {
-                // 1. تسجيل المستخدم الحالي مع الداعي الخاص به إن وجد
                 let payload = { id: userId };
                 if (userState.inviterId) {
                     payload.inviter_id = userState.inviterId;
                 }
                 await supabaseClient.from('users').upsert([payload]);
 
-                // 2. جلب جميع المستخدمين الذين سجلوا عبر رابط إحالة هذا المستخدم
                 let { data: refs, error } = await supabaseClient
                     .from('users')
                     .select('id')
@@ -1108,14 +1128,11 @@
 
                 if (!error && refs) {
                     let totalFetchedRefs = refs.length;
-                    
-                    // إذا زاد عدد المحالين عن العدد الذي تمت مكافأته سابقاً، نضيف العمولة فوراً
                     if (totalFetchedRefs > userState.rewardedRefsCount) {
                         let newRefsDiff = totalFetchedRefs - userState.rewardedRefsCount;
                         userState.teamCommission += (newRefsDiff * REF_REWARD_MOON);
                         userState.rewardedRefsCount = totalFetchedRefs;
                     }
-
                     userState.teamCount = totalFetchedRefs;
                     userState.activeTeamCount = totalFetchedRefs;
                     localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
@@ -1171,8 +1188,6 @@
             }
         }
 
-        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
-
         function getCurrentMinedData() {
             let now = Date.now();
             let elapsedMs = now - userState.miningStartTime;
@@ -1184,16 +1199,49 @@
             return { mined: minedAmount, remainingMs: remainingMs, isStopped: isStopped, dailyLimit: dailyLimit };
         }
 
+        function formatRemainingTime(ms) {
+            let h = Math.floor(ms / (1000 * 60 * 60));
+            let m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((ms % (1000 * 60)) / 1000);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function renderCheckinGridUI() {
+            let streak = userState.checkinStreak || 0;
+            let now = Date.now();
+            let isWaiting = userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS);
+            let currentTargetDayIndex = streak % 7; // 0 to 6 (D1 to D7)
+
+            for (let i = 0; i < 7; i++) {
+                let box = document.getElementById('day' + (i + 1) + 'Box');
+                if (!box) continue;
+                box.classList.remove('active', 'claimed');
+
+                if (isWaiting) {
+                    // أثناء انتظار الـ 24 ساعة، نظهر الأيام المستلمة في هذه الدورة ونبرز اليوم القادم
+                    let claimedInCycle = streak % 7 === 0 ? 7 : streak % 7;
+                    if (i < claimedInCycle) {
+                        box.classList.add('claimed');
+                    } else if (i === claimedInCycle % 7) {
+                        box.classList.add('active');
+                    }
+                } else {
+                    if (i < currentTargetDayIndex) {
+                        box.classList.add('claimed');
+                    } else if (i === currentTargetDayIndex) {
+                        box.classList.add('active');
+                    }
+                }
+            }
+        }
+
         function updateAllTimersUI() {
             const t = i18n[currentLang];
             let miningData = getCurrentMinedData();
             let timerSpan = document.getElementById('countdownTimer');
             let timerBox = document.getElementById('timerBox');
 
-            let h = Math.floor(miningData.remainingMs / (1000 * 60 * 60));
-            let m = Math.floor((miningData.remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-            let s = Math.floor((miningData.remainingMs % (1000 * 60)) / 1000);
-            let timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            let timeStr = formatRemainingTime(miningData.remainingMs);
 
             if (miningData.isStopped) {
                 if (timerSpan) timerSpan.innerText = t.fullCap;
@@ -1208,23 +1256,28 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
+            // تحديث زر وشبكة الحضور اليومي المتدرج (D1 - D7)
             let checkinBtn = document.getElementById('checkinBtn');
             if (checkinBtn) {
                 let now = Date.now();
+                let nextDayIndex = (userState.checkinStreak || 0) % 7;
+                let nextDayNum = nextDayIndex + 1;
+                let nextReward = CHECKIN_REWARDS[nextDayIndex];
+
                 if (userState.lastCheckinTime && (now - userState.lastCheckinTime < TWENTY_FOUR_HOURS_MS)) {
                     let checkinRemMs = TWENTY_FOUR_HOURS_MS - (now - userState.lastCheckinTime);
-                    let ch = Math.floor(checkinRemMs / (1000 * 60 * 60));
-                    let cm = Math.floor((checkinRemMs % (1000 * 60 * 60)) / (1000 * 60));
-                    let cs = Math.floor((checkinRemMs % (1000 * 60)) / 1000);
-                    checkinBtn.innerText = `${t.checkinWaiting}${ch.toString().padStart(2, '0')}:${cm.toString().padStart(2, '0')}:${cs.toString().padStart(2, '0')}`;
+                    checkinBtn.innerText = `${t.checkinWaiting.replace('{day}', nextDayNum)}${formatRemainingTime(checkinRemMs)}`;
                     checkinBtn.style.background = '#292524';
                     checkinBtn.style.color = '#a8a29e';
                 } else {
-                    checkinBtn.innerText = t.checkinAvailable;
+                    checkinBtn.innerText = t.checkinAvailable.replace('{day}', nextDayNum).replace('{rew}', nextReward);
                     checkinBtn.style.background = '';
                     checkinBtn.style.color = '';
                 }
             }
+
+            renderCheckinGridUI();
+            checkCompletedTasksUI();
         }
 
         setInterval(() => { updateAllTimersUI(); }, 1000);
@@ -1257,7 +1310,6 @@
                 document.getElementById('modalLevel').innerText = userState.level;
                 if(userState.savedWallet) document.getElementById('walletInput').value = userState.savedWallet;
 
-                // تحديث أعداد الفريق والعمولات
                 let tcEl = document.getElementById('teamCount');
                 let atcEl = document.getElementById('activeTeamCount');
                 if (tcEl) tcEl.innerText = userState.teamCount || 0;
@@ -1288,7 +1340,6 @@
                 document.getElementById('myRefLink').innerText = refLink;
 
                 renderLevelsList();
-                checkCompletedTasksUI();
                 updateAllTimersUI();
             } catch(e){}
         }
@@ -1318,14 +1369,29 @@
         function triggerCelebration() {
             if (typeof confetti === 'function') {
                 confetti({
-                    particleCount: 120,
-                    spread: 80,
+                    particleCount: 100,
+                    spread: 75,
                     origin: { y: 0.6 },
                     colors: ['#f59e0b', '#10b981', '#3b82f6', '#fde68a']
                 });
             }
         }
 
+        function getTaskCooldownDuration(taskId) {
+            if (taskId === 2) return TWENTY_FOUR_HOURS_MS; // المشاركة كل 24 ساعة
+            if (taskId === 3 || taskId === 4) return SIX_HOURS_MS; // الإعلانات كل 6 ساعات
+            return 0; // القناة مرة واحدة فقط
+        }
+
+        function isTaskOnCooldown(taskId) {
+            if (taskId === 1) return userState.completedTasks.includes(1);
+            let lastTime = userState.taskCooldowns[taskId] || 0;
+            if (!lastTime) return false;
+            let duration = getTaskCooldownDuration(taskId);
+            return (Date.now() - lastTime) < duration;
+        }
+
+        // 1. مهمة القناة الرسمية (مرة واحدة فقط)
         function handleChannelTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
             if (userState.completedTasks.includes(taskId)) { showMessage(t.alertTaskDone); return; }
@@ -1336,17 +1402,19 @@
                 checkCompletedTasksUI();
                 return;
             }
+            userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
             saveUserData();
-            checkCompletedTasksUI();
             updateUI();
+            triggerCelebration();
             showMessage(t.alertTaskReward.replace('{amount}', rewardAmount));
         }
 
+        // 2. مهمة المشاركة مع صديق (تتجدد كل 24 ساعة)
         function handleShareTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
-            if (userState.completedTasks.includes(taskId)) { showMessage(t.alertTaskDone); return; }
+            if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 shareReferral();
                 userState.pendingVerifyTasks.push(taskId);
@@ -1354,17 +1422,19 @@
                 checkCompletedTasksUI();
                 return;
             }
-            userState.completedTasks.push(taskId);
+            userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
+            userState.taskCooldowns[taskId] = Date.now();
             userState.balance += rewardAmount;
             saveUserData();
-            checkCompletedTasksUI();
             updateUI();
+            triggerCelebration();
             showMessage(t.alertTaskReward.replace('{amount}', rewardAmount));
         }
 
+        // 3 & 4. مهام الإعلانات المباشرة (تتجدد كل 6 ساعات)
         function openAdsterraTask(taskId, rewardAmount) {
             const t = i18n[currentLang];
-            if (userState.completedTasks.includes(taskId)) { showMessage(t.alertTaskDone); return; }
+            if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
                 openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
                 userState.pendingVerifyTasks.push(taskId);
@@ -1372,23 +1442,22 @@
                 checkCompletedTasksUI();
                 return;
             }
-            userState.completedTasks.push(taskId);
+            userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
+            userState.taskCooldowns[taskId] = Date.now();
             userState.balance += rewardAmount;
             saveUserData();
-            checkCompletedTasksUI();
             updateUI();
+            triggerCelebration();
             showMessage(t.alertTaskReward.replace('{amount}', rewardAmount));
         }
 
         function checkCompletedTasksUI() {
             if(!userState.completedTasks) userState.completedTasks = [];
             if(!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
+            if(!userState.taskCooldowns) userState.taskCooldowns = {};
             const t = i18n[currentLang];
+            let now = Date.now();
             
-            let completedCount = userState.completedTasks.length;
-            let totalTasks = 4;
-            let remainingTasks = totalTasks - completedCount;
-
             const initialTaskBtns = {
                 1: t.btnSubscribe,
                 2: t.btnShare,
@@ -1396,33 +1465,53 @@
                 4: t.btnOpen
             };
 
-            for (let taskId = 1; taskId <= totalTasks; taskId++) {
+            let availableTasksCount = 0;
+
+            for (let taskId = 1; taskId <= 4; taskId++) {
                 let btn = document.getElementById('taskBtn' + taskId);
                 if (!btn) continue;
-                if (userState.completedTasks.includes(taskId)) {
-                    btn.innerText = t.btnDone;
-                    btn.className = "task-action-btn done";
-                } else if (userState.pendingVerifyTasks.includes(taskId)) {
-                    btn.innerText = t.btnVerify;
-                    btn.className = "task-action-btn verify";
+
+                if (taskId === 1) {
+                    if (userState.completedTasks.includes(1)) {
+                        btn.innerText = t.btnDone;
+                        btn.className = "task-action-btn done";
+                    } else if (userState.pendingVerifyTasks.includes(1)) {
+                        btn.innerText = t.btnVerify;
+                        btn.className = "task-action-btn verify";
+                        availableTasksCount++;
+                    } else {
+                        btn.innerText = initialTaskBtns[1];
+                        btn.className = "task-action-btn";
+                        availableTasksCount++;
+                    }
                 } else {
-                    btn.innerText = initialTaskBtns[taskId];
-                    btn.className = "task-action-btn";
+                    let lastTime = userState.taskCooldowns[taskId] || 0;
+                    let duration = getTaskCooldownDuration(taskId);
+                    let elapsed = now - lastTime;
+
+                    if (lastTime > 0 && elapsed < duration) {
+                        let remMs = duration - elapsed;
+                        btn.innerText = `⏳ ${formatRemainingTime(remMs)}`;
+                        btn.className = "task-action-btn done";
+                    } else if (userState.pendingVerifyTasks.includes(taskId)) {
+                        btn.innerText = t.btnVerify;
+                        btn.className = "task-action-btn verify";
+                        availableTasksCount++;
+                    } else {
+                        btn.innerText = initialTaskBtns[taskId];
+                        btn.className = "task-action-btn";
+                        availableTasksCount++;
+                    }
                 }
             }
 
             let dot = document.getElementById('taskDot');
             if (dot) {
-                if (remainingTasks > 0) { 
+                if (availableTasksCount > 0) { 
                     dot.style.display = 'flex'; 
-                    dot.innerText = remainingTasks; 
+                    dot.innerText = availableTasksCount; 
                 } else { 
                     dot.style.display = 'none';
-                    if (!userState.hasCelebratedAllTasks) {
-                        userState.hasCelebratedAllTasks = true;
-                        saveUserData();
-                        triggerCelebration();
-                    }
                 }
             }
         }
@@ -1434,12 +1523,18 @@
                 showMessage(t.alertDailyDone); 
                 return;
             }
-            userState.balance += 5.00;
+            let currentDayIndex = (userState.checkinStreak || 0) % 7;
+            let dayNum = currentDayIndex + 1;
+            let reward = CHECKIN_REWARDS[currentDayIndex];
+
+            userState.balance += reward;
             userState.lastCheckinTime = now;
+            userState.checkinStreak = (userState.checkinStreak || 0) + 1;
+
             saveUserData();
             updateUI();
-            updateAllTimersUI();
-            showMessage(t.alertDailyReward);
+            triggerCelebration();
+            showMessage(t.alertDailyReward.replace('{day}', dayNum).replace('{rew}', reward));
         }
 
         async function submitWithdraw() {
@@ -1501,9 +1596,9 @@
             document.getElementById(modalId).style.display = 'flex';
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
-            if (modalId === 'refModal') syncReferralsAndCloud(); // فحص وتحديث الإحالات فوراً عند فتح نافذة الأصدقاء
+            if (modalId === 'refModal') syncReferralsAndCloud();
             if (modalId === 'minersModal') renderLevelsList();
-            if (modalId === 'tasksModal') checkCompletedTasksUI();
+            if (modalId === 'tasksModal') updateAllTimersUI();
         }
 
         function openMiningTab(btnEl) { 
