@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MoonTap Empire - Quantum Mystery Bubbles</title>
+    <title>MoonTap Empire - Dynamic Quantum Bubbles</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -411,7 +411,7 @@
             white-space: nowrap;
         }
 
-        /* --- تصميم ساحة الفقاعات المحدودة ومربع نتيجة الفقاعة --- */
+        /* --- ساحة متعددة الفقاعات المتنوعة والمتحركة معاً --- */
         .bubble-arena {
             position: relative;
             width: 100%;
@@ -422,9 +422,6 @@
             overflow: hidden;
             margin-bottom: 10px;
             box-shadow: inset 0 0 25px rgba(6, 182, 212, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .arena-hint {
             position: absolute;
@@ -438,33 +435,39 @@
         }
         .quantum-bubble {
             position: absolute;
-            width: 55px;
-            height: 55px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.25s ease;
+            transition: transform 0.2s ease, opacity 0.25s ease;
             box-shadow: 0 0 16px rgba(6, 182, 212, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.6);
-            background: radial-gradient(circle at 35% 35%, rgba(165, 243, 252, 0.9), rgba(8, 145, 178, 0.8));
-            border: 1.5px solid #67e8f9;
-            font-size: 1.4rem;
-            animation: floatBubble 2.5s ease-in-out infinite alternate;
+            font-size: 1.3rem;
+            animation: floatBubbleArena 3s ease-in-out infinite alternate;
         }
-        .quantum-bubble:active { transform: scale(1.3); }
+        .quantum-bubble:active { transform: scale(1.35); }
 
-        @keyframes floatBubble {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-10px) rotate(5deg); }
+        @keyframes floatBubbleArena {
+            0% { transform: translate(0px, 0px) rotate(0deg); }
+            50% { transform: translate(8px, -12px) rotate(5deg); }
+            100% { transform: translate(-8px, 10px) rotate(-5deg); }
         }
 
-        /* نافذة منبثقة صغيرة لنتيجة الفقاعة (عملة، حظ أوفر، محاولة أخرى) */
+        /* أنواع الفقاعات المختلفة */
+        .b-coin { background: radial-gradient(circle, #fde047, #d97706); border: 1.5px solid #fef08a; }
+        .b-luck { background: radial-gradient(circle, #c084fc, #7e22ce); border: 1.5px solid #e879f9; }
+        .b-extra { background: radial-gradient(circle, #22d3ee, #0284c7); border: 1.5px solid #67e8f9; }
+
         .bubble-popup-result {
             position: absolute;
-            background: rgba(15, 13, 11, 0.95);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 13, 11, 0.96);
             border: 2px solid #f59e0b;
-            padding: 12px 18px;
+            padding: 14px 22px;
             border-radius: 16px;
             text-align: center;
             z-index: 20;
@@ -472,8 +475,21 @@
             animation: popResultAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes popResultAnim {
-            0% { transform: scale(0.4); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .no-attempts-box {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 7, 12, 0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            text-align: center;
+            z-index: 15;
         }
 
         .bubble-stats-row {
@@ -795,11 +811,11 @@
         </div>
     </div>
 
-    <!-- نافذة المعمل الكمي: صندوق الحظ والفقاعات المحدودة -->
+    <!-- نافذة المعمل الكمي: عدة فقاعات متنوعة ومتحركة معا -->
     <div class="modal-overlay" id="labModal">
         <div class="modal-box" style="max-width: 400px;">
             <div class="modal-title" id="labTitle">🫧 صندوق الحظ والفقاعات الكمية</div>
-            <div class="modal-desc" id="labDesc">لديك محاولات محدودة لفتح الفقاعات! بعضها يمنح MOON، بعضها حظ أوفر، وبعضها يمنحك محاولة مجانية جديدة!</div>
+            <div class="modal-desc" id="labDesc">اضغط على الفقاعات المتنوعة المتطايرة لاكتشاف الجوائز (عملات، حظ أوفر، ومحاولات إضافية)!</div>
             
             <div class="bubble-stats-row">
                 <div class="bubble-stat-box">
@@ -813,7 +829,7 @@
             </div>
 
             <div class="bubble-arena" id="bubbleArena">
-                <div class="arena-hint" id="arenaHintText">✨ اضغط على الفقاعة لاكتشاف ما بداخلها!</div>
+                <div class="arena-hint" id="arenaHintText">✨ تظهر الفقاعات وتتحرك بداخل الساحة باستمرار!</div>
             </div>
 
             <button class="btn-ad-direct" style="width:100%; margin-bottom:8px;" onclick="refillBubbleAttempts()" id="btnRefillAttempts">
@@ -1001,11 +1017,12 @@
                 withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 1000 MOON)",
                 btnSubmitWithdraw: "🚀 إرسال طلب السحب",
                 labTitle: "🫧 صندوق الحظ والفقاعات الكمية",
-                labDesc: "لديك محاولات محدودة لفتح الفقاعات! بعضها يمنح MOON، بعضها حظ أوفر، وبعضها يمنحك محاولة مجانية جديدة!",
+                labDesc: "اضغط على الفقاعات المتنوعة المتطايرة لاكتشاف الجوائز (عملات، حظ أوفر، ومحاولات إضافية)!",
                 attemptsCountLabel: "⚡ المحاولات المتبقية",
                 bubbleTotalHarvestLabel: "🎁 إجمالي أرباح المعمل",
                 btnRefillAttempts: "🚀 نفدت محاولاتك؟ شاهد إعلان الراعي لتعبئة +10 محاولات جديدة!",
-                arenaHint: "✨ اضغط على الفقاعة لاكتشاف ما بداخلها!",
+                arenaHint: "✨ تظهر الفقاعات وتتحرك بداخل الساحة باستمرار!",
+                outOfAttemptsText: "⚠️ نفدت محاولاتك في المعمل! اضغط على زر الإعلان أدناه لتعبئة محاولات جديدة.",
                 refTitle: "👥 شبكة الأصدقاء والإحالات",
                 refDesc: "ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!",
                 eliteTitle: "شريك النخبة",
@@ -1088,11 +1105,12 @@
                 withdrawAmountPlaceholder: "Withdraw Amount (Min 1000 MOON)",
                 btnSubmitWithdraw: "🚀 Submit Withdrawal Request",
                 labTitle: "🫧 Quantum Mystery Bubbles",
-                labDesc: "Limited attempts to pop bubbles! Some give MOON, some are bad luck, and some give extra tries!",
+                labDesc: "Tap diverse floating bubbles to discover rewards (coins, bad luck, & extra tries)!",
                 attemptsCountLabel: "⚡ Attempts Left",
                 bubbleTotalHarvestLabel: "🎁 Total Lab Harvest",
                 btnRefillAttempts: "🚀 Out of attempts? Watch sponsor ad for +10 new tries!",
-                arenaHint: "✨ Tap the bubble to discover its secret!",
+                arenaHint: "✨ Bubbles appear and move around dynamically!",
+                outOfAttemptsText: "⚠️ Out of attempts! Tap the ad button below to refill.",
                 refTitle: "👥 Referral Network & Friends",
                 refDesc: "Invite partners & boost your mining speed by +50%!",
                 eliteTitle: "Elite Partner",
@@ -1511,75 +1529,80 @@
             }
         }
 
-        // --- نظام الفقاعات وصندوق الحظ المحدود مع خيارات (عملة، حظ أوفر، محاولة أخرى) ---
-        function spawnMysteryBubble() {
+        // --- محرك ظهور عدة فقاعات متحركة متنوعة معاً ---
+        function initBubbleArena() {
             const arena = document.getElementById('bubbleArena');
             if (!arena) return;
-            arena.querySelectorAll('.quantum-bubble, .bubble-popup-result').forEach(el => el.remove());
+            arena.querySelectorAll('.quantum-bubble, .bubble-popup-result, .no-attempts-box').forEach(el => el.remove());
 
             if (userState.bubbleAttemptsLeft <= 0) {
-                let msg = document.createElement('div');
-                msg.style.cssText = "color: #ef4444; font-size: 0.8rem; font-weight: bold; padding: 20px; text-align: center;";
-                msg.innerText = currentLang === 'ar' ? "⚠️ نفدت محاولاتك في المعمل! اضغط على زر الإعلان أدناه لتعبئة محاولات جديدة." : "⚠️ Out of attempts! Tap the ad button below to refill.";
-                arena.appendChild(msg);
+                const t = i18n[currentLang];
+                let noBox = document.createElement('div');
+                noBox.className = 'no-attempts-box';
+                noBox.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 6px;">⚠️</div>
+                    <div style="color: #ef4444; font-size: 0.82rem; font-weight: bold; line-height: 1.5;">${t.outOfAttemptsText}</div>
+                `;
+                arena.appendChild(noBox);
                 return;
             }
 
-            const bubble = document.createElement('div');
-            bubble.className = 'quantum-bubble';
-            bubble.innerHTML = '🫧';
+            // توليد 4 فقاعات متنوعة في الشاشة معاً
+            const types = ['b-coin', 'b-luck', 'b-extra'];
+            const icons = ['🪙', '🍀', '🎟️'];
 
-            const maxX = arena.clientWidth - 65;
-            const maxY = arena.clientHeight - 65;
-            bubble.style.left = `${Math.max(10, Math.floor(Math.random() * maxX))}px`;
-            bubble.style.top = `${Math.max(15, Math.floor(Math.random() * maxY))}px`;
+            for (let i = 0; i < 4; i++) {
+                let typeIdx = Math.floor(Math.random() * types.length);
+                const bubble = document.createElement('div');
+                bubble.className = `quantum-bubble ${types[typeIdx]}`;
+                bubble.innerHTML = icons[typeIdx];
 
-            bubble.onclick = function() {
-                openMysteryResult(this);
-            };
+                const maxX = arena.clientWidth - 58;
+                const maxY = arena.clientHeight - 58;
+                bubble.style.left = `${Math.max(10, Math.floor(Math.random() * maxX))}px`;
+                bubble.style.top = `${Math.max(15, Math.floor(Math.random() * maxY))}px`;
 
-            arena.appendChild(bubble);
+                bubble.onclick = function() {
+                    popMysteryBubble(this, types[typeIdx]);
+                };
+
+                arena.appendChild(bubble);
+            }
         }
 
-        function openMysteryResult(bubbleEl) {
+        function popMysteryBubble(bubbleEl, bubbleType) {
             triggerHaptic('impact', 'medium');
             const arena = document.getElementById('bubbleArena');
             if (!arena) return;
             bubbleEl.remove();
 
             userState.bubbleAttemptsLeft = Math.max(0, userState.bubbleAttemptsLeft - 1);
-
-            // تحديد النتيجة عشوائياً (50% عملة، 30% حظ أوفر، 20% محاولة أخرى)
-            let randOutcome = Math.random();
             let resultHtml = '';
 
-            if (randOutcome < 0.50) {
-                // فوز بعملة MOON
+            if (bubbleType === 'b-coin') {
                 let reward = parseFloat((Math.random() * 0.70 + 0.30).toFixed(2));
                 userState.balance += reward;
                 userState.bubbleHarvestTotal = (userState.bubbleHarvestTotal || 0) + reward;
                 triggerHaptic('notification', 'success');
                 resultHtml = `
-                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🪙</div>
-                    <div style="font-size: 0.85rem; color: #34d399; font-weight: bold;">+${reward} MOON</div>
-                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">مبروك! أُضيف الرصيد لحسابك.</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 3px;">🪙</div>
+                    <div style="font-size: 0.82rem; color: #34d399; font-weight: bold;">+${reward} MOON</div>
+                    <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 2px;">عملة رقمية مضافة!</div>
                 `;
-            } else if (randOutcome < 0.80) {
-                // حظ أوفر
+            } else if (bubbleType === 'b-luck') {
                 triggerHaptic('impact', 'light');
                 resultHtml = `
-                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🍀</div>
-                    <div style="font-size: 0.85rem; color: #fde68a; font-weight: bold;">حظ أوفر في المرة القادمة!</div>
-                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">لا تقلق، جرب الفقاعة التالية.</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 3px;">🍀</div>
+                    <div style="font-size: 0.82rem; color: #fde68a; font-weight: bold;">حظ أوفر في المرة القادمة!</div>
+                    <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 2px;">جرب فقاعة أخرى قريبة.</div>
                 `;
             } else {
-                // فوز بمحاولة أخرى إضافية
                 userState.bubbleAttemptsLeft += 1;
                 triggerHaptic('notification', 'success');
                 resultHtml = `
-                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🎟️</div>
-                    <div style="font-size: 0.85rem; color: #06b6d4; font-weight: bold;">لقد فزت بمحاولة أخرى!</div>
-                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">تم تعويض محاولتك مجاناً.</div>
+                    <div style="font-size: 1.5rem; margin-bottom: 3px;">🎟️</div>
+                    <div style="font-size: 0.82rem; color: #22d3ee; font-weight: bold;">لقد فزت بمحاولة أخرى!</div>
+                    <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 2px;">تم تعويض المحاولة مجاناً.</div>
                 `;
             }
 
@@ -1593,8 +1616,8 @@
 
             setTimeout(() => {
                 if (popup.parentNode) popup.parentNode.removeChild(popup);
-                spawnMysteryBubble();
-            }, 1800);
+                initBubbleArena();
+            }, 1400);
         }
 
         function refillBubbleAttempts() {
@@ -1604,7 +1627,7 @@
             saveUserData();
             updateUI();
             triggerCelebration();
-            spawnMysteryBubble();
+            initBubbleArena();
             showMessage(currentLang === 'ar' ? "🚀 تمت إضافة +10 محاولات فقاعات جديدة بنجاح!" : "🚀 +10 new bubble attempts added!");
         }
 
@@ -2023,7 +2046,7 @@
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'walletModal') renderWalletLockUI();
-            if (modalId === 'labModal') spawnMysteryBubble();
+            if (modalId === 'labModal') initBubbleArena();
             if (modalId === 'refModal') syncReferralsAndCloud();
             if (modalId === 'minersModal') renderLevelsList();
             if (modalId === 'tasksModal') updateAllTimersUI();
