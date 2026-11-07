@@ -17,6 +17,7 @@
             --text-gold: #fde68a;
             --text-dim: #94a3b8;
             --danger-red: #ef4444;
+            --cyan-glow: #06b6d4;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, 'Segoe UI', Arial, sans-serif; user-select: none; }
@@ -192,6 +193,7 @@
             box-shadow: 0 0 35px var(--gold-glow), inset 0 0 25px rgba(245, 158, 11, 0.2);
             position: relative;
             animation: floatChassis 3.5s ease-in-out infinite;
+            cursor: pointer;
         }
         @keyframes floatChassis { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .moon-icon-inner { font-size: 68px; filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.8)); }
@@ -332,18 +334,18 @@
         }
         .modal-box {
             background: #0f0d0b;
-            padding: 20px;
+            padding: 18px;
             border-radius: 24px;
             width: 100%;
-            max-width: 380px;
+            max-width: 385px;
             text-align: center;
             border: 1.5px solid rgba(212, 175, 55, 0.4);
-            max-height: 85vh;
+            max-height: 87vh;
             overflow-y: auto;
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95);
         }
-        .modal-title { font-size: 1.1rem; color: #fef08a; margin-bottom: 6px; font-weight: bold; }
-        .modal-desc { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4; }
+        .modal-title { font-size: 1.1rem; color: #fef08a; margin-bottom: 5px; font-weight: bold; }
+        .modal-desc { font-size: 0.74rem; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4; }
 
         .wallet-card-box {
             background: #050403;
@@ -356,6 +358,134 @@
         .wallet-card-box .label { font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 3px; }
         .wallet-card-box .value-moon { font-size: 1.3rem; color: #34d399; font-weight: bold; direction: ltr; }
         .wallet-card-box .value-usd { font-size: 0.85rem; color: #fef08a; margin-top: 2px; font-weight: bold; direction: ltr; }
+
+        /* تصميم حفظ وتثبيت محفظة TON الدائم */
+        .ton-wallet-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .ton-wallet-addr {
+            font-size: 0.74rem;
+            color: #6ee7b7;
+            font-weight: bold;
+            direction: ltr;
+            word-break: break-all;
+            text-align: left;
+            flex: 1;
+        }
+        .btn-edit-wallet {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fde68a;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .wallet-input-group {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .wallet-input-group .input-wallet {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .btn-save-ton {
+            background: linear-gradient(135deg, #059669, #065f46);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #fff;
+            padding: 0 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* تصميم المعمل الكمي المتطور (3 وحدات تفاعلية) */
+        .lab-module-card {
+            background: linear-gradient(180deg, #141210 0%, #080706 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        .lab-module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .lab-module-title {
+            font-size: 0.82rem;
+            font-weight: bold;
+            color: #fef08a;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .lab-badge {
+            font-size: 0.65rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            direction: ltr;
+        }
+        .lab-progress-track {
+            width: 100%;
+            height: 10px;
+            background: #050403;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .lab-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #10b981);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            transition: width 0.35s ease;
+        }
+        .cipher-nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .cipher-node {
+            background: #090807;
+            border: 1px dashed rgba(245, 158, 11, 0.45);
+            border-radius: 10px;
+            padding: 8px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.72rem;
+            color: #cbd5e1;
+        }
+        .cipher-node.unlocked {
+            background: rgba(16, 185, 129, 0.18);
+            border: 1px solid #10b981;
+            color: #34d399;
+            font-weight: bold;
+        }
+        .cipher-node span { display: block; font-size: 1.2rem; margin-bottom: 2px; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .friend-btn {
@@ -525,7 +655,7 @@
             border: 1px solid #44403c;
             background: #050403;
             color: #fff;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             text-align: center;
             font-size: 0.8rem;
             outline: none;
@@ -628,11 +758,11 @@
         </div>
     </div>
 
-    <!-- نافذة المحفظة -->
+    <!-- نافذة المحفظة (مع تثبيت محفظة TON الدائم وإزالة TRC20) -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
-            <div class="modal-title" id="walletTitle">💳 محفظة السحب</div>
-            <div class="modal-desc" id="walletDesc">إدارة رصيدك وسحب أرباحك بكل موثوقية.</div>
+            <div class="modal-title" id="walletTitle">💳 محفظة السحب (TON)</div>
+            <div class="modal-desc" id="walletDesc">إدارة رصيدك وسحب أرباحك عبر شبكة TON بكل موثوقية.</div>
             
             <div class="wallet-card-box">
                 <span class="label" id="walletAvailableLabel">إجمالي رصيدك المتاح للسحب</span>
@@ -640,7 +770,21 @@
                 <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
             </div>
 
-            <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة USDT (TRC20 / TON)...">
+            <!-- عرض المحفظة المحفوظة بشكل دائم ومقفل -->
+            <div class="ton-wallet-box" id="savedWalletDisplay">
+                <div style="text-align: right; flex: 1;">
+                    <span style="font-size: 0.65rem; color: #94a3b8; display: block;" id="savedTonLabel">✅ عنوان محفظة TON المثبت:</span>
+                    <div class="ton-wallet-addr" id="lockedTonAddress"></div>
+                </div>
+                <button class="btn-edit-wallet" onclick="unlockWalletEdit()" id="btnEditTon">تغيير ✏️</button>
+            </div>
+
+            <!-- حقل إدخال وحفظ عنوان TON لأول مرة -->
+            <div class="wallet-input-group" id="walletInputContainer">
+                <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON الخاصة بك..." oninput="autoSaveTonWallet(this.value)">
+                <button class="btn-save-ton" onclick="lockAndSaveTonWallet()" id="btnSaveTon">🔒 تثبيت</button>
+            </div>
+
             <input type="number" class="input-wallet" id="withdrawAmountInput" placeholder="كمية السحب (الحد الأدنى 1000 MOON)">
             
             <button class="btn-gold-claim" style="font-size:0.95rem; padding:12px; margin-bottom:8px;" id="btnSubmitWithdraw" onclick="submitWithdraw()">🚀 إرسال طلب السحب</button>
@@ -648,20 +792,54 @@
         </div>
     </div>
 
-    <!-- نافذة المعمل الكمي -->
+    <!-- نافذة المعمل الكمي المتطور (3 أنظمة تفاعلية مشوقة) -->
     <div class="modal-overlay" id="labModal">
-        <div class="modal-box">
-            <div class="modal-title" id="labTitle">🧪 المعمل الكمي المتقدم</div>
-            <div class="modal-desc" id="labDesc">قم بتنشيط معالج التبريد لتكرير الأصول وضاعف أرباحك بنسبة +10%!</div>
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-title" id="labTitle">🧪 المختبر الكمي ومفاعل الطاقة</div>
+            <div class="modal-desc" id="labDesc">شغّل المفاعلات، اشحن البلازما، وفك التشفير لمضاعفة إنتاجك من عملات MOON!</div>
             
-            <div class="wallet-card-box">
-                <span class="label" id="labStatusLabel">حالة المعالج النشط</span>
-                <div class="value-moon" id="labStateTxt" style="color: #f59e0b;">جاهز للتشغيل ⚡</div>
-                <div style="font-size: 0.8rem; color: #fde68a; margin-top: 4px; direction: ltr;" id="labTimerTxt">00:00:00</div>
+            <!-- النظام 1: مفاعل شحن البلازما التراكمي -->
+            <div class="lab-module-card">
+                <div class="lab-module-header">
+                    <div class="lab-module-title">⚡ <span id="labCoreTitle">مفاعل شحن البلازما</span></div>
+                    <div class="lab-badge"><span id="plasmaChargeVal">0</span>% / 100%</div>
+                </div>
+                <p style="font-size: 0.68rem; color: #94a3b8;" id="labCoreDesc">كل شحنة تمنحك +1.5 MOON فوراً، وعند اكتمال 100% تحصل على انفجار بقيمة +8 MOON!</p>
+                <div class="lab-progress-track">
+                    <div class="lab-progress-fill" id="plasmaProgressBar"></div>
+                </div>
+                <button class="btn-ad-direct" style="width:100%; padding:8px; font-size:0.76rem;" onclick="chargePlasmaCore()" id="btnChargePlasma">
+                    🔋 شحن نواة البلازما (+25% ومكافأة فورية)
+                </button>
             </div>
 
-            <button class="btn-gold-claim" style="font-size:0.9rem; padding:11px; margin-bottom:8px;" id="btnStartLab" onclick="startQuantumRefining()">⚛️ بدء دورة المعالجة (مشاهدة إعلان)</button>
-            <button class="friend-btn" style="width:100%; background:#292524;" onclick="closeModal('labModal')"><span class="closeTxt">إغلاق</span></button>
+            <!-- النظام 2: مصفاة التبريد والتقطير الكمي -->
+            <div class="lab-module-card">
+                <div class="lab-module-header">
+                    <div class="lab-module-title">⚛️ <span id="labRefineryTitle">مصفاة تقطير الكريستال</span></div>
+                    <div class="lab-badge" id="labTimerTxt">00:00:00</div>
+                </div>
+                <p style="font-size: 0.68rem; color: #94a3b8; margin-bottom: 6px;" id="labStateTxt">المصفاة جاهزة لاستخلاص +5.00 MOON صافية ⚡</p>
+                <button class="btn-gold-claim" style="font-size:0.82rem; padding:9px; margin-bottom:0;" id="btnStartLab" onclick="startQuantumRefining()">
+                    🧪 تشغيل دورة التقطير (+5 MOON)
+                </button>
+            </div>
+
+            <!-- النظام 3: خزنة الشفرات السرية (3 أقفال) -->
+            <div class="lab-module-card">
+                <div class="lab-module-header">
+                    <div class="lab-module-title">🔐 <span id="labCipherTitle">خزنة الشفرات الكونية</span></div>
+                    <div class="lab-badge" id="cipherStatusBadge">0 / 3</div>
+                </div>
+                <p style="font-size: 0.68rem; color: #94a3b8;" id="labCipherDesc">اضغط على الأقفال الثلاثة لفك شيفرة الصندوق السري وربح حتى +6 MOON!</p>
+                <div class="cipher-nodes-grid">
+                    <div class="cipher-node" id="cipherNode1" onclick="unlockCipherNode(1)"><span>🔒</span>#Alpha</div>
+                    <div class="cipher-node" id="cipherNode2" onclick="unlockCipherNode(2)"><span>🔒</span>#Beta</div>
+                    <div class="cipher-node" id="cipherNode3" onclick="unlockCipherNode(3)"><span>🔒</span>#Gamma</div>
+                </div>
+            </div>
+
+            <button class="friend-btn" style="width:100%; background:#292524; padding:9px;" onclick="closeModal('labModal')"><span class="closeTxt">إغلاق</span></button>
         </div>
     </div>
 
@@ -798,15 +976,15 @@
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
         const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
 
-        // تم ضبط التوكن الخاص ببوت الإشعارات الذي استخدمته سابقاً بنجاح
         const NOTIF_BOT_TOKEN = '8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs'; 
-        const NOTIF_CHAT_ID = '@UsdtBoxAdmin77_bot'; // أو معرف قناتك العامة/الخاصة
+        const NOTIF_CHAT_ID = '@UsdtBoxAdmin77_bot';
 
         const REF_REWARD_USDT = 0.05;
         const REF_REWARD_MOON = 50.00;
 
         const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
         const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+        const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
         const CHECKIN_REWARDS = [1, 2, 3, 4, 5, 7, 10];
 
         let telegramUser = tg?.initDataUnsafe?.user;
@@ -818,6 +996,7 @@
         const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('start') || hashParams.get('tgWebAppStartParam') || null;
 
         const PERMANENT_STORAGE_KEY = 'moontap_user_data_permanent_' + userId;
+        const PERMANENT_WALLET_KEY = 'moontap_ton_wallet_locked_' + userId;
 
         let currentLang = localStorage.getItem('moontap_lang_' + userId) || 'ar';
 
@@ -835,16 +1014,24 @@
                 tabMiners: "المعدنون",
                 tabTasks: "المهام",
                 tabMining: "التعدين",
-                walletTitle: "💳 محفظة السحب",
-                walletDesc: "إدارة رصيدك وسحب أرباحك بكل موثوقية.",
+                walletTitle: "💳 محفظة السحب (TON)",
+                walletDesc: "إدارة رصيدك وسحب أرباحك عبر شبكة TON بكل موثوقية.",
                 walletAvailable: "إجمالي رصيدك المتاح للسحب",
-                walletInputPlaceholder: "أدخل عنوان محفظة USDT (TRC20 / TON)...",
+                savedTonLabel: "✅ عنوان محفظة TON المثبت:",
+                btnEditTon: "تغيير ✏️",
+                btnSaveTon: "🔒 تثبيت",
+                walletInputPlaceholder: "أدخل عنوان محفظة TON الخاصة بك...",
                 withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 1000 MOON)",
                 btnSubmitWithdraw: "🚀 إرسال طلب السحب",
-                labTitle: "🧪 المعمل الكمي المتقدم",
-                labDesc: "قم بتنشيط معالج التبريد لتكرير الأصول وضاعف أرباحك بنسبة +10%!",
-                labStatusLabel: "حالة المعالج النشط",
-                btnStartLab: "⚛️ بدء دورة المعالجة (مشاهدة إعلان)",
+                labTitle: "🧪 المختبر الكمي ومفاعل الطاقة",
+                labDesc: "شغّل المفاعلات، اشحن البلازما، وفك التشفير لمضاعفة إنتاجك من عملات MOON!",
+                labCoreTitle: "مفاعل شحن البلازما",
+                labCoreDesc: "كل شحنة تمنحك +1.5 MOON فوراً، وعند اكتمال 100% تحصل على انفجار بقيمة +8 MOON!",
+                btnChargePlasma: "🔋 شحن نواة البلازما (+25% ومكافأة فورية)",
+                labRefineryTitle: "مصفاة تقطير الكريستال",
+                btnStartLab: "🧪 تشغيل دورة التقطير (+5 MOON)",
+                labCipherTitle: "خزنة الشفرات الكونية",
+                labCipherDesc: "اضغط على الأقفال الثلاثة لفك شيفرة الصندوق السري وربح حتى +6 MOON!",
                 refTitle: "👥 شبكة الأصدقاء والإحالات",
                 refDesc: "ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!",
                 eliteTitle: "شريك النخبة",
@@ -889,7 +1076,8 @@
                 alertTaskReward: "🎉 تم إنجاز المهمة بنجاح وحصلت على +{amount} MOON.",
                 alertDailyDone: "⚠️ لم يحن موعد استلام المكافأة بعد! تابع العد التنازلي.",
                 alertDailyReward: "🎉 تم استلام مكافأة اليوم D{day} بنجاح (+{rew} MOON)!",
-                alertWalletInvalid: "⚠️ أدخل عنوان محفظة صحيح ومعتمد أولاً!",
+                alertWalletInvalid: "⚠️ أدخل عنوان محفظة TON صحيح أولاً!",
+                alertWalletSaved: "✅ تم تثبيت وحفظ عنوان محفظة TON بشكل دائم!",
                 alertMinWithdraw: "⚠️ الحد الأدنى للسحب هو 1000 MOON.",
                 alertBalanceLow: "⚠️ رصيدك المتاح غير كافٍ لإتمام السحب!",
                 alertWithdrawSuccess: "✅ تم إرسال طلب السحب بنجاح ({amount} MOON ≈ {usdt} USDT)!",
@@ -916,16 +1104,24 @@
                 tabMiners: "Miners",
                 tabTasks: "Tasks",
                 tabMining: "Mining",
-                walletTitle: "💳 Withdrawal Wallet",
-                walletDesc: "Manage and withdraw your assets securely.",
+                walletTitle: "💳 TON Withdrawal Wallet",
+                walletDesc: "Manage and withdraw your assets via TON network securely.",
                 walletAvailable: "Available Balance for Withdrawal",
-                walletInputPlaceholder: "Enter USDT (TRC20 / TON) Address...",
+                savedTonLabel: "✅ Locked TON Wallet Address:",
+                btnEditTon: "Edit ✏️",
+                btnSaveTon: "🔒 Lock",
+                walletInputPlaceholder: "Enter your TON Wallet Address...",
                 withdrawAmountPlaceholder: "Withdraw Amount (Min 1000 MOON)",
                 btnSubmitWithdraw: "🚀 Submit Withdrawal Request",
-                labTitle: "🧪 Advanced Quantum Lab",
-                labDesc: "Activate cooling processor to refine assets and boost earnings by +10%!",
-                labStatusLabel: "Active Processor Status",
-                btnStartLab: "⚛️ Start Refining Cycle (Watch Ad)",
+                labTitle: "🧪 Quantum Lab & Energy Reactor",
+                labDesc: "Run reactors, charge plasma, and decrypt vaults to multiply your MOON!",
+                labCoreTitle: "Plasma Charge Reactor",
+                labCoreDesc: "Each charge gives +1.5 MOON instantly, and 100% triggers a +8 MOON burst!",
+                btnChargePlasma: "🔋 Charge Plasma Core (+25% & Instant Bonus)",
+                labRefineryTitle: "Crystal Distillation Refinery",
+                btnStartLab: "🧪 Start Distillation Cycle (+5 MOON)",
+                labCipherTitle: "Cosmic Cipher Vault",
+                labCipherDesc: "Tap all 3 locks to decrypt the secret vault and win up to +6 MOON!",
                 refTitle: "👥 Referral Network & Friends",
                 refDesc: "Invite partners & boost your mining speed by +50%!",
                 eliteTitle: "Elite Partner",
@@ -970,7 +1166,8 @@
                 alertTaskReward: "🎉 Task completed! +{amount} MOON added.",
                 alertDailyDone: "⚠️ Daily reward already claimed! Follow countdown.",
                 alertDailyReward: "🎉 Day D{day} check-in claimed (+{rew} MOON)!",
-                alertWalletInvalid: "⚠️ Enter a valid wallet address first!",
+                alertWalletInvalid: "⚠️ Enter a valid TON wallet address first!",
+                alertWalletSaved: "✅ TON wallet address permanently locked and saved!",
                 alertMinWithdraw: "⚠️ Minimum withdrawal is 1000 MOON.",
                 alertBalanceLow: "⚠️ Insufficient balance for withdrawal!",
                 alertWithdrawSuccess: "✅ Withdrawal submitted ({amount} MOON ≈ {usdt} USDT)!",
@@ -1015,14 +1212,22 @@
             document.getElementById('walletTitle').innerText = t.walletTitle;
             document.getElementById('walletDesc').innerText = t.walletDesc;
             document.getElementById('walletAvailableLabel').innerText = t.walletAvailable;
+            document.getElementById('savedTonLabel').innerText = t.savedTonLabel;
+            document.getElementById('btnEditTon').innerText = t.btnEditTon;
+            document.getElementById('btnSaveTon').innerText = t.btnSaveTon;
             document.getElementById('walletInput').placeholder = t.walletInputPlaceholder;
             document.getElementById('withdrawAmountInput').placeholder = t.withdrawAmountPlaceholder;
             document.getElementById('btnSubmitWithdraw').innerText = t.btnSubmitWithdraw;
 
             document.getElementById('labTitle').innerText = t.labTitle;
             document.getElementById('labDesc').innerText = t.labDesc;
-            document.getElementById('labStatusLabel').innerText = t.labStatusLabel;
+            document.getElementById('labCoreTitle').innerText = t.labCoreTitle;
+            document.getElementById('labCoreDesc').innerText = t.labCoreDesc;
+            document.getElementById('btnChargePlasma').innerText = t.btnChargePlasma;
+            document.getElementById('labRefineryTitle').innerText = t.labRefineryTitle;
             document.getElementById('btnStartLab').innerText = t.btnStartLab;
+            document.getElementById('labCipherTitle').innerText = t.labCipherTitle;
+            document.getElementById('labCipherDesc').innerText = t.labCipherDesc;
 
             document.getElementById('refTitle').innerText = t.refTitle;
             document.getElementById('refDesc').innerText = t.refDesc;
@@ -1108,16 +1313,29 @@
             savedWallet: '',
             hasCelebratedAllTasks: false,
             inviterId: null,
-            labCooldown: 0
+            labCooldown: 0,
+            plasmaCharge: 0,
+            unlockedCiphers: [],
+            cipherCooldown: 0
         };
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
         if (!userState.completedTasks) userState.completedTasks = [];
         if (!userState.taskCooldowns) userState.taskCooldowns = {};
+        if (!userState.unlockedCiphers) userState.unlockedCiphers = [];
+        if (typeof userState.plasmaCharge !== 'number') userState.plasmaCharge = 0;
         if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
         if (typeof userState.checkinStreak !== 'number') {
             userState.checkinStreak = userState.lastCheckinTime > 0 ? 1 : 0;
+        }
+
+        // استرداد عنوان محفظة TON من المفتاح الدائم المستقل
+        let backupTonWallet = localStorage.getItem(PERMANENT_WALLET_KEY);
+        if (backupTonWallet && !userState.savedWallet) {
+            userState.savedWallet = backupTonWallet;
+        } else if (userState.savedWallet) {
+            localStorage.setItem(PERMANENT_WALLET_KEY, userState.savedWallet);
         }
 
         userState.completedTasks = userState.completedTasks.filter(id => id === 1);
@@ -1131,8 +1349,59 @@
 
         localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
 
+        // --- دوال حفظ وتثبيت عنوان محفظة TON بشكل دائم ---
+        function autoSaveTonWallet(val) {
+            let clean = val.trim();
+            if (clean.length >= 10) {
+                userState.savedWallet = clean;
+                localStorage.setItem(PERMANENT_WALLET_KEY, clean);
+                localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
+            }
+        }
+
+        function lockAndSaveTonWallet() {
+            const t = i18n[currentLang];
+            const val = document.getElementById('walletInput').value.trim();
+            if (!val || val.length < 10) {
+                showMessage(t.alertWalletInvalid);
+                return;
+            }
+            userState.savedWallet = val;
+            localStorage.setItem(PERMANENT_WALLET_KEY, val);
+            saveUserData();
+            renderWalletLockUI();
+            showMessage(t.alertWalletSaved);
+        }
+
+        function unlockWalletEdit() {
+            document.getElementById('savedWalletDisplay').style.display = 'none';
+            document.getElementById('walletInputContainer').style.display = 'flex';
+            document.getElementById('walletInput').value = userState.savedWallet || '';
+            document.getElementById('walletInput').focus();
+        }
+
+        function renderWalletLockUI() {
+            const savedDisplay = document.getElementById('savedWalletDisplay');
+            const inputContainer = document.getElementById('walletInputContainer');
+            const lockedAddrEl = document.getElementById('lockedTonAddress');
+            const inputEl = document.getElementById('walletInput');
+
+            if (userState.savedWallet && userState.savedWallet.length >= 10) {
+                savedDisplay.style.display = 'flex';
+                inputContainer.style.display = 'none';
+                lockedAddrEl.innerText = userState.savedWallet;
+                inputEl.value = userState.savedWallet;
+            } else {
+                savedDisplay.style.display = 'none';
+                inputContainer.style.display = 'flex';
+            }
+        }
+
         async function saveUserData() {
             try {
+                if (userState.savedWallet) {
+                    localStorage.setItem(PERMANENT_WALLET_KEY, userState.savedWallet);
+                }
                 localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
                 let payload = { id: userId };
                 if (userState.inviterId) {
@@ -1265,6 +1534,122 @@
             }
         }
 
+        // --- دوال المعمل الكمي التفاعلي (3 أنظمة) ---
+        function chargePlasmaCore() {
+            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
+            userState.plasmaCharge = (userState.plasmaCharge || 0) + 25;
+            if (userState.plasmaCharge >= 100) {
+                userState.plasmaCharge = 0;
+                userState.balance += 9.50; // 1.5 + 8.0 انفجار النواة
+                saveUserData();
+                updateUI();
+                triggerCelebration();
+                showMessage(currentLang === 'ar' ? "💥 اكتمل شحن البلازما 100%! حصلت على انفجار طاقة +9.50 MOON!" : "💥 Plasma 100% full! +9.50 MOON burst added!");
+            } else {
+                userState.balance += 1.50;
+                saveUserData();
+                updateUI();
+                showMessage(currentLang === 'ar' ? `⚡ تم شحن النواة إلى ${userState.plasmaCharge}% وكسبت +1.50 MOON!` : `⚡ Core charged to ${userState.plasmaCharge}% & +1.50 MOON added!`);
+            }
+        }
+
+        function startQuantumRefining() {
+            let now = Date.now();
+            if (userState.labCooldown && (now < userState.labCooldown)) {
+                showMessage(currentLang === 'ar' ? "⚠️ المصفاة قيد التبريد حالياً! انتظر انتهاء المؤقت." : "⚠️ Refinery is cooling down! Wait for timer.");
+                return;
+            }
+            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
+            userState.labCooldown = Date.now() + (15 * 60 * 1000);
+            userState.balance += 5.00;
+            saveUserData();
+            updateUI();
+            triggerCelebration();
+            showMessage(currentLang === 'ar' ? "🧪 تمت عملية التقطير بنجاح وأُضيف +5 MOON لرصيدك!" : "🧪 Distillation complete! +5 MOON added.");
+        }
+
+        function unlockCipherNode(nodeNum) {
+            let now = Date.now();
+            if (userState.cipherCooldown && now < userState.cipherCooldown) {
+                let rem = formatRemainingTime(userState.cipherCooldown - now);
+                showMessage(currentLang === 'ar' ? `⏳ الخزنة قيد إعادة التشفير! متاح بعد ${rem}` : `⏳ Vault re-encrypting! Available in ${rem}`);
+                return;
+            }
+            if (!userState.unlockedCiphers) userState.unlockedCiphers = [];
+            if (userState.unlockedCiphers.includes(nodeNum)) return;
+
+            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
+            userState.unlockedCiphers.push(nodeNum);
+
+            if (userState.unlockedCiphers.length >= 3) {
+                let mysteryReward = Math.floor(Math.random() * 5) + 2; // 2 to 6 MOON
+                userState.balance += mysteryReward;
+                userState.unlockedCiphers = [];
+                userState.cipherCooldown = Date.now() + TWO_HOURS_MS;
+                saveUserData();
+                updateUI();
+                triggerCelebration();
+                showMessage(currentLang === 'ar' ? `🔓 تم كسر الأقفال الثلاثة! ربحت +${mysteryReward} MOON من الخزنة السرية!` : `🔓 All 3 locks decrypted! Won +${mysteryReward} MOON!`);
+            } else {
+                userState.balance += 0.50;
+                saveUserData();
+                updateUI();
+                showMessage(currentLang === 'ar' ? `🔑 تم فك القفل (${userState.unlockedCiphers.length}/3) وحصلت على +0.50 MOON!` : `🔑 Lock (${userState.unlockedCiphers.length}/3) opened! +0.50 MOON!`);
+            }
+        }
+
+        function renderLabUI() {
+            let now = Date.now();
+            // 1. تحديث البلازما
+            let charge = userState.plasmaCharge || 0;
+            let pVal = document.getElementById('plasmaChargeVal');
+            let pBar = document.getElementById('plasmaProgressBar');
+            if (pVal) pVal.innerText = charge;
+            if (pBar) pBar.style.width = charge + '%';
+
+            // 2. تحديث المصفاة
+            let labStateTxt = document.getElementById('labStateTxt');
+            let labTimerTxt = document.getElementById('labTimerTxt');
+            let labRem = (userState.labCooldown || 0) - now;
+            if (labRem > 0) {
+                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "جاري تبريد المصفاة الكريستالية ❄️" : "Cooling crystal refinery ❄️";
+                if (labTimerTxt) labTimerTxt.innerText = formatRemainingTime(labRem);
+            } else {
+                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "المصفاة جاهزة لاستخلاص +5.00 MOON صافية ⚡" : "Refinery ready to extract +5.00 MOON ⚡";
+                if (labTimerTxt) labTimerTxt.innerText = "00:00:00";
+            }
+
+            // 3. تحديث خزنة الشفرات
+            let cBadge = document.getElementById('cipherStatusBadge');
+            let cRem = (userState.cipherCooldown || 0) - now;
+            let names = ['#Alpha', '#Beta', '#Gamma'];
+            if (cRem > 0) {
+                if (cBadge) cBadge.innerText = `⏳ ${formatRemainingTime(cRem)}`;
+                for (let i = 1; i <= 3; i++) {
+                    let el = document.getElementById('cipherNode' + i);
+                    if (el) {
+                        el.className = 'cipher-node';
+                        el.innerHTML = `<span>⏳</span>${names[i-1]}`;
+                    }
+                }
+            } else {
+                let unlocked = userState.unlockedCiphers || [];
+                if (cBadge) cBadge.innerText = `${unlocked.length} / 3`;
+                for (let i = 1; i <= 3; i++) {
+                    let el = document.getElementById('cipherNode' + i);
+                    if (el) {
+                        if (unlocked.includes(i)) {
+                            el.className = 'cipher-node unlocked';
+                            el.innerHTML = `<span>🔓</span>${names[i-1]}`;
+                        } else {
+                            el.className = 'cipher-node';
+                            el.innerHTML = `<span>🔒</span>${names[i-1]}`;
+                        }
+                    }
+                }
+            }
+        }
+
         function updateAllTimersUI() {
             const t = i18n[currentLang];
             let miningData = getCurrentMinedData();
@@ -1292,18 +1677,9 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            let labStateTxt = document.getElementById('labStateTxt');
-            let labTimerTxt = document.getElementById('labTimerTxt');
-            let now = Date.now();
-            let labRem = (userState.labCooldown || 0) - now;
-            if (labRem > 0) {
-                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "قيد التبريد والمعالجة ⚛️" : "Refining in progress ⚛️";
-                if (labTimerTxt) labTimerTxt.innerText = formatRemainingTime(labRem);
-            } else {
-                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "جاهز للتشغيل ⚡" : "Ready to run ⚡";
-                if (labTimerTxt) labTimerTxt.innerText = "00:00:00";
-            }
+            renderLabUI();
 
+            let now = Date.now();
             let checkinBtn = document.getElementById('checkinBtn');
             if (checkinBtn) {
                 let nextDayIndex = (userState.checkinStreak || 0) % 7;
@@ -1330,6 +1706,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             applyLanguage();
+            renderWalletLockUI();
             updateUI();
             syncReferralsAndCloud();
         });
@@ -1344,21 +1721,6 @@
             saveUserData();
             updateUI();
             showMessage(t.alertClaimSuccess.replace('{amount}', claimedAmount.toFixed(2)));
-        }
-
-        function startQuantumRefining() {
-            let now = Date.now();
-            if (userState.labCooldown && (now < userState.labCooldown)) {
-                showMessage(currentLang === 'ar' ? "⚠️ المعمل قيد التبريد حالياً! انتظر انتهاء المؤقت." : "⚠️ Lab is currently cooling down! Wait for timer.");
-                return;
-            }
-            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.labCooldown = Date.now() + (15 * 60 * 1000);
-            userState.balance += 5.00;
-            saveUserData();
-            updateUI();
-            triggerCelebration();
-            showMessage(currentLang === 'ar' ? "⚛️ تمت عملية التكرير بنجاح وأُضيف طيف +5 MOON لرصيدك!" : "⚛️ Refining complete! +5 MOON added.");
         }
 
         function copyViralPitch() {
@@ -1377,7 +1739,7 @@
                 document.getElementById('modalBal').innerText = userState.balance.toFixed(2);
                 document.getElementById('userLevel').innerText = userState.level;
                 document.getElementById('modalLevel').innerText = userState.level;
-                if(userState.savedWallet) document.getElementById('walletInput').value = userState.savedWallet;
+                renderWalletLockUI();
 
                 let tcEl = document.getElementById('teamCount');
                 let atcEl = document.getElementById('activeTeamCount');
@@ -1612,13 +1974,12 @@
             showMessage(t.alertDailyReward.replace('{day}', dayNum).replace('{rew}', reward));
         }
 
-        // --- دالة إرسال إشعار السحب المباشر للقناة (تعمل بكفاءة تامة وتطابق الصورة) ---
         async function sendWithdrawNotification(amount, usdt, wallet) {
             if (!NOTIF_BOT_TOKEN) return;
             const message = `🚨 *طلب سحب جديد!*\n\n` +
                             `👤 المستخدم: \`@${telegramUser?.username || 'user'}\` (ID: \`${userId}\`)\n` +
                             `💰 المبلغ: \`${amount} MOON\` (\`${usdt} USDT\`)\n` +
-                            `💳 المحفظة:\n\`${wallet}\``;
+                            `💳 محفظة TON:\n\`${wallet}\``;
             try {
                 await fetch(`https://api.telegram.org/bot${NOTIF_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -1636,11 +1997,17 @@
 
         async function submitWithdraw() {
             const t = i18n[currentLang];
-            const walletAddr = document.getElementById('walletInput').value.trim();
+            const inputVal = document.getElementById('walletInput').value.trim();
+            const walletAddr = inputVal || userState.savedWallet || '';
             const amountVal = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
+            
             if (!walletAddr || walletAddr.length < 10) { showMessage(t.alertWalletInvalid); return; }
+            
             userState.savedWallet = walletAddr;
+            localStorage.setItem(PERMANENT_WALLET_KEY, walletAddr);
             saveUserData();
+            renderWalletLockUI();
+
             if (amountVal < 1000) { showMessage(t.alertMinWithdraw); return; }
             if (amountVal > userState.balance) { showMessage(t.alertBalanceLow); return; }
             
@@ -1650,7 +2017,6 @@
             saveUserData();
             updateUI();
             
-            // إرسال الإشعار فوراً للقناة كما كان يحدث في السابق
             await sendWithdrawNotification(amountVal, usdtEquivalent, walletAddr);
 
             try {
@@ -1696,9 +2062,10 @@
             document.getElementById(modalId).style.display = 'flex';
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
+            if (modalId === 'walletModal') renderWalletLockUI();
             if (modalId === 'refModal') syncReferralsAndCloud();
             if (modalId === 'minersModal') renderLevelsList();
-            if (modalId === 'tasksModal') updateAllTimersUI();
+            if (modalId === 'tasksModal' || modalId === 'labModal') updateAllTimersUI();
         }
 
         function openMiningTab(btnEl) { 
