@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MoonTap Empire - Ultimate Ecosystem</title>
+    <title>MoonTap Empire - Quantum Bubbles</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -17,7 +17,8 @@
             --text-gold: #fde68a;
             --text-dim: #94a3b8;
             --danger-red: #ef4444;
-            --cyan-glow: #06b6d4;
+            --neon-cyan: #06b6d4;
+            --neon-purple: #a855f7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, 'Segoe UI', Arial, sans-serif; user-select: none; }
@@ -359,7 +360,6 @@
         .wallet-card-box .value-moon { font-size: 1.3rem; color: #34d399; font-weight: bold; direction: ltr; }
         .wallet-card-box .value-usd { font-size: 0.85rem; color: #fef08a; margin-top: 2px; font-weight: bold; direction: ltr; }
 
-        /* تصميم حفظ وتثبيت محفظة TON الدائم */
         .ton-wallet-box {
             background: rgba(16, 185, 129, 0.08);
             border: 1px solid rgba(16, 185, 129, 0.45);
@@ -411,81 +411,93 @@
             white-space: nowrap;
         }
 
-        /* تصميم المعمل الكمي المتطور (3 وحدات تفاعلية) */
-        .lab-module-card {
-            background: linear-gradient(180deg, #141210 0%, #080706 100%);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 10px;
-            text-align: inherit;
+        .bubble-arena {
             position: relative;
+            width: 100%;
+            height: 250px;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.12) 0%, rgba(15, 13, 11, 0.95) 75%);
+            border: 1.5px solid rgba(6, 182, 212, 0.4);
+            border-radius: 18px;
             overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 25px rgba(6, 182, 212, 0.15);
         }
-        .lab-module-header {
+        .arena-hint {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            right: 0;
+            font-size: 0.68rem;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .quantum-bubble {
+            position: absolute;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 6px;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.25s ease;
+            box-shadow: 0 0 16px currentColor, inset 0 0 10px rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            animation: floatBubble 3s ease-in-out infinite alternate;
         }
-        .lab-module-title {
-            font-size: 0.82rem;
-            font-weight: bold;
-            color: #fef08a;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .quantum-bubble:active {
+            transform: scale(1.35) !important;
+            opacity: 0;
         }
-        .lab-badge {
-            font-size: 0.65rem;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
+        .quantum-bubble .bubble-icon { font-size: 1.25rem; }
+        .quantum-bubble .bubble-val {
+            font-size: 0.6rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
             direction: ltr;
         }
-        .lab-progress-track {
-            width: 100%;
-            height: 10px;
-            background: #050403;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.08);
-            overflow: hidden;
-            margin: 8px 0;
+        .bubble-gold {
+            background: radial-gradient(circle at 35% 35%, rgba(254, 240, 138, 0.8), rgba(217, 119, 6, 0.7));
+            border: 1.5px solid #fde68a;
+            color: rgba(245, 158, 11, 0.6);
         }
-        .lab-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f59e0b, #10b981);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-            transition: width 0.35s ease;
+        .bubble-cyan {
+            background: radial-gradient(circle at 35% 35%, rgba(165, 243, 252, 0.8), rgba(8, 145, 178, 0.7));
+            border: 1.5px solid #67e8f9;
+            color: rgba(6, 182, 212, 0.6);
         }
-        .cipher-nodes-grid {
+        .bubble-purple {
+            background: radial-gradient(circle at 35% 35%, rgba(243, 232, 255, 0.8), rgba(147, 51, 234, 0.7));
+            border: 1.5px solid #d8b4fe;
+            color: rgba(168, 85, 247, 0.6);
+        }
+        .bubble-emerald {
+            background: radial-gradient(circle at 35% 35%, rgba(167, 243, 208, 0.8), rgba(5, 150, 105, 0.7));
+            border: 1.5px solid #6ee7b7;
+            color: rgba(16, 185, 129, 0.6);
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-12px) rotate(6deg); }
+        }
+
+        .bubble-stats-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin: 8px 0;
+            margin-bottom: 10px;
         }
-        .cipher-node {
-            background: #090807;
-            border: 1px dashed rgba(245, 158, 11, 0.45);
-            border-radius: 10px;
-            padding: 8px 4px;
+        .bubble-stat-box {
+            background: #050403;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 8px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.72rem;
-            color: #cbd5e1;
         }
-        .cipher-node.unlocked {
-            background: rgba(16, 185, 129, 0.18);
-            border: 1px solid #10b981;
-            color: #34d399;
-            font-weight: bold;
-        }
-        .cipher-node span { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        .bubble-stat-box span { font-size: 0.65rem; color: var(--text-dim); display: block; margin-bottom: 2px; }
+        .bubble-stat-box strong { font-size: 0.95rem; color: #fff; direction: ltr; display: inline-block; }
 
         .friends-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .friend-btn {
@@ -758,7 +770,7 @@
         </div>
     </div>
 
-    <!-- نافذة المحفظة (مع تثبيت محفظة TON الدائم وإزالة TRC20) -->
+    <!-- نافذة المحفظة (TON) -->
     <div class="modal-overlay" id="walletModal">
         <div class="modal-box">
             <div class="modal-title" id="walletTitle">💳 محفظة السحب (TON)</div>
@@ -770,7 +782,6 @@
                 <div class="value-usd"><span id="modalUsdVal">0.0000</span> USDT</div>
             </div>
 
-            <!-- عرض المحفظة المحفوظة بشكل دائم ومقفل -->
             <div class="ton-wallet-box" id="savedWalletDisplay">
                 <div style="text-align: right; flex: 1;">
                     <span style="font-size: 0.65rem; color: #94a3b8; display: block;" id="savedTonLabel">✅ عنوان محفظة TON المثبت:</span>
@@ -779,7 +790,6 @@
                 <button class="btn-edit-wallet" onclick="unlockWalletEdit()" id="btnEditTon">تغيير ✏️</button>
             </div>
 
-            <!-- حقل إدخال وحفظ عنوان TON لأول مرة -->
             <div class="wallet-input-group" id="walletInputContainer">
                 <input type="text" class="input-wallet" id="walletInput" placeholder="أدخل عنوان محفظة TON الخاصة بك..." oninput="autoSaveTonWallet(this.value)">
                 <button class="btn-save-ton" onclick="lockAndSaveTonWallet()" id="btnSaveTon">🔒 تثبيت</button>
@@ -792,52 +802,30 @@
         </div>
     </div>
 
-    <!-- نافذة المعمل الكمي المتطور (3 أنظمة تفاعلية مشوقة) -->
+    <!-- نافذة المعمل الكمي: حقل الفقاعات العائمة التفاعلية -->
     <div class="modal-overlay" id="labModal">
         <div class="modal-box" style="max-width: 400px;">
-            <div class="modal-title" id="labTitle">🧪 المختبر الكمي ومفاعل الطاقة</div>
-            <div class="modal-desc" id="labDesc">شغّل المفاعلات، اشحن البلازما، وفك التشفير لمضاعفة إنتاجك من عملات MOON!</div>
+            <div class="modal-title" id="labTitle">🫧 حقل الفقاعات الكمية</div>
+            <div class="modal-desc" id="labDesc">افرقع الفقاعات الطافية بالضغط عليها لحصد عملات MOON الفورية! اللعب يتم داخل البوت.</div>
             
-            <!-- النظام 1: مفاعل شحن البلازما التراكمي -->
-            <div class="lab-module-card">
-                <div class="lab-module-header">
-                    <div class="lab-module-title">⚡ <span id="labCoreTitle">مفاعل شحن البلازما</span></div>
-                    <div class="lab-badge"><span id="plasmaChargeVal">0</span>% / 100%</div>
+            <div class="bubble-stats-row">
+                <div class="bubble-stat-box">
+                    <span id="poppedCountLabel">الفقاعات المفرقعة</span>
+                    <strong id="poppedCountVal" style="color: #34d399;">0</strong>
                 </div>
-                <p style="font-size: 0.68rem; color: #94a3b8;" id="labCoreDesc">كل شحنة تمنحك +1.5 MOON فوراً، وعند اكتمال 100% تحصل على انفجار بقيمة +8 MOON!</p>
-                <div class="lab-progress-track">
-                    <div class="lab-progress-fill" id="plasmaProgressBar"></div>
+                <div class="bubble-stat-box">
+                    <span id="bubbleTotalHarvestLabel">أرباح المعمل اليوم</span>
+                    <strong id="bubbleHarvestVal" style="color: #fde68a;">+0.00 MOON</strong>
                 </div>
-                <button class="btn-ad-direct" style="width:100%; padding:8px; font-size:0.76rem;" onclick="chargePlasmaCore()" id="btnChargePlasma">
-                    🔋 شحن نواة البلازما (+25% ومكافأة فورية)
-                </button>
             </div>
 
-            <!-- النظام 2: مصفاة التبريد والتقطير الكمي -->
-            <div class="lab-module-card">
-                <div class="lab-module-header">
-                    <div class="lab-module-title">⚛️ <span id="labRefineryTitle">مصفاة تقطير الكريستال</span></div>
-                    <div class="lab-badge" id="labTimerTxt">00:00:00</div>
-                </div>
-                <p style="font-size: 0.68rem; color: #94a3b8; margin-bottom: 6px;" id="labStateTxt">المصفاة جاهزة لاستخلاص +5.00 MOON صافية ⚡</p>
-                <button class="btn-gold-claim" style="font-size:0.82rem; padding:9px; margin-bottom:0;" id="btnStartLab" onclick="startQuantumRefining()">
-                    🧪 تشغيل دورة التقطير (+5 MOON)
-                </button>
+            <div class="bubble-arena" id="bubbleArena">
+                <div class="arena-hint" id="arenaHintText">✨ المس الفقاعات لفرقعتها وحصاد الأرباح!</div>
             </div>
 
-            <!-- النظام 3: خزنة الشفرات السرية (3 أقفال) -->
-            <div class="lab-module-card">
-                <div class="lab-module-header">
-                    <div class="lab-module-title">🔐 <span id="labCipherTitle">خزنة الشفرات الكونية</span></div>
-                    <div class="lab-badge" id="cipherStatusBadge">0 / 3</div>
-                </div>
-                <p style="font-size: 0.68rem; color: #94a3b8;" id="labCipherDesc">اضغط على الأقفال الثلاثة لفك شيفرة الصندوق السري وربح حتى +6 MOON!</p>
-                <div class="cipher-nodes-grid">
-                    <div class="cipher-node" id="cipherNode1" onclick="unlockCipherNode(1)"><span>🔒</span>#Alpha</div>
-                    <div class="cipher-node" id="cipherNode2" onclick="unlockCipherNode(2)"><span>🔒</span>#Beta</div>
-                    <div class="cipher-node" id="cipherNode3" onclick="unlockCipherNode(3)"><span>🔒</span>#Gamma</div>
-                </div>
-            </div>
+            <button class="btn-ad-direct" style="width:100%; margin-bottom:8px;" onclick="spawnBonusWave()" id="btnSpawnWave">
+                🌀 توليد موجة فقاعات إضافية (مكافأة)
+            </button>
 
             <button class="friend-btn" style="width:100%; background:#292524; padding:9px;" onclick="closeModal('labModal')"><span class="closeTxt">إغلاق</span></button>
         </div>
@@ -976,15 +964,11 @@
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
         const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
 
-        const NOTIF_BOT_TOKEN = '8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs'; 
-        const NOTIF_CHAT_ID = '@UsdtBoxAdmin77_bot';
-
         const REF_REWARD_USDT = 0.05;
         const REF_REWARD_MOON = 50.00;
 
         const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
         const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
-        const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
         const CHECKIN_REWARDS = [1, 2, 3, 4, 5, 7, 10];
 
         let telegramUser = tg?.initDataUnsafe?.user;
@@ -1023,15 +1007,12 @@
                 walletInputPlaceholder: "أدخل عنوان محفظة TON الخاصة بك...",
                 withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 1000 MOON)",
                 btnSubmitWithdraw: "🚀 إرسال طلب السحب",
-                labTitle: "🧪 المختبر الكمي ومفاعل الطاقة",
-                labDesc: "شغّل المفاعلات، اشحن البلازما، وفك التشفير لمضاعفة إنتاجك من عملات MOON!",
-                labCoreTitle: "مفاعل شحن البلازما",
-                labCoreDesc: "كل شحنة تمنحك +1.5 MOON فوراً، وعند اكتمال 100% تحصل على انفجار بقيمة +8 MOON!",
-                btnChargePlasma: "🔋 شحن نواة البلازما (+25% ومكافأة فورية)",
-                labRefineryTitle: "مصفاة تقطير الكريستال",
-                btnStartLab: "🧪 تشغيل دورة التقطير (+5 MOON)",
-                labCipherTitle: "خزنة الشفرات الكونية",
-                labCipherDesc: "اضغط على الأقفال الثلاثة لفك شيفرة الصندوق السري وربح حتى +6 MOON!",
+                labTitle: "🫧 حقل الفقاعات الكمية",
+                labDesc: "افرقع الفقاعات الطافية بالضغط عليها لحصد عملات MOON الفورية! اللعب يتم داخل البوت.",
+                poppedCountLabel: "الفقاعات المفرقعة",
+                bubbleTotalHarvestLabel: "أرباح المعمل اليوم",
+                btnSpawnWave: "🌀 توليد موجة فقاعات إضافية (مكافأة)",
+                arenaHint: "✨ المس الفقاعات لفرقعتها وحصاد الأرباح!",
                 refTitle: "👥 شبكة الأصدقاء والإحالات",
                 refDesc: "ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!",
                 eliteTitle: "شريك النخبة",
@@ -1113,15 +1094,12 @@
                 walletInputPlaceholder: "Enter your TON Wallet Address...",
                 withdrawAmountPlaceholder: "Withdraw Amount (Min 1000 MOON)",
                 btnSubmitWithdraw: "🚀 Submit Withdrawal Request",
-                labTitle: "🧪 Quantum Lab & Energy Reactor",
-                labDesc: "Run reactors, charge plasma, and decrypt vaults to multiply your MOON!",
-                labCoreTitle: "Plasma Charge Reactor",
-                labCoreDesc: "Each charge gives +1.5 MOON instantly, and 100% triggers a +8 MOON burst!",
-                btnChargePlasma: "🔋 Charge Plasma Core (+25% & Instant Bonus)",
-                labRefineryTitle: "Crystal Distillation Refinery",
-                btnStartLab: "🧪 Start Distillation Cycle (+5 MOON)",
-                labCipherTitle: "Cosmic Cipher Vault",
-                labCipherDesc: "Tap all 3 locks to decrypt the secret vault and win up to +6 MOON!",
+                labTitle: "🫧 Quantum Bubbles Field",
+                labDesc: "Tap floating bubbles to pop them and harvest instant MOON! All in-app fun.",
+                poppedCountLabel: "Bubbles Popped",
+                bubbleTotalHarvestLabel: "Lab Harvest Today",
+                btnSpawnWave: "🌀 Spawn Extra Bubble Wave (Bonus)",
+                arenaHint: "✨ Tap bubbles to pop & harvest crypto!",
                 refTitle: "👥 Referral Network & Friends",
                 refDesc: "Invite partners & boost your mining speed by +50%!",
                 eliteTitle: "Elite Partner",
@@ -1221,13 +1199,10 @@
 
             document.getElementById('labTitle').innerText = t.labTitle;
             document.getElementById('labDesc').innerText = t.labDesc;
-            document.getElementById('labCoreTitle').innerText = t.labCoreTitle;
-            document.getElementById('labCoreDesc').innerText = t.labCoreDesc;
-            document.getElementById('btnChargePlasma').innerText = t.btnChargePlasma;
-            document.getElementById('labRefineryTitle').innerText = t.labRefineryTitle;
-            document.getElementById('btnStartLab').innerText = t.btnStartLab;
-            document.getElementById('labCipherTitle').innerText = t.labCipherTitle;
-            document.getElementById('labCipherDesc').innerText = t.labCipherDesc;
+            document.getElementById('poppedCountLabel').innerText = t.poppedCountLabel;
+            document.getElementById('bubbleTotalHarvestLabel').innerText = t.bubbleTotalHarvestLabel;
+            document.getElementById('btnSpawnWave').innerText = t.btnSpawnWave;
+            document.getElementById('arenaHintText').innerText = t.arenaHint;
 
             document.getElementById('refTitle').innerText = t.refTitle;
             document.getElementById('refDesc').innerText = t.refDesc;
@@ -1262,6 +1237,15 @@
             renderLevelsList();
             checkCompletedTasksUI();
             updateAllTimersUI();
+        }
+
+        function triggerHaptic(type = 'impact', style = 'medium') {
+            try {
+                if (tg && tg.HapticFeedback) {
+                    if (type === 'impact') tg.HapticFeedback.impactOccurred(style);
+                    else if (type === 'notification') tg.HapticFeedback.notificationOccurred(style);
+                }
+            } catch(e) {}
         }
 
         function recoverAnyLegacyBalance() {
@@ -1313,24 +1297,21 @@
             savedWallet: '',
             hasCelebratedAllTasks: false,
             inviterId: null,
-            labCooldown: 0,
-            plasmaCharge: 0,
-            unlockedCiphers: [],
-            cipherCooldown: 0
+            bubblesPoppedCount: 0,
+            bubbleHarvestTotal: 0
         };
 
         if (!userState.miningStartTime) userState.miningStartTime = Date.now();
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
         if (!userState.completedTasks) userState.completedTasks = [];
         if (!userState.taskCooldowns) userState.taskCooldowns = {};
-        if (!userState.unlockedCiphers) userState.unlockedCiphers = [];
-        if (typeof userState.plasmaCharge !== 'number') userState.plasmaCharge = 0;
+        if (typeof userState.bubblesPoppedCount !== 'number') userState.bubblesPoppedCount = 0;
+        if (typeof userState.bubbleHarvestTotal !== 'number') userState.bubbleHarvestTotal = 0;
         if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
         if (typeof userState.checkinStreak !== 'number') {
             userState.checkinStreak = userState.lastCheckinTime > 0 ? 1 : 0;
         }
 
-        // استرداد عنوان محفظة TON من المفتاح الدائم المستقل
         let backupTonWallet = localStorage.getItem(PERMANENT_WALLET_KEY);
         if (backupTonWallet && !userState.savedWallet) {
             userState.savedWallet = backupTonWallet;
@@ -1349,7 +1330,6 @@
 
         localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(userState));
 
-        // --- دوال حفظ وتثبيت عنوان محفظة TON بشكل دائم ---
         function autoSaveTonWallet(val) {
             let clean = val.trim();
             if (clean.length >= 10) {
@@ -1366,6 +1346,7 @@
                 showMessage(t.alertWalletInvalid);
                 return;
             }
+            triggerHaptic('notification', 'success');
             userState.savedWallet = val;
             localStorage.setItem(PERMANENT_WALLET_KEY, val);
             saveUserData();
@@ -1374,6 +1355,7 @@
         }
 
         function unlockWalletEdit() {
+            triggerHaptic('impact', 'light');
             document.getElementById('savedWalletDisplay').style.display = 'none';
             document.getElementById('walletInputContainer').style.display = 'flex';
             document.getElementById('walletInput').value = userState.savedWallet || '';
@@ -1452,6 +1434,7 @@
 
         function openAdsterraLink() {
             const t = i18n[currentLang];
+            triggerHaptic('impact', 'medium');
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
             userState.balance += 1.00;
             saveUserData();
@@ -1480,6 +1463,7 @@
             if (newCalculatedLevel > userState.level) {
                 userState.level = newCalculatedLevel;
                 saveUserData();
+                triggerHaptic('notification', 'success');
                 const t = i18n[currentLang];
                 document.getElementById('newLevelReached').innerText = userState.level;
                 document.getElementById('newDailyCap').innerText = getDailyMiningLimit(userState.level);
@@ -1534,120 +1518,86 @@
             }
         }
 
-        // --- دوال المعمل الكمي التفاعلي (3 أنظمة) ---
-        function chargePlasmaCore() {
-            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.plasmaCharge = (userState.plasmaCharge || 0) + 25;
-            if (userState.plasmaCharge >= 100) {
-                userState.plasmaCharge = 0;
-                userState.balance += 9.50; // 1.5 + 8.0 انفجار النواة
-                saveUserData();
-                updateUI();
-                triggerCelebration();
-                showMessage(currentLang === 'ar' ? "💥 اكتمل شحن البلازما 100%! حصلت على انفجار طاقة +9.50 MOON!" : "💥 Plasma 100% full! +9.50 MOON burst added!");
-            } else {
-                userState.balance += 1.50;
-                saveUserData();
-                updateUI();
-                showMessage(currentLang === 'ar' ? `⚡ تم شحن النواة إلى ${userState.plasmaCharge}% وكسبت +1.50 MOON!` : `⚡ Core charged to ${userState.plasmaCharge}% & +1.50 MOON added!`);
+        const BUBBLE_TYPES = [
+            { class: 'bubble-gold', icon: '🪙', min: 0.50, max: 1.00, size: 55 },
+            { class: 'bubble-cyan', icon: '💎', min: 0.30, max: 0.70, size: 50 },
+            { class: 'bubble-purple', icon: '🔮', min: 0.40, max: 0.85, size: 52 },
+            { class: 'bubble-emerald', icon: '⚡', min: 0.25, max: 0.60, size: 48 }
+        ];
+
+        function createSingleBubble() {
+            const arena = document.getElementById('bubbleArena');
+            if (!arena) return;
+
+            const bType = BUBBLE_TYPES[Math.floor(Math.random() * BUBBLE_TYPES.length)];
+            const bubble = document.createElement('div');
+            bubble.className = `quantum-bubble ${bType.class}`;
+
+            const reward = (Math.random() * (bType.max - bType.min) + bType.min).toFixed(2);
+            bubble.style.width = `${bType.size}px`;
+            bubble.style.height = `${bType.size}px`;
+
+            const maxX = arena.clientWidth - bType.size - 10;
+            const maxY = arena.clientHeight - bType.size - 15;
+            const posX = Math.max(10, Math.floor(Math.random() * maxX));
+            const posY = Math.max(25, Math.floor(Math.random() * maxY));
+
+            bubble.style.left = `${posX}px`;
+            bubble.style.top = `${posY}px`;
+            bubble.style.animationDuration = `${(Math.random() * 2 + 2.5).toFixed(1)}s`;
+
+            bubble.innerHTML = `
+                <div class="bubble-icon">${bType.icon}</div>
+                <div class="bubble-val">+${reward}</div>
+            `;
+
+            bubble.onclick = function(e) {
+                e.stopPropagation();
+                popBubble(this, parseFloat(reward));
+            };
+
+            arena.appendChild(bubble);
+        }
+
+        function popBubble(bubbleEl, rewardVal) {
+            triggerHaptic('impact', 'medium');
+            bubbleEl.style.transform = 'scale(1.4)';
+            bubbleEl.style.opacity = '0';
+            setTimeout(() => { if (bubbleEl.parentNode) bubbleEl.parentNode.removeChild(bubbleEl); }, 220);
+
+            userState.balance += rewardVal;
+            userState.bubblesPoppedCount = (userState.bubblesPoppedCount || 0) + 1;
+            userState.bubbleHarvestTotal = (userState.bubbleHarvestTotal || 0) + rewardVal;
+
+            saveUserData();
+            updateUI();
+
+            setTimeout(() => {
+                const arena = document.getElementById('bubbleArena');
+                if (arena && arena.querySelectorAll('.quantum-bubble').length < 6) {
+                    createSingleBubble();
+                }
+            }, 1200);
+        }
+
+        function populateBubbles() {
+            const arena = document.getElementById('bubbleArena');
+            if (!arena) return;
+            arena.querySelectorAll('.quantum-bubble').forEach(b => b.remove());
+            for (let i = 0; i < 5; i++) {
+                createSingleBubble();
             }
         }
 
-        function startQuantumRefining() {
-            let now = Date.now();
-            if (userState.labCooldown && (now < userState.labCooldown)) {
-                showMessage(currentLang === 'ar' ? "⚠️ المصفاة قيد التبريد حالياً! انتظر انتهاء المؤقت." : "⚠️ Refinery is cooling down! Wait for timer.");
-                return;
-            }
+        function spawnBonusWave() {
+            triggerHaptic('notification', 'success');
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.labCooldown = Date.now() + (15 * 60 * 1000);
-            userState.balance += 5.00;
+            userState.balance += 2.00;
             saveUserData();
             updateUI();
             triggerCelebration();
-            showMessage(currentLang === 'ar' ? "🧪 تمت عملية التقطير بنجاح وأُضيف +5 MOON لرصيدك!" : "🧪 Distillation complete! +5 MOON added.");
-        }
-
-        function unlockCipherNode(nodeNum) {
-            let now = Date.now();
-            if (userState.cipherCooldown && now < userState.cipherCooldown) {
-                let rem = formatRemainingTime(userState.cipherCooldown - now);
-                showMessage(currentLang === 'ar' ? `⏳ الخزنة قيد إعادة التشفير! متاح بعد ${rem}` : `⏳ Vault re-encrypting! Available in ${rem}`);
-                return;
-            }
-            if (!userState.unlockedCiphers) userState.unlockedCiphers = [];
-            if (userState.unlockedCiphers.includes(nodeNum)) return;
-
-            openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.unlockedCiphers.push(nodeNum);
-
-            if (userState.unlockedCiphers.length >= 3) {
-                let mysteryReward = Math.floor(Math.random() * 5) + 2; // 2 to 6 MOON
-                userState.balance += mysteryReward;
-                userState.unlockedCiphers = [];
-                userState.cipherCooldown = Date.now() + TWO_HOURS_MS;
-                saveUserData();
-                updateUI();
-                triggerCelebration();
-                showMessage(currentLang === 'ar' ? `🔓 تم كسر الأقفال الثلاثة! ربحت +${mysteryReward} MOON من الخزنة السرية!` : `🔓 All 3 locks decrypted! Won +${mysteryReward} MOON!`);
-            } else {
-                userState.balance += 0.50;
-                saveUserData();
-                updateUI();
-                showMessage(currentLang === 'ar' ? `🔑 تم فك القفل (${userState.unlockedCiphers.length}/3) وحصلت على +0.50 MOON!` : `🔑 Lock (${userState.unlockedCiphers.length}/3) opened! +0.50 MOON!`);
-            }
-        }
-
-        function renderLabUI() {
-            let now = Date.now();
-            // 1. تحديث البلازما
-            let charge = userState.plasmaCharge || 0;
-            let pVal = document.getElementById('plasmaChargeVal');
-            let pBar = document.getElementById('plasmaProgressBar');
-            if (pVal) pVal.innerText = charge;
-            if (pBar) pBar.style.width = charge + '%';
-
-            // 2. تحديث المصفاة
-            let labStateTxt = document.getElementById('labStateTxt');
-            let labTimerTxt = document.getElementById('labTimerTxt');
-            let labRem = (userState.labCooldown || 0) - now;
-            if (labRem > 0) {
-                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "جاري تبريد المصفاة الكريستالية ❄️" : "Cooling crystal refinery ❄️";
-                if (labTimerTxt) labTimerTxt.innerText = formatRemainingTime(labRem);
-            } else {
-                if (labStateTxt) labStateTxt.innerText = currentLang === 'ar' ? "المصفاة جاهزة لاستخلاص +5.00 MOON صافية ⚡" : "Refinery ready to extract +5.00 MOON ⚡";
-                if (labTimerTxt) labTimerTxt.innerText = "00:00:00";
-            }
-
-            // 3. تحديث خزنة الشفرات
-            let cBadge = document.getElementById('cipherStatusBadge');
-            let cRem = (userState.cipherCooldown || 0) - now;
-            let names = ['#Alpha', '#Beta', '#Gamma'];
-            if (cRem > 0) {
-                if (cBadge) cBadge.innerText = `⏳ ${formatRemainingTime(cRem)}`;
-                for (let i = 1; i <= 3; i++) {
-                    let el = document.getElementById('cipherNode' + i);
-                    if (el) {
-                        el.className = 'cipher-node';
-                        el.innerHTML = `<span>⏳</span>${names[i-1]}`;
-                    }
-                }
-            } else {
-                let unlocked = userState.unlockedCiphers || [];
-                if (cBadge) cBadge.innerText = `${unlocked.length} / 3`;
-                for (let i = 1; i <= 3; i++) {
-                    let el = document.getElementById('cipherNode' + i);
-                    if (el) {
-                        if (unlocked.includes(i)) {
-                            el.className = 'cipher-node unlocked';
-                            el.innerHTML = `<span>🔓</span>${names[i-1]}`;
-                        } else {
-                            el.className = 'cipher-node';
-                            el.innerHTML = `<span>🔒</span>${names[i-1]}`;
-                        }
-                    }
-                }
-            }
+            populateBubbles();
+            showMessage(currentLang === 'ar' ? "🌊 تم إطلاق موجة فقاعات خارقة وحصلت على +2.00 MOON هدية!" : "🌊 Super bubble wave spawned! +2.00 MOON bonus!");
         }
 
         function updateAllTimersUI() {
@@ -1677,7 +1627,10 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            renderLabUI();
+            let popVal = document.getElementById('poppedCountVal');
+            let harvVal = document.getElementById('bubbleHarvestVal');
+            if (popVal) popVal.innerText = userState.bubblesPoppedCount || 0;
+            if (harvVal) harvVal.innerText = `+${(userState.bubbleHarvestTotal || 0).toFixed(2)} MOON`;
 
             let now = Date.now();
             let checkinBtn = document.getElementById('checkinBtn');
@@ -1715,6 +1668,7 @@
             const t = i18n[currentLang];
             let data = getCurrentMinedData();
             if (data.mined < 0.01) { showMessage(t.alertWait); return; }
+            triggerHaptic('notification', 'success');
             let claimedAmount = data.mined;
             userState.balance += claimedAmount;
             userState.miningStartTime = Date.now(); 
@@ -1724,6 +1678,7 @@
         }
 
         function copyViralPitch() {
+            triggerHaptic('impact', 'medium');
             const t = i18n[currentLang];
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
             const fullMsg = `${t.viralPitchText}${refLink}`;
@@ -1803,12 +1758,13 @@
                     particleCount: 100,
                     spread: 75,
                     origin: { y: 0.6 },
-                    colors: ['#f59e0b', '#10b981', '#3b82f6', '#fde68a']
+                    colors: ['#06b6d4', '#f59e0b', '#10b981', '#a855f7']
                 });
             }
         }
 
         function triggerEasterEgg() {
+            triggerHaptic('impact', 'heavy');
             let bonus = Math.floor(Math.random() * 3) + 1;
             userState.balance += bonus;
             saveUserData();
@@ -1835,12 +1791,14 @@
             const t = i18n[currentLang];
             if (userState.completedTasks.includes(taskId)) { showMessage(t.alertTaskDone); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
+                triggerHaptic('impact', 'light');
                 openTelegramUrlSafely(OFFICIAL_CHANNEL_LINK);
                 userState.pendingVerifyTasks.push(taskId);
                 saveUserData();
                 checkCompletedTasksUI();
                 return;
             }
+            triggerHaptic('notification', 'success');
             userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
             userState.completedTasks.push(taskId);
             userState.balance += rewardAmount;
@@ -1854,12 +1812,14 @@
             const t = i18n[currentLang];
             if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
+                triggerHaptic('impact', 'light');
                 shareReferral();
                 userState.pendingVerifyTasks.push(taskId);
                 saveUserData();
                 checkCompletedTasksUI();
                 return;
             }
+            triggerHaptic('notification', 'success');
             userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
             userState.taskCooldowns[taskId] = Date.now();
             userState.balance += rewardAmount;
@@ -1873,12 +1833,14 @@
             const t = i18n[currentLang];
             if (isTaskOnCooldown(taskId)) { showMessage(t.alertTaskDone); return; }
             if (!userState.pendingVerifyTasks.includes(taskId)) {
+                triggerHaptic('impact', 'light');
                 openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
                 userState.pendingVerifyTasks.push(taskId);
                 saveUserData();
                 checkCompletedTasksUI();
                 return;
             }
+            triggerHaptic('notification', 'success');
             userState.pendingVerifyTasks = userState.pendingVerifyTasks.filter(id => id !== taskId);
             userState.taskCooldowns[taskId] = Date.now();
             userState.balance += rewardAmount;
@@ -1960,6 +1922,7 @@
                 showMessage(t.alertDailyDone); 
                 return;
             }
+            triggerHaptic('notification', 'success');
             let currentDayIndex = (userState.checkinStreak || 0) % 7;
             let dayNum = currentDayIndex + 1;
             let reward = CHECKIN_REWARDS[currentDayIndex];
@@ -1974,27 +1937,7 @@
             showMessage(t.alertDailyReward.replace('{day}', dayNum).replace('{rew}', reward));
         }
 
-        async function sendWithdrawNotification(amount, usdt, wallet) {
-            if (!NOTIF_BOT_TOKEN) return;
-            const message = `🚨 *طلب سحب جديد!*\n\n` +
-                            `👤 المستخدم: \`@${telegramUser?.username || 'user'}\` (ID: \`${userId}\`)\n` +
-                            `💰 المبلغ: \`${amount} MOON\` (\`${usdt} USDT\`)\n` +
-                            `💳 محفظة TON:\n\`${wallet}\``;
-            try {
-                await fetch(`https://api.telegram.org/bot${NOTIF_BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: NOTIF_CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-            } catch (err) {
-                console.log("Notification send failed:", err);
-            }
-        }
-
+        // --- دالة السحب المؤمنة (ترسل الطلب لجدول Supabase والسيرفر يرسل الإشعار دون كشف التوكن) ---
         async function submitWithdraw() {
             const t = i18n[currentLang];
             const inputVal = document.getElementById('walletInput').value.trim();
@@ -2011,23 +1954,30 @@
             if (amountVal < 1000) { showMessage(t.alertMinWithdraw); return; }
             if (amountVal > userState.balance) { showMessage(t.alertBalanceLow); return; }
             
+            triggerHaptic('notification', 'success');
             userState.balance -= amountVal;
             let usdtEquivalent = (amountVal * 0.001).toFixed(3);
             document.getElementById('withdrawAmountInput').value = '';
             saveUserData();
             updateUI();
             
-            await sendWithdrawNotification(amountVal, usdtEquivalent, walletAddr);
-
             try {
-                const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
-                await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
-            } catch (e) {}
+                await supabaseClient.from('withdrawal_requests').insert([{
+                    user_id: userId,
+                    username: telegramUser?.username || 'user',
+                    amount_moon: amountVal,
+                    amount_usdt: parseFloat(usdtEquivalent),
+                    wallet_address: walletAddr
+                }]);
+            } catch (e) {
+                console.log("Withdraw log error:", e);
+            }
 
             showMessage(t.alertWithdrawSuccess.replace('{amount}', amountVal).replace('{usdt}', usdtEquivalent));
         }
 
         function copyRefLink() {
+            triggerHaptic('impact', 'medium');
             const t = i18n[currentLang];
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
             navigator.clipboard.writeText(refLink);
@@ -2035,6 +1985,7 @@
         }
 
         function shareReferral() {
+            triggerHaptic('impact', 'medium');
             const t = i18n[currentLang];
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
             const text = encodeURIComponent(`${t.shareText}${refLink}`);
@@ -2044,6 +1995,7 @@
         function claimTeamCommission() {
             const t = i18n[currentLang];
             if (userState.teamCommission <= 0) { showMessage(t.alertNoTeam); return; }
+            triggerHaptic('notification', 'success');
             let claimedMoon = userState.teamCommission;
             let claimedUsdt = (claimedMoon * 0.001).toFixed(3);
             userState.balance += claimedMoon;
@@ -2058,23 +2010,27 @@
         }
 
         function switchTab(modalId, btnEl) {
+            triggerHaptic('impact', 'light');
             document.querySelectorAll('.modal-overlay').forEach(m => { if (m.id !== 'levelUpModal') m.style.display = 'none'; });
             document.getElementById(modalId).style.display = 'flex';
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'walletModal') renderWalletLockUI();
+            if (modalId === 'labModal') populateBubbles();
             if (modalId === 'refModal') syncReferralsAndCloud();
             if (modalId === 'minersModal') renderLevelsList();
-            if (modalId === 'tasksModal' || modalId === 'labModal') updateAllTimersUI();
+            if (modalId === 'tasksModal') updateAllTimersUI();
         }
 
         function openMiningTab(btnEl) { 
+            triggerHaptic('impact', 'light');
             document.querySelectorAll('.modal-overlay').forEach(m => { if (m.id !== 'levelUpModal') m.style.display = 'none'; });
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
         }
 
         function closeModal(id) { 
+            triggerHaptic('impact', 'light');
             document.getElementById(id).style.display = 'none'; 
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('navMiningBtn').classList.add('active');
@@ -2082,4 +2038,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
