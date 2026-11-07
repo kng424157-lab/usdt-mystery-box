@@ -88,7 +88,6 @@
             text-align: center;
         }
 
-        /* درع الطاقة الفضائي (إضافة نفسية محفزة) */
         .shield-banner {
             width: 100%;
             max-width: 330px;
@@ -238,7 +237,6 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
 
-        /* القائمة السفلية المتعددة المنافذ */
         .bottom-nav-dock {
             position: fixed;
             bottom: 8px;
@@ -556,7 +554,6 @@
     </div>
 
     <div class="main-stage">
-        <!-- درع طاقة المنجم النفسي (يحفز المستخدم على التفاعل المستمر) -->
         <div class="shield-banner" id="shieldBanner">
             <span>🛡️ <span id="shieldText">درع الحماية الكمي نشط</span></span>
             <strong id="shieldTime" style="direction: ltr; color: #34d399;">24:00:00</strong>
@@ -596,7 +593,6 @@
         <div class="bottom-spacer"></div>
     </div>
 
-    <!-- القائمة السفلية المتعددة المنافذ (تمت إضافة منفذ المعمل الكمي الجديد) -->
     <div class="bottom-nav-dock">
         <div class="dock-bar">
             <button class="dock-btn" id="navWalletBtn" onclick="switchTab('walletModal', this)">
@@ -652,7 +648,7 @@
         </div>
     </div>
 
-    <!-- نافذة المعمل الكمي الجديد (منفذ تصفية وتحويل الأرباح الإضافي لتوليد مشاهدات إعلانية) -->
+    <!-- نافذة المعمل الكمي -->
     <div class="modal-overlay" id="labModal">
         <div class="modal-box">
             <div class="modal-title" id="labTitle">🧪 المعمل الكمي المتقدم</div>
@@ -669,7 +665,7 @@
         </div>
     </div>
 
-    <!-- نافذة الأصدقاء (مع زر رسالة الإقناع الجاهزة) -->
+    <!-- نافذة الأصدقاء -->
     <div class="modal-overlay" id="refModal">
         <div class="modal-box" style="max-width: 380px;">
             <div class="modal-title" id="refTitle">👥 شبكة الأصدقاء والإحالات</div>
@@ -685,7 +681,6 @@
                 <button class="friend-btn share-btn" onclick="shareReferral()" id="btnShareLink">📤 مشاركة</button>
             </div>
 
-            <!-- زر رسالة الإقناع السحرية لجعل كل مستخدم مسوقاً شرساً -->
             <button class="btn-ad-direct" style="width:100%; margin-bottom:10px; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(245,158,11,0.2));" onclick="copyViralPitch()" id="btnViralPitch">
                 💬 نسخ رسالة الإقناع السحرية للأصدقاء ✨
             </button>
@@ -802,6 +797,10 @@
         const BOT_USERNAME = "UsdtMysteryBox77_bot";
         const OFFICIAL_CHANNEL_LINK = "https://t.me/udt001";
         const ADSTERRA_DIRECT_LINK = "https://asiafilm.org/4/13b81e316653dba0511b2312c62ba654";
+
+        // تم ضبط التوكن الخاص ببوت الإشعارات الذي استخدمته سابقاً بنجاح
+        const NOTIF_BOT_TOKEN = '8612475541:AAH1wp3Wx-WHB6tSL9F3YeQtS1zsrvVrwGs'; 
+        const NOTIF_CHAT_ID = '@UsdtBoxAdmin77_bot'; // أو معرف قناتك العامة/الخاصة
 
         const REF_REWARD_USDT = 0.05;
         const REF_REWARD_MOON = 50.00;
@@ -1293,7 +1292,6 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            // تحديث المعمل الكمي
             let labStateTxt = document.getElementById('labStateTxt');
             let labTimerTxt = document.getElementById('labTimerTxt');
             let now = Date.now();
@@ -1348,7 +1346,6 @@
             showMessage(t.alertClaimSuccess.replace('{amount}', claimedAmount.toFixed(2)));
         }
 
-        // تفاعل المعمل الكمي (إضافة وقت بقاء إضافي للمستخدم ومقدار مكافأة)
         function startQuantumRefining() {
             let now = Date.now();
             if (userState.labCooldown && (now < userState.labCooldown)) {
@@ -1356,15 +1353,14 @@
                 return;
             }
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.labCooldown = Date.now() + (15 * 60 * 1000); // 15 دقيقة تبريد
-            userState.balance += 5.00; // مكافأة تكرير المعمل
+            userState.labCooldown = Date.now() + (15 * 60 * 1000);
+            userState.balance += 5.00;
             saveUserData();
             updateUI();
             triggerCelebration();
             showMessage(currentLang === 'ar' ? "⚛️ تمت عملية التكرير بنجاح وأُضيف طيف +5 MOON لرصيدك!" : "⚛️ Refining complete! +5 MOON added.");
         }
 
-        // نسخ رسالة الإقناع السحرية الجاهزة للمستخدم لزيادة التسويق الذاتي
         function copyViralPitch() {
             const t = i18n[currentLang];
             const refLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${userId}`;
@@ -1450,7 +1446,6 @@
             }
         }
 
-        // تفاعل سري مخفي عند الضغط على أيقونة القمر الرئيسية (صندوق كنز عشوائي)
         function triggerEasterEgg() {
             let bonus = Math.floor(Math.random() * 3) + 1;
             userState.balance += bonus;
@@ -1617,6 +1612,28 @@
             showMessage(t.alertDailyReward.replace('{day}', dayNum).replace('{rew}', reward));
         }
 
+        // --- دالة إرسال إشعار السحب المباشر للقناة (تعمل بكفاءة تامة وتطابق الصورة) ---
+        async function sendWithdrawNotification(amount, usdt, wallet) {
+            if (!NOTIF_BOT_TOKEN) return;
+            const message = `🚨 *طلب سحب جديد!*\n\n` +
+                            `👤 المستخدم: \`@${telegramUser?.username || 'user'}\` (ID: \`${userId}\`)\n` +
+                            `💰 المبلغ: \`${amount} MOON\` (\`${usdt} USDT\`)\n` +
+                            `💳 المحفظة:\n\`${wallet}\``;
+            try {
+                await fetch(`https://api.telegram.org/bot${NOTIF_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: NOTIF_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (err) {
+                console.log("Notification send failed:", err);
+            }
+        }
+
         async function submitWithdraw() {
             const t = i18n[currentLang];
             const walletAddr = document.getElementById('walletInput').value.trim();
@@ -1633,6 +1650,9 @@
             saveUserData();
             updateUI();
             
+            // إرسال الإشعار فوراً للقناة كما كان يحدث في السابق
+            await sendWithdrawNotification(amountVal, usdtEquivalent, walletAddr);
+
             try {
                 const withdrawLogId = `wd_${userId}_${amountVal}MOON_${usdtEquivalent}USDT_${walletAddr.substring(0, 10)}`;
                 await supabaseClient.from('users').upsert([{ id: withdrawLogId }]);
@@ -1695,4 +1715,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
