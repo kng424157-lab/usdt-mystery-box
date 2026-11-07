@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MoonTap Empire - Quantum Bubbles</title>
+    <title>MoonTap Empire - Quantum Mystery Bubbles</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -411,16 +411,20 @@
             white-space: nowrap;
         }
 
+        /* --- تصميم ساحة الفقاعات المحدودة ومربع نتيجة الفقاعة --- */
         .bubble-arena {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 240px;
             background: radial-gradient(circle at center, rgba(6, 182, 212, 0.12) 0%, rgba(15, 13, 11, 0.95) 75%);
             border: 1.5px solid rgba(6, 182, 212, 0.4);
             border-radius: 18px;
             overflow: hidden;
             margin-bottom: 10px;
             box-shadow: inset 0 0 25px rgba(6, 182, 212, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .arena-hint {
             position: absolute;
@@ -434,53 +438,42 @@
         }
         .quantum-bubble {
             position: absolute;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: transform 0.15s ease, opacity 0.25s ease;
-            box-shadow: 0 0 16px currentColor, inset 0 0 10px rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
-            animation: floatBubble 3s ease-in-out infinite alternate;
-        }
-        .quantum-bubble:active {
-            transform: scale(1.35) !important;
-            opacity: 0;
-        }
-        .quantum-bubble .bubble-icon { font-size: 1.25rem; }
-        .quantum-bubble .bubble-val {
-            font-size: 0.6rem;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-            direction: ltr;
-        }
-        .bubble-gold {
-            background: radial-gradient(circle at 35% 35%, rgba(254, 240, 138, 0.8), rgba(217, 119, 6, 0.7));
-            border: 1.5px solid #fde68a;
-            color: rgba(245, 158, 11, 0.6);
-        }
-        .bubble-cyan {
-            background: radial-gradient(circle at 35% 35%, rgba(165, 243, 252, 0.8), rgba(8, 145, 178, 0.7));
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.6);
+            background: radial-gradient(circle at 35% 35%, rgba(165, 243, 252, 0.9), rgba(8, 145, 178, 0.8));
             border: 1.5px solid #67e8f9;
-            color: rgba(6, 182, 212, 0.6);
+            font-size: 1.4rem;
+            animation: floatBubble 2.5s ease-in-out infinite alternate;
         }
-        .bubble-purple {
-            background: radial-gradient(circle at 35% 35%, rgba(243, 232, 255, 0.8), rgba(147, 51, 234, 0.7));
-            border: 1.5px solid #d8b4fe;
-            color: rgba(168, 85, 247, 0.6);
-        }
-        .bubble-emerald {
-            background: radial-gradient(circle at 35% 35%, rgba(167, 243, 208, 0.8), rgba(5, 150, 105, 0.7));
-            border: 1.5px solid #6ee7b7;
-            color: rgba(16, 185, 129, 0.6);
-        }
+        .quantum-bubble:active { transform: scale(1.3); }
 
         @keyframes floatBubble {
             0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-12px) rotate(6deg); }
+            100% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        /* نافذة منبثقة صغيرة لنتيجة الفقاعة (عملة، حظ أوفر، محاولة أخرى) */
+        .bubble-popup-result {
+            position: absolute;
+            background: rgba(15, 13, 11, 0.95);
+            border: 2px solid #f59e0b;
+            padding: 12px 18px;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            animation: popResultAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popResultAnim {
+            0% { transform: scale(0.4); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .bubble-stats-row {
@@ -802,29 +795,29 @@
         </div>
     </div>
 
-    <!-- نافذة المعمل الكمي: حقل الفقاعات العائمة التفاعلية -->
+    <!-- نافذة المعمل الكمي: صندوق الحظ والفقاعات المحدودة -->
     <div class="modal-overlay" id="labModal">
         <div class="modal-box" style="max-width: 400px;">
-            <div class="modal-title" id="labTitle">🫧 حقل الفقاعات الكمية</div>
-            <div class="modal-desc" id="labDesc">افرقع الفقاعات الطافية بالضغط عليها لحصد عملات MOON الفورية! اللعب يتم داخل البوت.</div>
+            <div class="modal-title" id="labTitle">🫧 صندوق الحظ والفقاعات الكمية</div>
+            <div class="modal-desc" id="labDesc">لديك محاولات محدودة لفتح الفقاعات! بعضها يمنح MOON، بعضها حظ أوفر، وبعضها يمنحك محاولة مجانية جديدة!</div>
             
             <div class="bubble-stats-row">
                 <div class="bubble-stat-box">
-                    <span id="poppedCountLabel">الفقاعات المفرقعة</span>
-                    <strong id="poppedCountVal" style="color: #34d399;">0</strong>
+                    <span>⚡ المحاولات المتبقية</span>
+                    <strong id="attemptsCountVal" style="color: #f59e0b;">10 / 10</strong>
                 </div>
                 <div class="bubble-stat-box">
-                    <span id="bubbleTotalHarvestLabel">أرباح المعمل اليوم</span>
-                    <strong id="bubbleHarvestVal" style="color: #fde68a;">+0.00 MOON</strong>
+                    <span>🎁 إجمالي أرباح المعمل</span>
+                    <strong id="bubbleHarvestVal" style="color: #34d399;">+0.00 MOON</strong>
                 </div>
             </div>
 
             <div class="bubble-arena" id="bubbleArena">
-                <div class="arena-hint" id="arenaHintText">✨ المس الفقاعات لفرقعتها وحصاد الأرباح!</div>
+                <div class="arena-hint" id="arenaHintText">✨ اضغط على الفقاعة لاكتشاف ما بداخلها!</div>
             </div>
 
-            <button class="btn-ad-direct" style="width:100%; margin-bottom:8px;" onclick="spawnBonusWave()" id="btnSpawnWave">
-                🌀 توليد موجة فقاعات إضافية (مكافأة)
+            <button class="btn-ad-direct" style="width:100%; margin-bottom:8px;" onclick="refillBubbleAttempts()" id="btnRefillAttempts">
+                🚀 نفدت محاولاتك؟ شاهد إعلان الراعي لتعبئة +10 محاولات جديدة!
             </button>
 
             <button class="friend-btn" style="width:100%; background:#292524; padding:9px;" onclick="closeModal('labModal')"><span class="closeTxt">إغلاق</span></button>
@@ -1007,12 +1000,12 @@
                 walletInputPlaceholder: "أدخل عنوان محفظة TON الخاصة بك...",
                 withdrawAmountPlaceholder: "كمية السحب (الحد الأدنى 1000 MOON)",
                 btnSubmitWithdraw: "🚀 إرسال طلب السحب",
-                labTitle: "🫧 حقل الفقاعات الكمية",
-                labDesc: "افرقع الفقاعات الطافية بالضغط عليها لحصد عملات MOON الفورية! اللعب يتم داخل البوت.",
-                poppedCountLabel: "الفقاعات المفرقعة",
-                bubbleTotalHarvestLabel: "أرباح المعمل اليوم",
-                btnSpawnWave: "🌀 توليد موجة فقاعات إضافية (مكافأة)",
-                arenaHint: "✨ المس الفقاعات لفرقعتها وحصاد الأرباح!",
+                labTitle: "🫧 صندوق الحظ والفقاعات الكمية",
+                labDesc: "لديك محاولات محدودة لفتح الفقاعات! بعضها يمنح MOON، بعضها حظ أوفر، وبعضها يمنحك محاولة مجانية جديدة!",
+                attemptsCountLabel: "⚡ المحاولات المتبقية",
+                bubbleTotalHarvestLabel: "🎁 إجمالي أرباح المعمل",
+                btnRefillAttempts: "🚀 نفدت محاولاتك؟ شاهد إعلان الراعي لتعبئة +10 محاولات جديدة!",
+                arenaHint: "✨ اضغط على الفقاعة لاكتشاف ما بداخلها!",
                 refTitle: "👥 شبكة الأصدقاء والإحالات",
                 refDesc: "ادعُ أصدقاءك لتسريع وتيرة التعدين بنسبة +50%!",
                 eliteTitle: "شريك النخبة",
@@ -1094,12 +1087,12 @@
                 walletInputPlaceholder: "Enter your TON Wallet Address...",
                 withdrawAmountPlaceholder: "Withdraw Amount (Min 1000 MOON)",
                 btnSubmitWithdraw: "🚀 Submit Withdrawal Request",
-                labTitle: "🫧 Quantum Bubbles Field",
-                labDesc: "Tap floating bubbles to pop them and harvest instant MOON! All in-app fun.",
-                poppedCountLabel: "Bubbles Popped",
-                bubbleTotalHarvestLabel: "Lab Harvest Today",
-                btnSpawnWave: "🌀 Spawn Extra Bubble Wave (Bonus)",
-                arenaHint: "✨ Tap bubbles to pop & harvest crypto!",
+                labTitle: "🫧 Quantum Mystery Bubbles",
+                labDesc: "Limited attempts to pop bubbles! Some give MOON, some are bad luck, and some give extra tries!",
+                attemptsCountLabel: "⚡ Attempts Left",
+                bubbleTotalHarvestLabel: "🎁 Total Lab Harvest",
+                btnRefillAttempts: "🚀 Out of attempts? Watch sponsor ad for +10 new tries!",
+                arenaHint: "✨ Tap the bubble to discover its secret!",
                 refTitle: "👥 Referral Network & Friends",
                 refDesc: "Invite partners & boost your mining speed by +50%!",
                 eliteTitle: "Elite Partner",
@@ -1199,9 +1192,9 @@
 
             document.getElementById('labTitle').innerText = t.labTitle;
             document.getElementById('labDesc').innerText = t.labDesc;
-            document.getElementById('poppedCountLabel').innerText = t.poppedCountLabel;
+            document.getElementById('attemptsCountLabel').innerText = t.attemptsCountLabel;
             document.getElementById('bubbleTotalHarvestLabel').innerText = t.bubbleTotalHarvestLabel;
-            document.getElementById('btnSpawnWave').innerText = t.btnSpawnWave;
+            document.getElementById('btnRefillAttempts').innerText = t.btnRefillAttempts;
             document.getElementById('arenaHintText').innerText = t.arenaHint;
 
             document.getElementById('refTitle').innerText = t.refTitle;
@@ -1297,7 +1290,7 @@
             savedWallet: '',
             hasCelebratedAllTasks: false,
             inviterId: null,
-            bubblesPoppedCount: 0,
+            bubbleAttemptsLeft: 10,
             bubbleHarvestTotal: 0
         };
 
@@ -1305,7 +1298,7 @@
         if (!userState.pendingVerifyTasks) userState.pendingVerifyTasks = [];
         if (!userState.completedTasks) userState.completedTasks = [];
         if (!userState.taskCooldowns) userState.taskCooldowns = {};
-        if (typeof userState.bubblesPoppedCount !== 'number') userState.bubblesPoppedCount = 0;
+        if (typeof userState.bubbleAttemptsLeft !== 'number') userState.bubbleAttemptsLeft = 10;
         if (typeof userState.bubbleHarvestTotal !== 'number') userState.bubbleHarvestTotal = 0;
         if (typeof userState.rewardedRefsCount !== 'number') userState.rewardedRefsCount = userState.teamCount || 0;
         if (typeof userState.checkinStreak !== 'number') {
@@ -1518,86 +1511,101 @@
             }
         }
 
-        const BUBBLE_TYPES = [
-            { class: 'bubble-gold', icon: '🪙', min: 0.50, max: 1.00, size: 55 },
-            { class: 'bubble-cyan', icon: '💎', min: 0.30, max: 0.70, size: 50 },
-            { class: 'bubble-purple', icon: '🔮', min: 0.40, max: 0.85, size: 52 },
-            { class: 'bubble-emerald', icon: '⚡', min: 0.25, max: 0.60, size: 48 }
-        ];
-
-        function createSingleBubble() {
+        // --- نظام الفقاعات وصندوق الحظ المحدود مع خيارات (عملة، حظ أوفر، محاولة أخرى) ---
+        function spawnMysteryBubble() {
             const arena = document.getElementById('bubbleArena');
             if (!arena) return;
+            arena.querySelectorAll('.quantum-bubble, .bubble-popup-result').forEach(el => el.remove());
 
-            const bType = BUBBLE_TYPES[Math.floor(Math.random() * BUBBLE_TYPES.length)];
+            if (userState.bubbleAttemptsLeft <= 0) {
+                let msg = document.createElement('div');
+                msg.style.cssText = "color: #ef4444; font-size: 0.8rem; font-weight: bold; padding: 20px; text-align: center;";
+                msg.innerText = currentLang === 'ar' ? "⚠️ نفدت محاولاتك في المعمل! اضغط على زر الإعلان أدناه لتعبئة محاولات جديدة." : "⚠️ Out of attempts! Tap the ad button below to refill.";
+                arena.appendChild(msg);
+                return;
+            }
+
             const bubble = document.createElement('div');
-            bubble.className = `quantum-bubble ${bType.class}`;
+            bubble.className = 'quantum-bubble';
+            bubble.innerHTML = '🫧';
 
-            const reward = (Math.random() * (bType.max - bType.min) + bType.min).toFixed(2);
-            bubble.style.width = `${bType.size}px`;
-            bubble.style.height = `${bType.size}px`;
+            const maxX = arena.clientWidth - 65;
+            const maxY = arena.clientHeight - 65;
+            bubble.style.left = `${Math.max(10, Math.floor(Math.random() * maxX))}px`;
+            bubble.style.top = `${Math.max(15, Math.floor(Math.random() * maxY))}px`;
 
-            const maxX = arena.clientWidth - bType.size - 10;
-            const maxY = arena.clientHeight - bType.size - 15;
-            const posX = Math.max(10, Math.floor(Math.random() * maxX));
-            const posY = Math.max(25, Math.floor(Math.random() * maxY));
-
-            bubble.style.left = `${posX}px`;
-            bubble.style.top = `${posY}px`;
-            bubble.style.animationDuration = `${(Math.random() * 2 + 2.5).toFixed(1)}s`;
-
-            bubble.innerHTML = `
-                <div class="bubble-icon">${bType.icon}</div>
-                <div class="bubble-val">+${reward}</div>
-            `;
-
-            bubble.onclick = function(e) {
-                e.stopPropagation();
-                popBubble(this, parseFloat(reward));
+            bubble.onclick = function() {
+                openMysteryResult(this);
             };
 
             arena.appendChild(bubble);
         }
 
-        function popBubble(bubbleEl, rewardVal) {
+        function openMysteryResult(bubbleEl) {
             triggerHaptic('impact', 'medium');
-            bubbleEl.style.transform = 'scale(1.4)';
-            bubbleEl.style.opacity = '0';
-            setTimeout(() => { if (bubbleEl.parentNode) bubbleEl.parentNode.removeChild(bubbleEl); }, 220);
+            const arena = document.getElementById('bubbleArena');
+            if (!arena) return;
+            bubbleEl.remove();
 
-            userState.balance += rewardVal;
-            userState.bubblesPoppedCount = (userState.bubblesPoppedCount || 0) + 1;
-            userState.bubbleHarvestTotal = (userState.bubbleHarvestTotal || 0) + rewardVal;
+            userState.bubbleAttemptsLeft = Math.max(0, userState.bubbleAttemptsLeft - 1);
+
+            // تحديد النتيجة عشوائياً (50% عملة، 30% حظ أوفر، 20% محاولة أخرى)
+            let randOutcome = Math.random();
+            let resultHtml = '';
+
+            if (randOutcome < 0.50) {
+                // فوز بعملة MOON
+                let reward = parseFloat((Math.random() * 0.70 + 0.30).toFixed(2));
+                userState.balance += reward;
+                userState.bubbleHarvestTotal = (userState.bubbleHarvestTotal || 0) + reward;
+                triggerHaptic('notification', 'success');
+                resultHtml = `
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🪙</div>
+                    <div style="font-size: 0.85rem; color: #34d399; font-weight: bold;">+${reward} MOON</div>
+                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">مبروك! أُضيف الرصيد لحسابك.</div>
+                `;
+            } else if (randOutcome < 0.80) {
+                // حظ أوفر
+                triggerHaptic('impact', 'light');
+                resultHtml = `
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🍀</div>
+                    <div style="font-size: 0.85rem; color: #fde68a; font-weight: bold;">حظ أوفر في المرة القادمة!</div>
+                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">لا تقلق، جرب الفقاعة التالية.</div>
+                `;
+            } else {
+                // فوز بمحاولة أخرى إضافية
+                userState.bubbleAttemptsLeft += 1;
+                triggerHaptic('notification', 'success');
+                resultHtml = `
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🎟️</div>
+                    <div style="font-size: 0.85rem; color: #06b6d4; font-weight: bold;">لقد فزت بمحاولة أخرى!</div>
+                    <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">تم تعويض محاولتك مجاناً.</div>
+                `;
+            }
 
             saveUserData();
             updateUI();
 
+            const popup = document.createElement('div');
+            popup.className = 'bubble-popup-result';
+            popup.innerHTML = resultHtml;
+            arena.appendChild(popup);
+
             setTimeout(() => {
-                const arena = document.getElementById('bubbleArena');
-                if (arena && arena.querySelectorAll('.quantum-bubble').length < 6) {
-                    createSingleBubble();
-                }
-            }, 1200);
+                if (popup.parentNode) popup.parentNode.removeChild(popup);
+                spawnMysteryBubble();
+            }, 1800);
         }
 
-        function populateBubbles() {
-            const arena = document.getElementById('bubbleArena');
-            if (!arena) return;
-            arena.querySelectorAll('.quantum-bubble').forEach(b => b.remove());
-            for (let i = 0; i < 5; i++) {
-                createSingleBubble();
-            }
-        }
-
-        function spawnBonusWave() {
+        function refillBubbleAttempts() {
             triggerHaptic('notification', 'success');
             openTelegramUrlSafely(ADSTERRA_DIRECT_LINK);
-            userState.balance += 2.00;
+            userState.bubbleAttemptsLeft += 10;
             saveUserData();
             updateUI();
             triggerCelebration();
-            populateBubbles();
-            showMessage(currentLang === 'ar' ? "🌊 تم إطلاق موجة فقاعات خارقة وحصلت على +2.00 MOON هدية!" : "🌊 Super bubble wave spawned! +2.00 MOON bonus!");
+            spawnMysteryBubble();
+            showMessage(currentLang === 'ar' ? "🚀 تمت إضافة +10 محاولات فقاعات جديدة بنجاح!" : "🚀 +10 new bubble attempts added!");
         }
 
         function updateAllTimersUI() {
@@ -1627,9 +1635,9 @@
             document.getElementById('dailyRateInfo').innerText = miningData.dailyLimit.toFixed(2);
             document.getElementById('dailyEarnings').innerText = miningData.dailyLimit.toFixed(1);
 
-            let popVal = document.getElementById('poppedCountVal');
+            let attVal = document.getElementById('attemptsCountVal');
             let harvVal = document.getElementById('bubbleHarvestVal');
-            if (popVal) popVal.innerText = userState.bubblesPoppedCount || 0;
+            if (attVal) attVal.innerText = `${userState.bubbleAttemptsLeft || 0} / 10`;
             if (harvVal) harvVal.innerText = `+${(userState.bubbleHarvestTotal || 0).toFixed(2)} MOON`;
 
             let now = Date.now();
@@ -1937,7 +1945,6 @@
             showMessage(t.alertDailyReward.replace('{day}', dayNum).replace('{rew}', reward));
         }
 
-        // --- دالة السحب المؤمنة (ترسل الطلب لجدول Supabase والسيرفر يرسل الإشعار دون كشف التوكن) ---
         async function submitWithdraw() {
             const t = i18n[currentLang];
             const inputVal = document.getElementById('walletInput').value.trim();
@@ -2016,7 +2023,7 @@
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
             if (modalId === 'walletModal') renderWalletLockUI();
-            if (modalId === 'labModal') populateBubbles();
+            if (modalId === 'labModal') spawnMysteryBubble();
             if (modalId === 'refModal') syncReferralsAndCloud();
             if (modalId === 'minersModal') renderLevelsList();
             if (modalId === 'tasksModal') updateAllTimersUI();
